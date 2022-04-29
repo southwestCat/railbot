@@ -1,6 +1,9 @@
 #include <iostream>
 #include <eigen-quadprog/QuadProg.h>
 
+#include <stdlib.h>
+#include <time.h>
+
 struct QP1
 {
     QP1()
@@ -101,11 +104,19 @@ int main()
     qp = Eigen::QuadProgDense(qp1.nrvar, qp1.nreq, nrineq);
     // Eigen::QuadProgDense qp(qp1.nrvar, qp1.nreq, nrineq);
 
-    qp.solve(qp1.Q, qp1.C,
-             qp1.Aeq, qp1.Beq,
-             qp1.Aineq, qp1.Bineq);
+    clock_t start, finish;
+    start = clock();
+    for (int i = 0; i < 1000; i++)
+    {
+        qp.solve(qp1.Q, qp1.C,
+                 qp1.Aeq, qp1.Beq,
+                 qp1.Aineq, qp1.Bineq);
+    }
+    finish = clock();
+    double duration = (double)(finish-start) / CLOCKS_PER_SEC * 1000;
+    std::cout << "time cost: " << duration << "ms." << std::endl;
 
-    std::cout << qp.result().transpose() << std::endl;
-    std::cout << qp1.X.transpose() << std::endl;
+    // std::cout << qp.result().transpose() << std::endl;
+    // std::cout << qp1.X.transpose() << std::endl;
     return 0;
 }

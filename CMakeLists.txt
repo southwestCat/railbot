@@ -6,9 +6,16 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Bin)
 set (CMAKE_CXX_FLAGS  "-std=c++17 -w -march=silvermont -mtune=silvermont -Og")
 set(CMAKE_EXE_LINKER_FLAGS " -no-pie")
 
-link_directories(
-    Lib/
+include_directories(
+    Src/
 )
+
+add_executable(lola_conn 
+    Src/LolaConnector/lola_conn.cpp
+    Src/LolaConnector/leds.cpp
+    Src/LolaConnector/lola_frame.cpp
+)
+target_link_libraries(lola_conn -lboost_system -lpthread -lrt)
 
 add_executable(test Src/test.cpp)
 target_link_libraries(test -leigen-quadprog)
