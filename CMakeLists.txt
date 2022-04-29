@@ -8,6 +8,7 @@ set(CMAKE_EXE_LINKER_FLAGS " -no-pie")
 
 include_directories(
     Src/
+    Src/CPPController
 )
 
 add_executable(lola_conn 
@@ -16,6 +17,10 @@ add_executable(lola_conn
     Src/LolaConnector/lola_frame.cpp
 )
 target_link_libraries(lola_conn -lboost_system -lpthread -lrt)
+
+file(GLOB_RECURSE CONTROLLER_SRC Src/CPPController/[^.]*.cpp)
+add_executable(controller ${CONTROLLER_SRC})
+target_link_libraries(controller -pthread -leigen-quadprog -lrt)
 
 add_executable(test Src/test.cpp)
 target_link_libraries(test -leigen-quadprog)
