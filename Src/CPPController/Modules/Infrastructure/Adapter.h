@@ -27,7 +27,7 @@ protected:
 
     Adapter(BlackboardThread *bb) : blackboard(bb)
     {
-        // Blackboard::setInstance(&this->bb);
+        Blackboard::setInstance(&this->bb);
         // NaoProvider::setInstance(&naoProvider);
         // ModuleManager::setInstance(&moduleManager);
     }
