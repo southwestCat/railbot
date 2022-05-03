@@ -78,6 +78,7 @@ int openSharedMemory()
             }
         }
     }
+    shData->state = 1;
     return 0;
 }
 
@@ -327,6 +328,18 @@ void processReceiveSend()
         CycleIndex++;
         writeActuators(socket);
         readSensors(socket, frame_handler, socketdata, max_len);
+        // raise the semaphore
+        if (sem != SEM_FAILED)
+        {
+            int sval;
+            if (sem_getvalue(sem, &sval) == 0)
+            {
+                if (sval < 1)
+                {
+                    sem_post(sem);
+                }
+            }
+        }
     }
 }
 
@@ -346,4 +359,6 @@ int main()
     processReceiveSend();
 
     closeSharedMemory();
+
+    return 0;
 }

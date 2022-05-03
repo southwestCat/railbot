@@ -90,7 +90,6 @@ void NaoProvider::update(InertialSensorData &inertialSensorData)
     inertialSensorData.acc.x() = sensors[accXSensor];
     inertialSensorData.acc.y() = sensors[accYSensor];
     inertialSensorData.acc.z() = sensors[accZSensor];
-    printf("%f\n\n", sensors[accZSensor]);
 
     inertialSensorData.angle.x() = sensors[angleXSensor];
     inertialSensorData.angle.y() = sensors[angleYSensor];

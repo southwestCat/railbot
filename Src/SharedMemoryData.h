@@ -294,6 +294,8 @@ struct SharedData
     volatile int readingActuators;
     volatile int newestActuators;
 
+    volatile int state = -1;
+
     float sensors[3][mumOfSensorIds];
     float actuators[3][numOfActuatorIds];
 };

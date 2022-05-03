@@ -38,7 +38,8 @@ public:
             return false;
         }
         assert((shData = (SharedData *)mmap(nullptr, sizeof(SharedData), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0)) != MAP_FAILED);
-        return true;
+        // return true;
+        return (shData->state == 1);
     }
 
     void cleanup()

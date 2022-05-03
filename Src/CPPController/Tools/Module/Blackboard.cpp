@@ -33,6 +33,9 @@ Blackboard::Blackboard()
 
     theInertialData = new InertialData;
     insert(CLASS2STRING(InertialData));
+
+    theJointSensorData = new JointSensorData;
+    insert(CLASS2STRING(JointSensorData));
 }
 
 Blackboard::~Blackboard()

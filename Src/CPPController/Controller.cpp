@@ -40,6 +40,8 @@ int main(int argc, char **argv)
         {
             usleep(1000000);
             cout << "[INFO] waiting" << endl;
+            if (!run)
+                exit(EXIT_SUCCESS);
         } while (!naoBody.init());
     }
     cout << "[INFO] Connected to lola_conn" << endl;

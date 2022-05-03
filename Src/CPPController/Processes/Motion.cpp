@@ -21,16 +21,21 @@ void Motion::beforeModules()
 
 void Motion::updateModules()
 {
-    FrameInfo *_theFrameInfo = (FrameInfo *)Blackboard::getInstance().theFrameInfo;
-    NaoProvider::getInstance().update(*_theFrameInfo);
+    InertialData *_theInertialData = (InertialData *)Blackboard::getInstance().theInertialData;
+    NaoProvider::getInstance().update(*_theInertialData);
 }
 
 void Motion::afterModules()
 {
+    NaoProvider::finishFrame();
 }
 
 void Motion::afterFrame()
 {
+    if (Blackboard::getInstance().exists(CLASS2STRING(JointSensorData)))
+    {
+        NaoProvider::waitForFrameData();
+    }
 }
 
 void Motion::resetUpdate()

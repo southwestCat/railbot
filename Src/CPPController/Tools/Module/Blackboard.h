@@ -26,11 +26,11 @@ public:
 
     void *theFrameInfo = nullptr;
     // FsrSensorData theFsrSensorData;
-    void* theInertialData = nullptr;
+    void *theInertialData = nullptr;
     void *theInertialSensorData = nullptr;
     // JointLimits theJointLimits;
     void *theJointRequest = nullptr;
-    // JointSensorData theJointSensorData;
+    void *theJointSensorData = nullptr;
     // MassCalibration theMassCalibration;
     // NetWrenchEstimation theNetWrenchEstimation;
     // FloatingBaseEstimation theFloatingBaseEstimation;
@@ -44,6 +44,7 @@ public:
 public:
     std::map<std::string, bool> updatedRepresentation;
     std::map<std::string, bool> updatedConfig;
+    bool exists(std::string representation);
 
 private:
     enum MapType
@@ -55,7 +56,6 @@ private:
     // void initMap();
     // void initRepresentationMap();
     // void initConfigMap();
-    bool exists(std::string representation);
     void setRMap(std::string representation);
     void setCMap(std::string config);
     void insert(std::string string, MapType type = representationMap);
