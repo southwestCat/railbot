@@ -1,6 +1,6 @@
-#include "Behavior.h"
+#include "Cognition.h"
 
-void Behavior::tick()
+void Cognition::tick()
 {
     resetUpdate();
     update();
@@ -8,7 +8,7 @@ void Behavior::tick()
     send();
 }
 
-void Behavior::resetUpdate()
+void Cognition::resetUpdate()
 {
     std::map<std::string, bool> &_map = Blackboard::getInstance().updatedRepresentation;
     std::map<std::string, bool>::iterator it;
@@ -18,14 +18,14 @@ void Behavior::resetUpdate()
     }
 }
 
-void Behavior::update()
+void Cognition::update()
 {
 }
 
-void Behavior::receive()
+void Cognition::receive()
 {
 }
 
-void Behavior::send()
+void Cognition::send()
 {
 }

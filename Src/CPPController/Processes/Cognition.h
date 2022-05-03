@@ -3,10 +3,10 @@
 #include "Modules/Infrastructure/Adapter.h"
 #include "CABSL/Cabsl.h"
 
-class Behavior : public Adapter
+class Cognition : public Adapter
 {
 public:
-    Behavior(BlackboardThread *bb) : Adapter(bb)
+    Cognition(BlackboardThread *bb) : Adapter(bb)
     {
     }
 

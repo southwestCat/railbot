@@ -5,7 +5,7 @@
 #include "Platform/NaoBody.h"
 #include "Platform/ThreadManager.h"
 #include "Processes/Motion.h"
-#include "Processes/Behavior.h"
+#include "Processes/Cognition.h"
 #include "Tools/Module/BlackboardThread.h"
 
 using namespace std;
@@ -52,8 +52,8 @@ int main(int argc, char **argv)
     ThreadManager motion("Motion", 0);
     motion.run<Motion>(blackboard);
 
-    ThreadManager behavior("Behavior", 20000);
-    behavior.run<Behavior>(blackboard);
+    ThreadManager behavior("Cognition", 20000);
+    behavior.run<Cognition>(blackboard);
 
     while (run)
     {
