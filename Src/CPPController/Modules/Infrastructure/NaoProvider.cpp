@@ -1,6 +1,7 @@
 #include "NaoProvider.h"
 #include "SharedMemoryData.h"
 #include "Platform/Time.h"
+#include "Tools/Module/ModuleManager.h"
 
 thread_local NaoProvider *NaoProvider::theInstance = nullptr;
 
@@ -94,4 +95,44 @@ void NaoProvider::update(InertialSensorData &inertialSensorData)
     inertialSensorData.angle.x() = sensors[angleXSensor];
     inertialSensorData.angle.y() = sensors[angleYSensor];
     inertialSensorData.angle.z() = sensors[angleZSensor]; // TODO:
+}
+
+void NaoProvider::update(FsrSensorData &fsrSensorData)
+{
+    float *sensors = naoBody.getSensors();
+    for (int leg = 0; leg < Legs::numOfLegs; leg++)
+    {
+        for (int sensor = 0; sensor < FsrSensors::numOfFsrSensors; sensor++)
+        {
+            fsrSensorData.pressures[leg][sensor] = sensors[lFSRFrontLeftSensor + leg * FsrSensors::numOfFsrSensors + sensor];
+        }
+        fsrSensorData.totals[leg] = sensors[lFSRTotalSensor + leg];
+    }
+}
+
+void NaoProvider::update(JointSensorData &jointSensorData)
+{
+    UPDATE_REPRESENTATION(FrameInfo);
+
+    float *sensors = naoBody.getSensors();
+    int j = 0;
+    for (int i = 0; i < Joints::numOfJoints; i++)
+    {
+        if (i == Joints::rHipYawPitch)
+        {
+            jointSensorData.angles[i] = jointSensorData.angles[Joints::lHipYawPitch];
+            jointSensorData.currents[i] = jointSensorData.currents[Joints::lHipYawPitch];
+            jointSensorData.temperatures[i] = jointSensorData.temperatures[Joints::lHipYawPitch];
+            jointSensorData.status[i] = jointSensorData.status[Joints::lHipYawPitch];
+        }
+        else
+        {
+            // jointSensorData.angles[i] = sensors[j++] - theJointCalibration.offsets[i];
+            jointSensorData.angles[i] = sensors[j++];
+            jointSensorData.currents[i] = static_cast<short>(1000.f * sensors[j++]);
+            jointSensorData.temperatures[i] = static_cast<unsigned char>(sensors[j++]);
+            // jointSensorData.status[i] = static_cast<JointSensorData::TemperatureStatus>(*reinterpret_cast<int *>(&sensors[j++]));
+        }
+    }
+    jointSensorData.timestamp = theFrameInfo->time;
 }

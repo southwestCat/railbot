@@ -21,8 +21,9 @@ void Motion::beforeModules()
 
 void Motion::updateModules()
 {
-    InertialData *_theInertialData = (InertialData *)Blackboard::getInstance().theInertialData;
-    NaoProvider::getInstance().update(*_theInertialData);
+    JointRequest *j = (JointRequest *)Blackboard::getInstance().theJointRequest;
+    j->angles[Joints::headYaw] = 0_deg;
+    j->stiffnessData.stiffnesses[Joints::headYaw] = 50;
 }
 
 void Motion::afterModules()

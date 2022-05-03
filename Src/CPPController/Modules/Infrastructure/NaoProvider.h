@@ -13,6 +13,7 @@ class NaoProviderBase
 {
 public:
     USES_REPRESENTATION(JointRequest);
+    REQUIRES_REPRESENTATION(FrameInfo);
 };
 
 class NaoProvider : public NaoProviderBase

@@ -51,12 +51,12 @@ int openSharedMemory()
     int memoryHandle = shm_open(MEM_NAME, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
     if (memoryHandle == -1)
     {
-        perror("lola_conn: shm_open.");
+        perror("[ERROR]: shm_open.");
         return -1;
     }
     else if (ftruncate(memoryHandle, sizeof(SharedData)) == -1)
     {
-        perror("lola_conn: ftruncate.");
+        perror("[ERROR]: ftruncate.");
         return -1;
     }
     else
@@ -64,7 +64,7 @@ int openSharedMemory()
         shData = (SharedData *)mmap(nullptr, sizeof(SharedData), PROT_READ | PROT_WRITE, MAP_SHARED, memoryHandle, 0);
         if (shData == MAP_FAILED)
         {
-            perror("lola_conn: mmap.");
+            perror("[ERROR]: mmap.");
             return -1;
         }
         else
@@ -73,7 +73,7 @@ int openSharedMemory()
             sem = sem_open(SEM_NAME, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, 0);
             if (sem == SEM_FAILED)
             {
-                perror("lola_conn: sem_open.");
+                perror("[ERROR]: sem_open.");
                 return -1;
             }
         }
@@ -84,13 +84,13 @@ int openSharedMemory()
 
 void closeSharedMemory()
 {
-    fprintf(stderr, "lola_conn: Stopping.\n");
+    fprintf(stderr, "[INFO]: lola_conn is stopping.\n");
     if (sem != SEM_FAILED)
         sem_close(sem);
     if (shData != MAP_FAILED)
         munmap(shData, sizeof(SharedData));
 
-    fprintf(stderr, "lola_conn: Stopped.\n");
+    fprintf(stderr, "[INFO]: lola_conn is stopped.\n");
 }
 
 void extractSensors(float *sensors, const LolaSensorFrame &sensor_frame)
@@ -233,21 +233,39 @@ void writeLEDs(Leds &leds, float *ledRequest)
     leds.foots.right.b = ledRequest[index++];
 }
 
+void writeJoints(Joints &joints, float *positionRequest, float *stiffnessRequest)
+{
+    joints.head[HeadYaw].angle = positionRequest[headYawPositionActuator];
+    joints.head[HeadYaw].stiffness = stiffnessRequest[headYawPositionActuator];
+    joints.head[HeadPitch].angle = positionRequest[headPitchPositionActuator];
+    joints.head[HeadPitch].stiffness = stiffnessRequest[headPitchPositionActuator];
+    for (int i = 0; i < ARM_JOINT_SIZE; i++)
+    {
+        joints.arms[i].angle = positionRequest[lShoulderPitchPositionActuator + i];
+        joints.arms[i].stiffness = stiffnessRequest[lShoulderPitchPositionActuator + i];
+    }
+    for (int i = 0; i < LEG_JOINT_SIZE; i++)
+    {
+        joints.legs[i].angle = positionRequest[lHipYawPitchPositionActuator + i];
+        joints.legs[i].stiffness = stiffnessRequest[lHipYawPitchPositionActuator + i];
+    }
+}
+
 void writeActuators(local::stream_protocol::socket &socket)
 {
     LolaFrameHandler frame_handler;
     try
     {
         shData->readingActuators = shData->newestActuators;
-        // if (shData->readingActuators == lastReadingActuators)
-        // {
-        //     if (actuatorsDrop == 0)
-        //         fprintf(stderr, "lola_conn: missed actuator request. \n");
-        //     actuatorsDrop++;
-        // }
-        // else
-        //     actuatorsDrop = 0;
-        // lastReadingActuators = shData->readingActuators;
+        if (shData->readingActuators == lastReadingActuators)
+        {
+            if (actuatorsDrop == 0)
+                fprintf(stderr, "[INFO]: missed actuator request. \n");
+            actuatorsDrop++;
+        }
+        else
+            actuatorsDrop = 0;
+        lastReadingActuators = shData->readingActuators;
 
         float *readingActuators = shData->actuators[shData->readingActuators];
         float *actuators = readingActuators;
@@ -256,6 +274,20 @@ void writeActuators(local::stream_protocol::socket &socket)
         float ledRequest[numOfLedActuatorIds] = {0.f};
         setEyeLeds(ledRequest);
         writeLEDs(leds, ledRequest);
+
+        float positionRequest[numOfPositionActuatorIds];
+        float stiffnessRequest[numOfPositionActuatorIds];
+        for (int i = 0; i < numOfPositionActuatorIds; i++)
+        {
+            positionRequest[i] = actuators[i];
+        }
+        for (int i = 0; i < numOfStiffnessActuatorIds; i++)
+        {
+            stiffnessRequest[i] = actuatorsDrop > 5 ? 0.f : actuators[headYawStiffnessActuator + i];
+        }
+
+        auto &joints = frame_handler.actuator_frame.joints;
+        writeJoints(joints, positionRequest, stiffnessRequest);
 
         char *buffer;
         size_t size;
@@ -296,7 +328,7 @@ void readSensors(local::stream_protocol::socket &socket, LolaFrameHandler &frame
     }
     catch (string &e)
     {
-        fprintf(stderr, "libbhuman: %s\n", e.c_str());
+        fprintf(stderr, "[ERROR]: catch %s\n", e.c_str());
         exit(0);
     }
 }
@@ -350,7 +382,7 @@ int main()
     int ret = openSharedMemory();
     if (ret < 0)
     {
-        printf("Cannot open shared memory.\n");
+        printf("[ERROR]: Cannot open shared memory.\n");
         return -1;
     }
 
