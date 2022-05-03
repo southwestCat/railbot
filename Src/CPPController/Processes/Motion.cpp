@@ -21,9 +21,6 @@ void Motion::beforeModules()
 
 void Motion::updateModules()
 {
-    JointRequest *j = (JointRequest *)Blackboard::getInstance().theJointRequest;
-    j->angles[Joints::headYaw] = 0_deg;
-    j->stiffnessData.stiffnesses[Joints::headYaw] = 50;
 }
 
 void Motion::afterModules()
