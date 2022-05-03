@@ -25,6 +25,7 @@ public:
     float timeStamp_ = 0.01f;
 
     void *theFrameInfo = nullptr;
+    void *theKeyStates = nullptr;
     // FsrSensorData theFsrSensorData;
     void *theInertialData = nullptr;
     void *theInertialSensorData = nullptr;

@@ -15,6 +15,7 @@
 #include "Representations/Sensing/InertialData.h"
 #include "Representations/Sensing/NetWrenchEstimation.h"
 #include "Representations/Sensing/RobotModel.h"
+#include "Representations/Infrastructure/SensorData/KeyStates.h"
 
 static Blackboard *theInstance = nullptr;
 
@@ -36,6 +37,9 @@ Blackboard::Blackboard()
 
     theJointSensorData = new JointSensorData;
     insert(CLASS2STRING(JointSensorData));
+
+    theKeyStates = new KeyStates;
+    insert(CLASS2STRING(KeyStates));
 }
 
 Blackboard::~Blackboard()
@@ -48,6 +52,8 @@ Blackboard::~Blackboard()
         delete (JointRequest *)theJointRequest;
     if (theInertialSensorData != nullptr)
         delete (InertialSensorData *)theInertialSensorData;
+    if (theKeyStates != nullptr)
+        delete (KeyStates *)theKeyStates;
 }
 
 Blackboard &Blackboard::getInstance()

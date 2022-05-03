@@ -11,8 +11,13 @@ public:
     }
 
     void tick();
-    void update();
     void send();
     void receive();
     void resetUpdate();
+
+    void beforeFrame() override;
+    void beforeModules() override;
+    void updateModules() override;
+    void afterModules() override;
+    void afterFrame() override;
 };

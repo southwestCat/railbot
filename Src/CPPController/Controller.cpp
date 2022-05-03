@@ -52,6 +52,8 @@ int main(int argc, char **argv)
     ThreadManager motion("Motion", 0);
     motion.run<Motion>(blackboard);
 
+    usleep(100000);
+
     ThreadManager behavior("Cognition", 20000);
     behavior.run<Cognition>(blackboard);
 

@@ -1,5 +1,7 @@
 #include "Motion.h"
 #include <iostream>
+#include "Tools/Module/BlackboardThread.h"
+
 
 void Motion::tick()
 {
@@ -21,10 +23,13 @@ void Motion::beforeModules()
 
 void Motion::updateModules()
 {
+    KeyStates *_theKeyStates = (KeyStates *)Blackboard::getInstance().theKeyStates;
+    NaoProvider::getInstance().update(*_theKeyStates);
 }
 
 void Motion::afterModules()
 {
+    send();
     NaoProvider::finishFrame();
 }
 
@@ -44,4 +49,11 @@ void Motion::resetUpdate()
     {
         it->second = false;
     }
+}
+
+void Motion::send()
+{
+    KeyStates *_theKeyStates = (KeyStates *)Blackboard::getInstance().theKeyStates;
+    RepresentationTemplate<KeyStates> *recvKeyStates = (RepresentationTemplate<KeyStates> *)blackboard->theKeyStatesThread;
+    recvKeyStates->write(*_theKeyStates);
 }

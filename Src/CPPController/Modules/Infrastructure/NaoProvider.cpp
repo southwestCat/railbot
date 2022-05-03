@@ -136,3 +136,13 @@ void NaoProvider::update(JointSensorData &jointSensorData)
     }
     jointSensorData.timestamp = theFrameInfo->time;
 }
+
+void NaoProvider::update(KeyStates &keyStates)
+{
+    float *sensors = naoBody.getSensors();
+
+    for (int i = 0, j = headTouchFrontSensor; i < KeyStates::numOfKeys; i++, j++)
+    {
+        keyStates.pressed[i] = sensors[j] != 0;
+    }
+}
