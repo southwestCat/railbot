@@ -136,3 +136,9 @@ void NaoBody::closeActuators()
     naoBodyAccess.shData->newestActuators = writingActuators;
     writingActuators = -1;
 }
+
+float *NaoBody::getSensors()
+{
+    assert(naoBodyAccess.shData != (SharedData*)MAP_FAILED);
+    return naoBodyAccess.shData->sensors[naoBodyAccess.shData->readingSensors];
+}

@@ -1,7 +1,6 @@
 #include "NaoProvider.h"
 #include "SharedMemoryData.h"
-
-#include <cassert>
+#include "Platform/Time.h"
 
 thread_local NaoProvider *NaoProvider::theInstance = nullptr;
 
@@ -64,4 +63,36 @@ void NaoProvider::send()
             actuators[j + numOfPositionActuatorIds] = static_cast<float>(theJointRequest->stiffnessData.stiffnesses[i]) / 100.f;
         }
     }
+    j += numOfPositionActuatorIds;
+    assert(j == faceLedRedLeft0DegActuator);
+
+    naoBody.closeActuators();
+}
+
+void NaoProvider::update()
+{
+}
+
+void NaoProvider::update(FrameInfo &frameInfo)
+{
+    frameInfo.time = std::max(frameInfo.time + 1, Time::getCurrentSystemTime());
+}
+
+void NaoProvider::update(InertialSensorData &inertialSensorData)
+{
+    float *sensors = naoBody.getSensors();
+
+    // TODO:
+    inertialSensorData.gyro.x() = sensors[gyroXSensor];
+    inertialSensorData.gyro.y() = sensors[gyroYSensor];
+    inertialSensorData.gyro.z() = sensors[gyroZSensor]; // Aldebarans z-gyron is negated in V5, but in V6 it is positive.
+
+    inertialSensorData.acc.x() = sensors[accXSensor];
+    inertialSensorData.acc.y() = sensors[accYSensor];
+    inertialSensorData.acc.z() = sensors[accZSensor];
+    printf("%f\n\n", sensors[accZSensor]);
+
+    inertialSensorData.angle.x() = sensors[angleXSensor];
+    inertialSensorData.angle.y() = sensors[angleYSensor];
+    inertialSensorData.angle.z() = sensors[angleZSensor]; // TODO:
 }

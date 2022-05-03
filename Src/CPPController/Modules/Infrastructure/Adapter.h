@@ -2,8 +2,8 @@
 
 #include "Tools/Module/Blackboard.h"
 #include "Tools/Module/BlackboardThread.h"
-// #include "Modules/Infrastructure/NaoProvider/NaoProvider.h"
-// #include "Tools/Module/ModuleManager.h"
+#include "Modules/Infrastructure/NaoProvider.h"
+#include "Tools/Module/ModuleManager.h"
 
 #include <iostream>
 
@@ -22,14 +22,14 @@ protected:
     Blackboard bb;
 
     /** Provider */
-    // NaoProvider naoProvider;
-    // ModuleManager moduleManager;
+    NaoProvider naoProvider;
+    ModuleManager moduleManager;
 
     Adapter(BlackboardThread *bb) : blackboard(bb)
     {
         Blackboard::setInstance(&this->bb);
-        // NaoProvider::setInstance(&naoProvider);
-        // ModuleManager::setInstance(&moduleManager);
+        NaoProvider::setInstance(&naoProvider);
+        ModuleManager::setInstance(&moduleManager);
     }
 
 public:

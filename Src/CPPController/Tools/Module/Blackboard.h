@@ -1,6 +1,8 @@
 #pragma once
 
 #include <vector>
+#include <map>
+#include <cassert>
 
 #define REQUIRES_REPRESENTATION(representation)                                                                  \
     const representation *the##representation = (representation *)Blackboard::getInstance().the##representation; \
@@ -24,8 +26,8 @@ public:
 
     void *theFrameInfo = nullptr;
     // FsrSensorData theFsrSensorData;
-    // InertialData theInertialData;
-    // InertialSensorData theInertialSensorData;
+    void* theInertialData = nullptr;
+    void *theInertialSensorData = nullptr;
     // JointLimits theJointLimits;
     void *theJointRequest = nullptr;
     // JointSensorData theJointSensorData;
@@ -38,4 +40,23 @@ public:
 
     //! LOG
     std::vector<float> logLeftPitchd;
+
+public:
+    std::map<std::string, bool> updatedRepresentation;
+    std::map<std::string, bool> updatedConfig;
+
+private:
+    enum MapType
+    {
+        representationMap,
+        configMap
+    };
+
+    // void initMap();
+    // void initRepresentationMap();
+    // void initConfigMap();
+    bool exists(std::string representation);
+    void setRMap(std::string representation);
+    void setCMap(std::string config);
+    void insert(std::string string, MapType type = representationMap);
 };
