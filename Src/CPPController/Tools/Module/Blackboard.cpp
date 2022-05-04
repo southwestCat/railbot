@@ -17,7 +17,7 @@
 #include "Representations/Sensing/RobotModel.h"
 #include "Representations/Infrastructure/SensorData/KeyStates.h"
 
-static Blackboard *theInstance = nullptr;
+static thread_local Blackboard *theInstance = nullptr;
 
 Blackboard::Blackboard()
 {

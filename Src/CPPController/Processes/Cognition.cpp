@@ -23,7 +23,6 @@ void Cognition::beforeModules()
 
 void Cognition::updateModules()
 {
-    printf("[INFO]: In Cognition.\n");
 }
 
 void Cognition::afterModules()
@@ -54,7 +53,6 @@ void Cognition::receive()
     KeyStates *_theKeyStates = (KeyStates *)Blackboard::getInstance().theKeyStates;
     RepresentationTemplate<KeyStates> *recvKeyStates = (RepresentationTemplate<KeyStates> *)blackboard->theKeyStatesThread;
     *_theKeyStates = recvKeyStates->read();
-    std::cout << "press: " << _theKeyStates->pressed[KeyStates::chest] << std::endl;
 }
 
 void Cognition::send()
