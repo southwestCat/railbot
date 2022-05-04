@@ -17,7 +17,6 @@ define_option(Root)
     {
         define_action
         {
-            printf("In StandUp.\n");
         }
     }
 }
