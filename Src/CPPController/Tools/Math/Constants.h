@@ -28,7 +28,7 @@ namespace Constants
     constexpr float pi3_4 = pi * 0.75f;
     ///@}
 
-    constexpr float motionCycleTime = 1.f / 100.f;
+    constexpr float motionCycleTime = 12.f / 1000.f;
 
     const Eigen::Vector3f e_z = Eigen::Vector3f(0.f, 0.f, 1.f);
     const Eigen::Vector3f gravity = Eigen::Vector3f(0.f, 0.f, -g);

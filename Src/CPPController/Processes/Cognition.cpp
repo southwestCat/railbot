@@ -1,6 +1,5 @@
 #include "Cognition.h"
 #include "Tools/Module/BlackboardThread.h"
-#include "Representations/Infrastructure/SensorData/KeyStates.h"
 
 void Cognition::tick()
 {
@@ -23,6 +22,7 @@ void Cognition::beforeModules()
 
 void Cognition::updateModules()
 {
+    soccer.execute();
 }
 
 void Cognition::afterModules()

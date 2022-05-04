@@ -16,6 +16,8 @@
 #include "Representations/Sensing/NetWrenchEstimation.h"
 #include "Representations/Sensing/RobotModel.h"
 #include "Representations/Infrastructure/SensorData/KeyStates.h"
+#include "Representations/MotionControl/HeadMotionRequest.h"
+#include "Representations/Configuration/HeadLimits.h"
 
 static thread_local Blackboard *theInstance = nullptr;
 
@@ -40,6 +42,15 @@ Blackboard::Blackboard()
 
     theKeyStates = new KeyStates;
     insert(CLASS2STRING(KeyStates));
+
+    theHeadMotionRequest = new HeadMotionRequest;
+    insert(CLASS2STRING(HeadMotionRequest));
+
+    theHeadLimits = new HeadLimits;
+    insert(CLASS2STRING(HeadLimits));
+
+    theJointAngles = new JointAngles;
+    insert(CLASS2STRING(JointAngles));
 }
 
 Blackboard::~Blackboard()
@@ -54,6 +65,12 @@ Blackboard::~Blackboard()
         delete (InertialSensorData *)theInertialSensorData;
     if (theKeyStates != nullptr)
         delete (KeyStates *)theKeyStates;
+    if (theHeadMotionRequest != nullptr)
+        delete (HeadMotionRequest *)theHeadMotionRequest;
+    if (theHeadLimits != nullptr)
+        delete (HeadLimits *)theHeadLimits;
+    if (theJointAngles != nullptr)
+        delete (JointAngles *)theJointAngles;
 }
 
 Blackboard &Blackboard::getInstance()

@@ -2,6 +2,7 @@
 
 #include "Modules/Infrastructure/Adapter.h"
 #include "CABSL/Cabsl.h"
+#include "Modules/BehaviorControl/BehaviorControl/Soccer.h"
 
 class Cognition : public Adapter
 {
@@ -20,4 +21,7 @@ public:
     void updateModules() override;
     void afterModules() override;
     void afterFrame() override;
+
+private:
+    Soccer soccer;
 };

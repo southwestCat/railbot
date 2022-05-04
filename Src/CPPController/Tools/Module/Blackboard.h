@@ -32,12 +32,9 @@ public:
     // JointLimits theJointLimits;
     void *theJointRequest = nullptr;
     void *theJointSensorData = nullptr;
-    // MassCalibration theMassCalibration;
-    // NetWrenchEstimation theNetWrenchEstimation;
-    // FloatingBaseEstimation theFloatingBaseEstimation;
-    // RobotDimensions theRobotDimensions;
-    // RobotModel theRobotModel;
-    // FootTask theFootTask[2]; //< 0: left, 1: right
+    void *theHeadMotionRequest = nullptr;
+    void *theHeadLimits = nullptr;
+    void *theJointAngles = nullptr;
 
     //! LOG
     std::vector<float> logLeftPitchd;
