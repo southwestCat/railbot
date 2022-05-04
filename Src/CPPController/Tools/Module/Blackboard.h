@@ -26,7 +26,7 @@ public:
 
     void *theFrameInfo = nullptr;
     void *theKeyStates = nullptr;
-    // FsrSensorData theFsrSensorData;
+    void *theFsrSensorData = nullptr;
     void *theInertialData = nullptr;
     void *theInertialSensorData = nullptr;
     // JointLimits theJointLimits;

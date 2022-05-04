@@ -51,6 +51,9 @@ Blackboard::Blackboard()
 
     theJointAngles = new JointAngles;
     insert(CLASS2STRING(JointAngles));
+
+    theFsrSensorData = new FsrSensorData;
+    insert(CLASS2STRING(FsrSensorData));
 }
 
 Blackboard::~Blackboard()
@@ -71,6 +74,8 @@ Blackboard::~Blackboard()
         delete (HeadLimits *)theHeadLimits;
     if (theJointAngles != nullptr)
         delete (JointAngles *)theJointAngles;
+    if (theFsrSensorData != nullptr)
+        delete (FsrSensorData *)theFsrSensorData;
 }
 
 Blackboard &Blackboard::getInstance()

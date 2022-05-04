@@ -5,6 +5,8 @@
     if (!Blackboard::getInstance().updatedRepresentation[CLASS2STRING(representation)])                         \
     {                                                                                                           \
         representation *_the##representation = (representation *)Blackboard::getInstance().the##representation; \
+        assert(_the##representation != nullptr);                                                                \
+        assert(ModuleManager::getInstance().the##provider != nullptr);                                          \
         ModuleManager::getInstance().the##provider.update(*_the##representation);                               \
         Blackboard::getInstance().updatedRepresentation[CLASS2STRING(representation)] = true;                   \
     }
@@ -39,9 +41,19 @@ void ModuleManager::updateRepresentation(std::string representation)
         if (!Blackboard::getInstance().updatedRepresentation[CLASS2STRING(InertialSensorData)])
         {
             InertialSensorData *_theInertialSensorData = (InertialSensorData *)Blackboard::getInstance().theInertialSensorData;
-            assert(_theInertialSensorData);
+            assert(_theInertialSensorData != nullptr);
             NaoProvider::getInstance().update(*_theInertialSensorData);
             Blackboard::getInstance().updatedRepresentation[CLASS2STRING(InertialSensorData)] = true;
+        }
+    }
+    else if (representation == CLASS2STRING(FsrSensorData))
+    {
+        if (!Blackboard::getInstance().updatedRepresentation[CLASS2STRING(FsrSensorData)])
+        {
+            FsrSensorData *_theFsrSensorData = (FsrSensorData *)Blackboard::getInstance().theFsrSensorData;
+            assert(_theFsrSensorData != nullptr);
+            NaoProvider::getInstance().update(*_theFsrSensorData);
+            Blackboard::getInstance().updatedRepresentation[CLASS2STRING(FsrSensorData)] = true;
         }
     }
     else

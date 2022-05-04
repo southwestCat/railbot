@@ -15,4 +15,7 @@ public:
     static ModuleManager &getInstance();
 
     static void updateRepresentation(std::string representation);
+
+private:
+    void *theInertialDataProvider = nullptr;
 };
