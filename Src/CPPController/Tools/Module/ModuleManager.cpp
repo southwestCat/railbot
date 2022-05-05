@@ -3,6 +3,7 @@
 #include "Modules/Sensing/InertialDataProvider/InertialDataProvider.h"
 #include "Modules/MotionControl/MotionCombinator/MotionCombinator.h"
 #include "Modules/MotionControl/HeadMotionEngine/HeadMotionEngine.h"
+#include "Modules/MotionControl/MotionCombinator/HeadMotionCombinator.h"
 
 #define UPDATE_REPRESENTATION_WITH_PROVIDER(representation, provider)                                           \
     if (!Blackboard::getInstance().updatedRepresentation[CLASS2STRING(representation)])                         \
@@ -24,6 +25,7 @@ ModuleManager::ModuleManager()
     theInertialDataProvider = new InertialDataProvider;
     theMotionCombinator = new MotionCombinator;
     theHeadMotionEngine = new HeadMotionEngine;
+    theHeadMotionCombinator = new HeadMotionCombinator;
 }
 
 ModuleManager::~ModuleManager()
@@ -36,6 +38,8 @@ ModuleManager::~ModuleManager()
         delete (MotionCombinator *)theMotionCombinator;
     if (theHeadMotionEngine != nullptr)
         delete (HeadMotionEngine *)theHeadMotionEngine;
+    if (theHeadMotionCombinator != nullptr)
+        delete (HeadMotionCombinator *)theHeadMotionCombinator;
 }
 
 void ModuleManager::setInstance(ModuleManager *instance)
@@ -93,6 +97,10 @@ void ModuleManager::updateRepresentation(std::string representation)
     else if (representation == CLASS2STRING(HeadMotionEngineOutput))
     {
         UPDATE_REPRESENTATION_WITH_PROVIDER(HeadMotionEngineOutput, HeadMotionEngine);
+    }
+    else if (representation == CLASS2STRING(HeadJointRequest))
+    {
+        UPDATE_REPRESENTATION_WITH_PROVIDER(HeadJointRequest, HeadMotionCombinator);
     }
     else
     {

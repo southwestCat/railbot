@@ -21,4 +21,5 @@ private:
     void *theInertialDataProvider = nullptr;
     void *theMotionCombinator = nullptr;
     void *theHeadMotionEngine = nullptr;
+    void *theHeadMotionCombinator = nullptr;
 };

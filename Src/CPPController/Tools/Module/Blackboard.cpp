@@ -19,6 +19,7 @@
 #include "Representations/MotionControl/HeadMotionRequest.h"
 #include "Representations/Configuration/HeadLimits.h"
 #include "Representations/MotionControl/HeadMotionEngineOutput.h"
+#include "Representations/Infrastructure/Stiffness.h"
 
 static thread_local Blackboard *theInstance = nullptr;
 
@@ -58,6 +59,12 @@ Blackboard::Blackboard()
 
     theHeadMotionEngineOutput = new HeadMotionEngineOutput;
     insert(CLASS2STRING(HeadMotionEngineOutput));
+
+    theHeadJointRequest = new HeadJointRequest;
+    insert(CLASS2STRING(HeadJointRequest));
+
+    theStiffnessSettings = new StiffnessSettings;
+    insert(CLASS2STRING(StiffnessSettings), configMap);
 }
 
 Blackboard::~Blackboard()
@@ -82,6 +89,10 @@ Blackboard::~Blackboard()
         delete (FsrSensorData *)theFsrSensorData;
     if (theHeadMotionEngineOutput != nullptr)
         delete (HeadMotionEngineOutput *)theHeadMotionEngineOutput;
+    if (theHeadJointRequest != nullptr)
+        delete (HeadJointRequest *)theHeadJointRequest;
+    if (theStiffnessSettings != nullptr)
+        delete (StiffnessSettings *)theStiffnessSettings;
 }
 
 Blackboard &Blackboard::getInstance()

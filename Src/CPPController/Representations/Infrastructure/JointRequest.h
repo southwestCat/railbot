@@ -19,3 +19,15 @@ public:
 
     StiffnessData stiffnessData; /**< the stiffness for all joints */
 };
+
+class HeadJointRequest : public JointRequest
+{
+};
+
+class LegJointRequest : public JointRequest
+{
+};
+
+class ArmJointRequest : public JointRequest
+{
+};

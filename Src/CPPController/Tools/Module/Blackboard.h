@@ -8,7 +8,9 @@
     const representation *the##representation = (representation *)Blackboard::getInstance().the##representation; \
     const bool update##representation = true;
 
-#define USES_REPRESENTATION(representation)                                                                      \
+#define REQUIRES_CONFIGURATION(representation) const representation *the##representation = (representation *)Blackboard::getInstance().the##representation;
+
+#define USES_REPRESENTATION(representation)                                                                \
     representation *the##representation = (representation *)Blackboard::getInstance().the##representation; \
     const bool update##representation = false;
 
@@ -36,6 +38,8 @@ public:
     void *theHeadLimits = nullptr;
     void *theJointAngles = nullptr;
     void *theHeadMotionEngineOutput = nullptr;
+    void *theHeadJointRequest = nullptr;
+    void *theStiffnessSettings = nullptr;
 
     //! LOG
     std::vector<float> logLeftPitchd;
