@@ -1,6 +1,7 @@
 #include <iostream>
 #include "Motion.h"
 #include "Representations/MotionControl/HeadMotionRequest.h"
+#include "Representations/MotionControl/HeadMotionEngineOutput.h"
 #include "Tools/Module/BlackboardThread.h"
 
 void Motion::tick()
@@ -57,6 +58,10 @@ void Motion::send()
     KeyStates *_theKeyStates = (KeyStates *)Blackboard::getInstance().theKeyStates;
     RepresentationTemplate<KeyStates> *recvKeyStates = (RepresentationTemplate<KeyStates> *)blackboard->theKeyStatesThread;
     recvKeyStates->write(*_theKeyStates);
+
+    HeadMotionEngineOutput *_theHeadMotionEngineOutput = (HeadMotionEngineOutput *)Blackboard::getInstance().theHeadMotionEngineOutput;
+    RepresentationTemplate<HeadMotionEngineOutput> *_recvHeadMotionEngineOutput = (RepresentationTemplate<HeadMotionEngineOutput> *)blackboard->theHeadMotionEngineOutput;
+    _recvHeadMotionEngineOutput->write(*_theHeadMotionEngineOutput);
 }
 
 void Motion::receive()
@@ -64,4 +69,5 @@ void Motion::receive()
     HeadMotionRequest *_theHeadMotionRequest = (HeadMotionRequest *)Blackboard::getInstance().theHeadMotionRequest;
     RepresentationTemplate<HeadMotionRequest> *recvHeadMotionRequest = (RepresentationTemplate<HeadMotionRequest> *)blackboard->theHeadMotionRequest;
     *_theHeadMotionRequest = recvHeadMotionRequest->read();
+    std::cout << _theHeadMotionRequest->pan << " " << _theHeadMotionRequest->tilt << std::endl;
 }

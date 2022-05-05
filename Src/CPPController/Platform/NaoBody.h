@@ -6,7 +6,7 @@ private:
     int writingActuators = -1;
 public:
     bool init();
-    bool cleanup();
+    void cleanup();
     bool wait();
     float* getSensors();
     void openActuators(float* &actuators);

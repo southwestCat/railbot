@@ -69,7 +69,7 @@ int openSharedMemory()
         }
         else
         {
-            memset(shData, 0, sizeof(SharedData));
+            memset((void *)shData, 0, sizeof(SharedData));
             sem = sem_open(SEM_NAME, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, 0);
             if (sem == SEM_FAILED)
             {

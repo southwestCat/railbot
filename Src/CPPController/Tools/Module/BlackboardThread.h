@@ -48,4 +48,5 @@ public:
 
     void *theKeyStatesThread = nullptr;
     void *theHeadMotionRequest = nullptr;
+    void *theHeadMotionEngineOutput = nullptr;
 };

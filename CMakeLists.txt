@@ -3,7 +3,8 @@ cmake_minimum_required(VERSION 3.6)
 project(railbot)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Bin)
-set (CMAKE_CXX_FLAGS  "-std=c++17 -w -march=silvermont -mtune=silvermont -Og")
+set (CMAKE_CXX_FLAGS  "-std=c++17 -Wall -Wno-cast-function-type -Wno-unused-variable -march=silvermont -mtune=silvermont -Og")
+# set (CMAKE_CXX_FLAGS  "-std=c++17 -w -march=silvermont -mtune=silvermont -O3")
 set(CMAKE_EXE_LINKER_FLAGS " -no-pie")
 
 include_directories(

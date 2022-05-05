@@ -22,7 +22,7 @@ public:
 
     static Blackboard &getInstance();
     static void setInstance(Blackboard *instance);
-    const float dt() const { return timeStamp_; }
+    float dt() const { return timeStamp_; }
 
     float timeStamp_ = 0.01f;
 

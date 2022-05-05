@@ -17,6 +17,7 @@ define_option(Root)
     {
         define_action
         {
+            printf("In standUp\n");
             LookForward();
         }
     }

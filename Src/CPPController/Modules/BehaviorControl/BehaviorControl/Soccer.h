@@ -5,6 +5,7 @@
 #include "Representations/Infrastructure/SensorData/KeyStates.h"
 #include "Representations/MotionControl/HeadMotionRequest.h"
 #include "Representations/MotionControl/HeadMotionEngineOutput.h"
+#include "Representations/Infrastructure/JointAngles.h"
 #include "Tools/Module/Blackboard.h"
 
 class SoccerBase

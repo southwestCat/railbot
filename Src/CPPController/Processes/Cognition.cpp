@@ -53,6 +53,10 @@ void Cognition::receive()
     KeyStates *_theKeyStates = (KeyStates *)Blackboard::getInstance().theKeyStates;
     RepresentationTemplate<KeyStates> *recvKeyStates = (RepresentationTemplate<KeyStates> *)blackboard->theKeyStatesThread;
     *_theKeyStates = recvKeyStates->read();
+
+    HeadMotionEngineOutput *_theHeadMotionEngineOutput = (HeadMotionEngineOutput *)Blackboard::getInstance().theHeadMotionEngineOutput;
+    RepresentationTemplate<HeadMotionEngineOutput> *recvHeadMotionEngineOutput = (RepresentationTemplate<HeadMotionEngineOutput> *)blackboard->theHeadMotionEngineOutput;
+    *_theHeadMotionEngineOutput = recvHeadMotionEngineOutput->read();
 }
 
 void Cognition::send()

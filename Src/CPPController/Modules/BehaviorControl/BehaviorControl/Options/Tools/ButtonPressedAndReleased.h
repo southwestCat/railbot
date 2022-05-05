@@ -35,11 +35,7 @@ define_option(ButtonPressedAndReleased, (KeyStates::Key)key, (int)releaseTimeOut
     {
         define_transition
         {
-            // goto waitingForPressSuccessive;
-        }
-        define_action
-        {
-            printf("Success press.\n");
+            goto waitingForPressSuccessive;
         }
     }
 

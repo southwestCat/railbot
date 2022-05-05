@@ -15,7 +15,7 @@ void HeadMotionEngine::update()
 }
 
 void HeadMotionEngine::update(HeadMotionEngineOutput &headMotionEngineOutput)
-{
+{       
     requestedPan = theHeadMotionRequest->pan;
     requestedTilt = theHeadMotionRequest->tilt;
 

@@ -69,7 +69,7 @@ bool NaoBody::init()
     return naoBodyAccess.init();
 }
 
-bool NaoBody::cleanup()
+void NaoBody::cleanup()
 {
     naoBodyAccess.cleanup();
 }
