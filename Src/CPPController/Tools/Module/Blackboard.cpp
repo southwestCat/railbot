@@ -18,6 +18,7 @@
 #include "Representations/Infrastructure/SensorData/KeyStates.h"
 #include "Representations/MotionControl/HeadMotionRequest.h"
 #include "Representations/Configuration/HeadLimits.h"
+#include "Representations/MotionControl/HeadMotionEngineOutput.h"
 
 static thread_local Blackboard *theInstance = nullptr;
 
@@ -54,6 +55,9 @@ Blackboard::Blackboard()
 
     theFsrSensorData = new FsrSensorData;
     insert(CLASS2STRING(FsrSensorData));
+
+    theHeadMotionEngineOutput = new HeadMotionEngineOutput;
+    insert(CLASS2STRING(HeadMotionEngineOutput));
 }
 
 Blackboard::~Blackboard()
@@ -76,6 +80,8 @@ Blackboard::~Blackboard()
         delete (JointAngles *)theJointAngles;
     if (theFsrSensorData != nullptr)
         delete (FsrSensorData *)theFsrSensorData;
+    if (theHeadMotionEngineOutput != nullptr)
+        delete (HeadMotionEngineOutput *)theHeadMotionEngineOutput;
 }
 
 Blackboard &Blackboard::getInstance()

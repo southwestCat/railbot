@@ -9,6 +9,7 @@ class ModuleManager
 {
 public:
     ModuleManager();
+    ~ModuleManager();
 
     static thread_local ModuleManager *theInstance;
     static void setInstance(ModuleManager *instance);
@@ -18,4 +19,6 @@ public:
 
 private:
     void *theInertialDataProvider = nullptr;
+    void *theMotionCombinator = nullptr;
+    void *theHeadMotionEngine = nullptr;
 };

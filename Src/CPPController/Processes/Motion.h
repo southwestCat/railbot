@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Modules/Infrastructure/Adapter.h"
-#include "Modules/Sensing/InertialDataProvider/InertialDataProvider.h"
+#include "Modules/MotionControl/MotionCombinator/MotionCombinator.h"
 
 class Motion : public Adapter 
 {
@@ -25,5 +25,4 @@ public:
     void afterFrame() override;
 
 private:
-    InertialDataProvider inertialDataProvider;
 };

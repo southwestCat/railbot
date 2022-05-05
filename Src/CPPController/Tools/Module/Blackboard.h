@@ -35,6 +35,7 @@ public:
     void *theHeadMotionRequest = nullptr;
     void *theHeadLimits = nullptr;
     void *theJointAngles = nullptr;
+    void *theHeadMotionEngineOutput = nullptr;
 
     //! LOG
     std::vector<float> logLeftPitchd;

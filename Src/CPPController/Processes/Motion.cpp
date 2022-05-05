@@ -1,7 +1,6 @@
-#include "Motion.h"
 #include <iostream>
+#include "Motion.h"
 #include "Tools/Module/BlackboardThread.h"
-
 
 void Motion::tick()
 {
@@ -23,8 +22,8 @@ void Motion::beforeModules()
 
 void Motion::updateModules()
 {
-    KeyStates *_theKeyStates = (KeyStates *)Blackboard::getInstance().theKeyStates;
-    NaoProvider::getInstance().update(*_theKeyStates);
+    UPDATE_REPRESENTATION(KeyStates);
+    UPDATE_REPRESENTATION(JointRequest);
 }
 
 void Motion::afterModules()

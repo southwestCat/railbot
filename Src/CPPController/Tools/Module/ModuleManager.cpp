@@ -1,13 +1,17 @@
 #include "ModuleManager.h"
 #include "Modules/Infrastructure/NaoProvider.h"
+#include "Modules/Sensing/InertialDataProvider/InertialDataProvider.h"
+#include "Modules/MotionControl/MotionCombinator/MotionCombinator.h"
+#include "Modules/MotionControl/HeadMotionEngine/HeadMotionEngine.h"
 
 #define UPDATE_REPRESENTATION_WITH_PROVIDER(representation, provider)                                           \
     if (!Blackboard::getInstance().updatedRepresentation[CLASS2STRING(representation)])                         \
     {                                                                                                           \
         representation *_the##representation = (representation *)Blackboard::getInstance().the##representation; \
         assert(_the##representation != nullptr);                                                                \
-        assert(ModuleManager::getInstance().the##provider != nullptr);                                          \
-        ModuleManager::getInstance().the##provider.update(*_the##representation);                               \
+        provider *_the##provider = (provider *)ModuleManager::getInstance().the##provider;                      \
+        assert(_the##provider != nullptr);                                                                      \
+        _the##provider->update(*_the##representation);                                                          \
         Blackboard::getInstance().updatedRepresentation[CLASS2STRING(representation)] = true;                   \
     }
 
@@ -16,6 +20,22 @@ thread_local ModuleManager *ModuleManager::theInstance = nullptr;
 ModuleManager::ModuleManager()
 {
     theInstance = this;
+
+    theInertialDataProvider = new InertialDataProvider;
+    theMotionCombinator = new MotionCombinator;
+    theHeadMotionEngine = new HeadMotionEngine;
+}
+
+ModuleManager::~ModuleManager()
+{
+    theInstance = nullptr;
+
+    if (theInertialDataProvider != nullptr)
+        delete (InertialDataProvider *)theInertialDataProvider;
+    if (theMotionCombinator != nullptr)
+        delete (MotionCombinator *)theMotionCombinator;
+    if (theHeadMotionEngine != nullptr)
+        delete (HeadMotionEngine *)theHeadMotionEngine;
 }
 
 void ModuleManager::setInstance(ModuleManager *instance)
@@ -55,6 +75,24 @@ void ModuleManager::updateRepresentation(std::string representation)
             NaoProvider::getInstance().update(*_theFsrSensorData);
             Blackboard::getInstance().updatedRepresentation[CLASS2STRING(FsrSensorData)] = true;
         }
+    }
+    else if (representation == CLASS2STRING(KeyStates))
+    {
+        if (!Blackboard::getInstance().updatedRepresentation[CLASS2STRING(KeyStates)])
+        {
+            KeyStates *_theKeyStates = (KeyStates *)Blackboard::getInstance().theKeyStates;
+            assert(_theKeyStates != nullptr);
+            NaoProvider::getInstance().update(*_theKeyStates);
+            Blackboard::getInstance().updatedRepresentation[CLASS2STRING(KeyStates)] = true;
+        }
+    }
+    else if (representation == CLASS2STRING(JointRequest))
+    {
+        UPDATE_REPRESENTATION_WITH_PROVIDER(JointRequest, MotionCombinator);
+    }
+    else if (representation == CLASS2STRING(HeadMotionEngineOutput))
+    {
+        UPDATE_REPRESENTATION_WITH_PROVIDER(HeadMotionEngineOutput, HeadMotionEngine);
     }
     else
     {
