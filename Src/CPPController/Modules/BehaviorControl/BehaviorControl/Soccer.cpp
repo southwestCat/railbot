@@ -8,6 +8,7 @@ Soccer::Soccer() : Cabsl<Soccer>(&activationGraph)
 void Soccer::update()
 {
     UPDATE_REPRESENTATION(FrameInfo);
+    UPDATE_REPRESENTATION(HeadMotionEngineOutput);
 }
 
 void Soccer::execute()

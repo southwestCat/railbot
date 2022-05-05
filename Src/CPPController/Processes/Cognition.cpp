@@ -57,4 +57,7 @@ void Cognition::receive()
 
 void Cognition::send()
 {
+    HeadMotionRequest *_theHeadMotionRequest = (HeadMotionRequest *)Blackboard::getInstance().theHeadMotionRequest;
+    RepresentationTemplate<HeadMotionRequest> *recvHeadMotionRequest = (RepresentationTemplate<HeadMotionRequest> *)blackboard->theHeadMotionRequest;
+    recvHeadMotionRequest->write(*_theHeadMotionRequest);
 }

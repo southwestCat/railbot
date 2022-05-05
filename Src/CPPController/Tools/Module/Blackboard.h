@@ -9,7 +9,7 @@
     const bool update##representation = true;
 
 #define USES_REPRESENTATION(representation)                                                                      \
-    const representation *the##representation = (representation *)Blackboard::getInstance().the##representation; \
+    representation *the##representation = (representation *)Blackboard::getInstance().the##representation; \
     const bool update##representation = false;
 
 class Blackboard

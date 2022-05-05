@@ -47,4 +47,5 @@ public:
     static void setInstance(BlackboardThread *instance);
 
     void *theKeyStatesThread = nullptr;
+    void *theHeadMotionRequest = nullptr;
 };
