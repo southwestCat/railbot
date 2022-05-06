@@ -27,6 +27,9 @@ void Motion::updateModules()
 {
     UPDATE_REPRESENTATION(KeyStates);
     UPDATE_REPRESENTATION(JointRequest);
+
+    JointRequest *j = (JointRequest *)Blackboard::getInstance().theJointRequest;
+    // std::cout << j->angles[Joints::headYaw] << " " << j->stiffnessData.stiffnesses[Joints::headYaw] << std::endl;
 }
 
 void Motion::afterModules()
@@ -69,5 +72,4 @@ void Motion::receive()
     HeadMotionRequest *_theHeadMotionRequest = (HeadMotionRequest *)Blackboard::getInstance().theHeadMotionRequest;
     RepresentationTemplate<HeadMotionRequest> *recvHeadMotionRequest = (RepresentationTemplate<HeadMotionRequest> *)blackboard->theHeadMotionRequest;
     *_theHeadMotionRequest = recvHeadMotionRequest->read();
-    std::cout << _theHeadMotionRequest->pan << " " << _theHeadMotionRequest->tilt << std::endl;
 }

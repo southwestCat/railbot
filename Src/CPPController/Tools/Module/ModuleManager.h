@@ -22,4 +22,5 @@ private:
     void *theMotionCombinator = nullptr;
     void *theHeadMotionEngine = nullptr;
     void *theHeadMotionCombinator = nullptr;
+    void *theJointAnglesProvider = nullptr;
 };

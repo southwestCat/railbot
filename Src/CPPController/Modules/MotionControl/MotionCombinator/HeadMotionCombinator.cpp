@@ -8,6 +8,7 @@ void HeadMotionCombinator::update()
 
 void HeadMotionCombinator::update(HeadJointRequest &jointRequest)
 {
+    update();
     jointRequest.angles[Joints::headYaw] = theHeadMotionEngineOutput->pan;
     jointRequest.angles[Joints::headPitch] = theHeadMotionEngineOutput->tilt;
 }

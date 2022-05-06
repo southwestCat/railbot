@@ -5,6 +5,7 @@
 void MotionCombinator::update()
 {
     UPDATE_REPRESENTATION(HeadJointRequest);
+    UPDATE_REPRESENTATION(StiffnessSettings);
 }
 
 void MotionCombinator::update(JointRequest &jointRequest)

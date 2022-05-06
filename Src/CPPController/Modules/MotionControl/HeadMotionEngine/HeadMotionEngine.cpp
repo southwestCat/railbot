@@ -1,8 +1,10 @@
 #include "HeadMotionEngine.h"
 #include "Tools/Range.h"
 #include "Representations/Infrastructure/JointAngles.h"
+#include "Tools/Module/ModuleManager.h"
 
 #include <algorithm>
+#include <iostream>
 
 HeadMotionEngine::HeadMotionEngine()
 {
@@ -12,10 +14,16 @@ HeadMotionEngine::HeadMotionEngine()
 
 void HeadMotionEngine::update()
 {
+    UPDATE_REPRESENTATION(FrameInfo);
+    UPDATE_REPRESENTATION(HeadMotionRequest);
+    UPDATE_REPRESENTATION(HeadLimits);
+    UPDATE_REPRESENTATION(JointAngles);
 }
 
 void HeadMotionEngine::update(HeadMotionEngineOutput &headMotionEngineOutput)
 {       
+    update();
+
     requestedPan = theHeadMotionRequest->pan;
     requestedTilt = theHeadMotionRequest->tilt;
 
@@ -24,8 +32,8 @@ void HeadMotionEngine::update(HeadMotionEngineOutput &headMotionEngineOutput)
     const float tilt = requestedTilt == JointAngles::off ? JointAngles::off : theHeadLimits->getTiltBound(pan).limit(requestedTilt);
 
     constexpr float deltaTime = Constants::motionCycleTime;
-    const Vector2f position(headMotionEngineOutput.pan == JointAngles::off ? theJointSensorData->angles[Joints::headYaw] : headMotionEngineOutput.pan,
-                            headMotionEngineOutput.tilt == JointAngles::off ? theJointSensorData->angles[Joints::headPitch] : headMotionEngineOutput.tilt);
+    const Vector2f position(headMotionEngineOutput.pan == JointAngles::off ? theJointAngles->angles[Joints::headYaw] : headMotionEngineOutput.pan,
+                            headMotionEngineOutput.tilt == JointAngles::off ? theJointAngles->angles[Joints::headPitch] : headMotionEngineOutput.tilt);
     const Vector2f target(pan == JointAngles::off ? 0.f : pan, tilt == JointAngles::off ? 0.f : tilt);
     Vector2f offset(target - position);
     const float distanceToTarget = offset.norm();

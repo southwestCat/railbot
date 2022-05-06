@@ -9,6 +9,12 @@ define_option(SetHeadPanTilt, (float) pan, (float) tilt, (float)(pi) speed)
                 goto targetReached;
             }
         }
+        define_action
+        {
+            theHeadMotionRequest->pan = pan;
+            theHeadMotionRequest->tilt = tilt;
+            theHeadMotionRequest->speed = speed;
+        }
     }
 
     target_state(targetReached)

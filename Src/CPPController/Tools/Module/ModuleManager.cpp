@@ -4,6 +4,7 @@
 #include "Modules/MotionControl/MotionCombinator/MotionCombinator.h"
 #include "Modules/MotionControl/HeadMotionEngine/HeadMotionEngine.h"
 #include "Modules/MotionControl/MotionCombinator/HeadMotionCombinator.h"
+#include "Modules/Infrastructure/JointAnglesProvider/JointAnglesProvider.h"
 
 #define UPDATE_REPRESENTATION_WITH_PROVIDER(representation, provider)                                           \
     if (!Blackboard::getInstance().updatedRepresentation[CLASS2STRING(representation)])                         \
@@ -26,6 +27,7 @@ ModuleManager::ModuleManager()
     theMotionCombinator = new MotionCombinator;
     theHeadMotionEngine = new HeadMotionEngine;
     theHeadMotionCombinator = new HeadMotionCombinator;
+    theJointAnglesProvider = new JointAnglesProvider;
 }
 
 ModuleManager::~ModuleManager()
@@ -40,6 +42,8 @@ ModuleManager::~ModuleManager()
         delete (HeadMotionEngine *)theHeadMotionEngine;
     if (theHeadMotionCombinator != nullptr)
         delete (HeadMotionCombinator *)theHeadMotionCombinator;
+    if (theJointAnglesProvider != nullptr)
+        delete (JointAnglesProvider *)theJointAnglesProvider;
 }
 
 void ModuleManager::setInstance(ModuleManager *instance)
@@ -80,6 +84,16 @@ void ModuleManager::updateRepresentation(std::string representation)
             Blackboard::getInstance().updatedRepresentation[CLASS2STRING(FsrSensorData)] = true;
         }
     }
+    else if (representation == CLASS2STRING(JointSensorData))
+    {
+        if (!Blackboard::getInstance().updatedRepresentation[CLASS2STRING(JointSensorData)])
+        {
+            JointSensorData *_theJointSensorData = (JointSensorData *)Blackboard::getInstance().theJointSensorData;
+            assert(_theJointSensorData != nullptr);
+            NaoProvider::getInstance().update(*_theJointSensorData);
+            Blackboard::getInstance().updatedRepresentation[CLASS2STRING(JointSensorData)] = true;
+        }
+    }
     else if (representation == CLASS2STRING(KeyStates))
     {
         if (!Blackboard::getInstance().updatedRepresentation[CLASS2STRING(KeyStates)])
@@ -101,6 +115,22 @@ void ModuleManager::updateRepresentation(std::string representation)
     else if (representation == CLASS2STRING(HeadJointRequest))
     {
         UPDATE_REPRESENTATION_WITH_PROVIDER(HeadJointRequest, HeadMotionCombinator);
+    }
+    else if (representation == CLASS2STRING(JointAngles))
+    {
+        UPDATE_REPRESENTATION_WITH_PROVIDER(JointAngles, JointAnglesProvider);
+    }
+    else if (representation == CLASS2STRING(StiffnessSettings))
+    {
+        // Configurations
+    }
+    else if (representation == CLASS2STRING(HeadLimits))
+    {
+        // Configurations
+    }
+    else if (representation == CLASS2STRING(HeadMotionRequest))
+    {
+        // Modified in cognition
     }
     else
     {

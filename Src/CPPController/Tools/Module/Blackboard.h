@@ -8,8 +8,6 @@
     const representation *the##representation = (representation *)Blackboard::getInstance().the##representation; \
     const bool update##representation = true;
 
-#define REQUIRES_CONFIGURATION(representation) const representation *the##representation = (representation *)Blackboard::getInstance().the##representation;
-
 #define USES_REPRESENTATION(representation)                                                                \
     representation *the##representation = (representation *)Blackboard::getInstance().the##representation; \
     const bool update##representation = false;

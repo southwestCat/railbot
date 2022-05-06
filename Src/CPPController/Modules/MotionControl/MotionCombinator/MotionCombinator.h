@@ -8,7 +8,7 @@ class MotionCombinatorBase
 {
 public:
     REQUIRES_REPRESENTATION(HeadJointRequest);
-    REQUIRES_CONFIGURATION(StiffnessSettings);
+    REQUIRES_REPRESENTATION(StiffnessSettings);
 };
 
 class MotionCombinator : public MotionCombinatorBase
