@@ -12,4 +12,12 @@ void MotionCombinator::update(JointRequest &jointRequest)
 {
     update();
     MotionUtilities::copy(*theHeadJointRequest, jointRequest, *theStiffnessSettings, Joints::headYaw, Joints::headPitch);
+
+    
+}
+
+void MotionCombinator::update(MotionInfo &motionInfo)
+{
+    update();
+    motionInfo = this->motionInfo;
 }

@@ -15,10 +15,24 @@ define_option(Root)
 
     define_state(standUp)
     {
+        define_transition
+        {
+            if (action_done)
+            {
+                goto playSoccer;
+            }
+        }
         define_action
         {
-            printf("In standUp\n");
             LookForward();
+        }
+    }
+
+    define_state(playSoccer)
+    {
+        define_action
+        {
+            printf("In playSoccer\n");
         }
     }
 }

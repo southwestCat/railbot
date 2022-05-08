@@ -4,3 +4,4 @@
 #include "Options/Output/HeadMotionRequest/SetHeadPanTilt.h"
 #include "Options/HeadControl/LookForward.h"
 #include "Options/HeadControl/LookDead.h"
+#include "Options/Output/MotionRequest/Stand.h"

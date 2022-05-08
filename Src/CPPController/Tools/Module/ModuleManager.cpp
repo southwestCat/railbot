@@ -5,6 +5,7 @@
 #include "Modules/MotionControl/HeadMotionEngine/HeadMotionEngine.h"
 #include "Modules/MotionControl/MotionCombinator/HeadMotionCombinator.h"
 #include "Modules/Infrastructure/JointAnglesProvider/JointAnglesProvider.h"
+#include "Modules/MotionControl/MotionSelector/MotionSelector.h"
 
 #define UPDATE_REPRESENTATION_WITH_PROVIDER(representation, provider)                                           \
     if (!Blackboard::getInstance().updatedRepresentation[CLASS2STRING(representation)])                         \
@@ -28,6 +29,7 @@ ModuleManager::ModuleManager()
     theHeadMotionEngine = new HeadMotionEngine;
     theHeadMotionCombinator = new HeadMotionCombinator;
     theJointAnglesProvider = new JointAnglesProvider;
+    theMotionSelector = new MotionSelector;
 }
 
 ModuleManager::~ModuleManager()
@@ -44,6 +46,8 @@ ModuleManager::~ModuleManager()
         delete (HeadMotionCombinator *)theHeadMotionCombinator;
     if (theJointAnglesProvider != nullptr)
         delete (JointAnglesProvider *)theJointAnglesProvider;
+    if (theMotionSelector != nullptr)
+        delete (MotionSelector *)theMotionSelector;
 }
 
 void ModuleManager::setInstance(ModuleManager *instance)
@@ -119,6 +123,14 @@ void ModuleManager::updateRepresentation(std::string representation)
     else if (representation == CLASS2STRING(JointAngles))
     {
         UPDATE_REPRESENTATION_WITH_PROVIDER(JointAngles, JointAnglesProvider);
+    }
+    else if (representation == CLASS2STRING(MotionInfo))
+    {
+        UPDATE_REPRESENTATION_WITH_PROVIDER(MotionInfo, MotionCombinator);
+    }
+    else if (representation == CLASS2STRING(LegMotionSelection))
+    {
+        UPDATE_REPRESENTATION_WITH_PROVIDER(LegMotionSelection, MotionSelector);
     }
     else if (representation == CLASS2STRING(StiffnessSettings))
     {

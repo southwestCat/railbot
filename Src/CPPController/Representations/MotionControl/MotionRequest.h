@@ -7,9 +7,10 @@ public:
     {
         walk,
         stand,
-        specialActions,
+        balance,
+        specialAction,
         numOfMotions
     };
 
-    Motion motion = specialActions;
+    Motion motion = specialAction;
 };

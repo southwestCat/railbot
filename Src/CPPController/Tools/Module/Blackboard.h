@@ -9,6 +9,10 @@
     const bool update##representation = true;
 
 #define USES_REPRESENTATION(representation)                                                                \
+    const representation *the##representation = (representation *)Blackboard::getInstance().the##representation; \
+    const bool update##representation = false;
+
+#define MODIFIES_REPRESENTATION(representation)                                                            \
     representation *the##representation = (representation *)Blackboard::getInstance().the##representation; \
     const bool update##representation = false;
 
@@ -38,7 +42,14 @@ public:
     void *theHeadMotionEngineOutput = nullptr;
     void *theHeadJointRequest = nullptr;
     void *theStiffnessSettings = nullptr;
-
+    void *theMotionInfo = nullptr;
+    void *theMotionRequest = nullptr;
+    void *theLegMotionSelection = nullptr;
+    void *theWalkingEngineOutput = nullptr;
+    void *theStandEngineOuptut = nullptr;
+    void *theRobotModel = nullptr;
+    void *theRobotDimensions = nullptr;
+    
     //! LOG
     std::vector<float> logLeftPitchd;
 

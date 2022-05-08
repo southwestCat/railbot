@@ -20,6 +20,12 @@
 #include "Representations/Configuration/HeadLimits.h"
 #include "Representations/MotionControl/HeadMotionEngineOutput.h"
 #include "Representations/Infrastructure/Stiffness.h"
+#include "Representations/MotionControl/MotionInfo.h"
+#include "Representations/MotionControl/MotionRequest.h"
+#include "Representations/MotionControl/LegMotionSelection.h"
+#include "Representations/MotionControl/WalkingEngineOutput.h"
+#include "Representations/MotionControl/StandEngineOutput.h"
+#include "Representations/Sensing/RobotModel.h"
 
 static thread_local Blackboard *theInstance = nullptr;
 
@@ -65,6 +71,27 @@ Blackboard::Blackboard()
 
     theStiffnessSettings = new StiffnessSettings;
     insert(CLASS2STRING(StiffnessSettings), configMap);
+
+    theMotionInfo = new MotionInfo;
+    insert(CLASS2STRING(MotionInfo));
+
+    theMotionRequest = new MotionRequest;
+    insert(CLASS2STRING(MotionRequest));
+
+    theLegMotionSelection = new LegMotionSelection;
+    insert(CLASS2STRING(LegMotionSelection));
+
+    theWalkingEngineOutput = new WalkingEngineOutput;
+    insert(CLASS2STRING(WalkingEngineOutput));
+
+    theStandEngineOuptut = new StandEngineOuptut;
+    insert(CLASS2STRING(StandEngineOuptut));
+
+    theRobotModel = new RobotModel;
+    insert(CLASS2STRING(RobotModel));
+
+    theRobotDimensions = new RobotDimensions;
+    insert(CLASS2STRING(RobotDimensions));
 }
 
 Blackboard::~Blackboard()
@@ -93,6 +120,20 @@ Blackboard::~Blackboard()
         delete (HeadJointRequest *)theHeadJointRequest;
     if (theStiffnessSettings != nullptr)
         delete (StiffnessSettings *)theStiffnessSettings;
+    if (theMotionInfo != nullptr)
+        delete (MotionInfo *)theMotionInfo;
+    if (theMotionRequest != nullptr)
+        delete (MotionRequest *)theMotionRequest;
+    if (theLegMotionSelection != nullptr)
+        delete (LegMotionSelection *)theLegMotionSelection;
+    if (theWalkingEngineOutput != nullptr)
+        delete (WalkingEngineOutput *)theWalkingEngineOutput;
+    if (theStandEngineOuptut != nullptr)
+        delete (StandEngineOuptut *)theStandEngineOuptut;
+    if (theRobotModel != nullptr)
+        delete (RobotModel *)theRobotModel;
+    if (theRobotDimensions != nullptr)
+        delete (RobotDimensions *)theRobotDimensions;
 }
 
 Blackboard &Blackboard::getInstance()

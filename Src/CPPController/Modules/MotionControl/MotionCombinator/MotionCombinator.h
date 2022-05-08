@@ -2,6 +2,7 @@
 
 #include "Representations/Infrastructure/JointRequest.h"
 #include "Representations/Infrastructure/Stiffness.h"
+#include "Representations/MotionControl/MotionInfo.h"
 #include "Tools/Module/Blackboard.h"
 
 class MotionCombinatorBase
@@ -15,7 +16,8 @@ class MotionCombinator : public MotionCombinatorBase
 {
 public:
     void update(JointRequest &jointRequest);
-
+    void update(MotionInfo &motionInfo);
 private:
     void update();
+    MotionInfo motionInfo;
 };

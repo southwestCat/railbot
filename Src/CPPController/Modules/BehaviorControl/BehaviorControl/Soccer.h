@@ -6,6 +6,7 @@
 #include "Representations/MotionControl/HeadMotionRequest.h"
 #include "Representations/MotionControl/HeadMotionEngineOutput.h"
 #include "Representations/Infrastructure/JointAngles.h"
+#include "Representations/MotionControl/MotionInfo.h"
 #include "Tools/Module/Blackboard.h"
 
 class SoccerBase
@@ -14,8 +15,11 @@ public:
     REQUIRES_REPRESENTATION(FrameInfo);
     REQUIRES_REPRESENTATION(KeyStates);
     REQUIRES_REPRESENTATION(HeadMotionEngineOutput);
+    
+    USES_REPRESENTATION(MotionInfo);
 
-    USES_REPRESENTATION(HeadMotionRequest);
+    MODIFIES_REPRESENTATION(HeadMotionRequest);
+    MODIFIES_REPRESENTATION(MotionRequest);
 };
 
 class Soccer : public SoccerBase, public Cabsl<Soccer>
