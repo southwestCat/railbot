@@ -4,6 +4,8 @@
 void MotionSelector::update()
 {
     UPDATE_REPRESENTATION(FrameInfo);
+    UPDATE_REPRESENTATION(SpecialActionEngineOutput);
+    UPDATE_REPRESENTATION(StandEngineOuptut);
 }
 
 void MotionSelector::update(LegMotionSelection &legMotionSelection)
@@ -12,7 +14,11 @@ void MotionSelector::update(LegMotionSelection &legMotionSelection)
 
     MotionRequest::Motion requestLegMotion = theMotionRequest->motion;
 
-    legMotionSelection.targetMotion = requestLegMotion;
+    if ((lastLegMotion == MotionRequest::specialAction && theSpecialActionEngineOutput->isLeavingPossible) ||
+        (lastLegMotion == MotionRequest::stand && theStandEngineOuptut->isLeavingPossible) )
+    {
+        legMotionSelection.targetMotion = requestLegMotion;
+    }
     
     int interpolationTime = interpolationTimes[legMotionSelection.targetMotion];
 

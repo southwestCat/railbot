@@ -5,5 +5,5 @@
 class StandEngineOuptut : public JointRequest
 {
 public:
-    bool isLeavingPossible = true;
+    bool isLeavingPossible = false;
 };

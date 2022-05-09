@@ -3,13 +3,21 @@
 #include "Representations/Infrastructure/JointRequest.h"
 #include "Representations/Infrastructure/Stiffness.h"
 #include "Representations/MotionControl/MotionInfo.h"
+#include "Representations/Configuration/JointLimits.h"
+#include "Representations/MotionControl/LegMotionSelection.h"
+#include "Representations/MotionControl/StandEngineOutput.h"
 #include "Tools/Module/Blackboard.h"
 
 class MotionCombinatorBase
 {
 public:
     REQUIRES_REPRESENTATION(HeadJointRequest);
-    REQUIRES_REPRESENTATION(StiffnessSettings);
+    REQUIRES_REPRESENTATION(LegJointRequest);
+    REQUIRES_REPRESENTATION(LegMotionSelection);
+    REQUIRES_REPRESENTATION(StandEngineOuptut);
+
+    USES_REPRESENTATION(StiffnessSettings);
+    USES_REPRESENTATION(JointLimits);
 };
 
 class MotionCombinator : public MotionCombinatorBase

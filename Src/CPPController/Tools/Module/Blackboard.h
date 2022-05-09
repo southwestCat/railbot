@@ -49,6 +49,9 @@ public:
     void *theStandEngineOuptut = nullptr;
     void *theRobotModel = nullptr;
     void *theRobotDimensions = nullptr;
+    void *theLegJointRequest = nullptr;
+    void *theSpecialActionEngineOutput = nullptr;
+    void *theJointLimits = nullptr;
     
     //! LOG
     std::vector<float> logLeftPitchd;

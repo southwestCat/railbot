@@ -57,15 +57,19 @@ void Cognition::receive()
     HeadMotionEngineOutput *_theHeadMotionEngineOutput = (HeadMotionEngineOutput *)Blackboard::getInstance().theHeadMotionEngineOutput;
     RepresentationTemplate<HeadMotionEngineOutput> *recvHeadMotionEngineOutput = (RepresentationTemplate<HeadMotionEngineOutput> *)blackboard->theHeadMotionEngineOutput;
     *_theHeadMotionEngineOutput = recvHeadMotionEngineOutput->read();
+
+    MotionInfo *_theMotionInfo = (MotionInfo *)Blackboard::getInstance().theMotionInfo;
+    RepresentationTemplate<MotionInfo> *recvMotionInfo = (RepresentationTemplate<MotionInfo> *)blackboard->theMotionInfo;
+    *_theMotionInfo = recvMotionInfo->read();
 }
 
 void Cognition::send()
 {
     HeadMotionRequest *_theHeadMotionRequest = (HeadMotionRequest *)Blackboard::getInstance().theHeadMotionRequest;
-    RepresentationTemplate<HeadMotionRequest> *recvHeadMotionRequest = (RepresentationTemplate<HeadMotionRequest> *)blackboard->theHeadMotionRequest;
-    recvHeadMotionRequest->write(*_theHeadMotionRequest);
+    RepresentationTemplate<HeadMotionRequest> *sendHeadMotionRequest = (RepresentationTemplate<HeadMotionRequest> *)blackboard->theHeadMotionRequest;
+    sendHeadMotionRequest->write(*_theHeadMotionRequest);
 
     MotionRequest *_theMotionRequest = (MotionRequest *)Blackboard::getInstance().theMotionRequest;
-    RepresentationTemplate<MotionRequest> *recvMotionRequest = (RepresentationTemplate<MotionRequest> *)blackboard->theMotionRequest;
-    recvMotionRequest->write(*_theMotionRequest);
+    RepresentationTemplate<MotionRequest> *sendMotionRequest = (RepresentationTemplate<MotionRequest> *)blackboard->theMotionRequest;
+    sendMotionRequest->write(*_theMotionRequest);
 }

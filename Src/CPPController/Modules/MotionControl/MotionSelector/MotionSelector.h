@@ -3,12 +3,16 @@
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/MotionControl/MotionRequest.h"
 #include "Representations/MotionControl/LegMotionSelection.h"
+#include "Representations/MotionControl/SpecialActionEngineOutput.h"
+#include "Representations/MotionControl/StandEngineOutput.h"
 #include "Tools/Module/Blackboard.h"
 
 class MotionSelectorBase
 {
 public:
     REQUIRES_REPRESENTATION(FrameInfo);
+    REQUIRES_REPRESENTATION(SpecialActionEngineOutput);
+    REQUIRES_REPRESENTATION(StandEngineOuptut);
 
     USES_REPRESENTATION(MotionRequest);
 

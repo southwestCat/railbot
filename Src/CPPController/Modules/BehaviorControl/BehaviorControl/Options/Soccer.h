@@ -25,6 +25,7 @@ define_option(Root)
         define_action
         {
             LookForward();
+            Stand();
         }
     }
 
@@ -32,7 +33,7 @@ define_option(Root)
     {
         define_action
         {
-            printf("In playSoccer\n");
+            // printf("In playSoccer\n");
         }
     }
 }

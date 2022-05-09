@@ -28,9 +28,6 @@ void Motion::updateModules()
     UPDATE_REPRESENTATION(KeyStates);
     UPDATE_REPRESENTATION(JointRequest);
     UPDATE_REPRESENTATION(MotionInfo);
-
-    JointRequest *j = (JointRequest *)Blackboard::getInstance().theJointRequest;
-    // std::cout << j->angles[Joints::headYaw] << " " << j->stiffnessData.stiffnesses[Joints::headYaw] << std::endl;
 }
 
 void Motion::afterModules()
@@ -60,12 +57,16 @@ void Motion::resetUpdate()
 void Motion::send()
 {
     KeyStates *_theKeyStates = (KeyStates *)Blackboard::getInstance().theKeyStates;
-    RepresentationTemplate<KeyStates> *recvKeyStates = (RepresentationTemplate<KeyStates> *)blackboard->theKeyStatesThread;
-    recvKeyStates->write(*_theKeyStates);
+    RepresentationTemplate<KeyStates> *sendKeyStates = (RepresentationTemplate<KeyStates> *)blackboard->theKeyStatesThread;
+    sendKeyStates->write(*_theKeyStates);
 
     HeadMotionEngineOutput *_theHeadMotionEngineOutput = (HeadMotionEngineOutput *)Blackboard::getInstance().theHeadMotionEngineOutput;
-    RepresentationTemplate<HeadMotionEngineOutput> *_recvHeadMotionEngineOutput = (RepresentationTemplate<HeadMotionEngineOutput> *)blackboard->theHeadMotionEngineOutput;
-    _recvHeadMotionEngineOutput->write(*_theHeadMotionEngineOutput);
+    RepresentationTemplate<HeadMotionEngineOutput> *sendHeadMotionEngineOutput = (RepresentationTemplate<HeadMotionEngineOutput> *)blackboard->theHeadMotionEngineOutput;
+    sendHeadMotionEngineOutput->write(*_theHeadMotionEngineOutput);
+
+    MotionInfo *_theMotionInfo = (MotionInfo *)Blackboard::getInstance().theMotionInfo;
+    RepresentationTemplate<MotionInfo> *sendMotionInfo = (RepresentationTemplate<MotionInfo>* )blackboard->theMotionInfo;
+    sendMotionInfo->write(*_theMotionInfo);
 }
 
 void Motion::receive()

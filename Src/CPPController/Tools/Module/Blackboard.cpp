@@ -26,6 +26,8 @@
 #include "Representations/MotionControl/WalkingEngineOutput.h"
 #include "Representations/MotionControl/StandEngineOutput.h"
 #include "Representations/Sensing/RobotModel.h"
+#include "Representations/MotionControl/SpecialActionEngineOutput.h"
+#include "Representations/Configuration/JointLimits.h"
 
 static thread_local Blackboard *theInstance = nullptr;
 
@@ -54,9 +56,6 @@ Blackboard::Blackboard()
     theHeadMotionRequest = new HeadMotionRequest;
     insert(CLASS2STRING(HeadMotionRequest));
 
-    theHeadLimits = new HeadLimits;
-    insert(CLASS2STRING(HeadLimits));
-
     theJointAngles = new JointAngles;
     insert(CLASS2STRING(JointAngles));
 
@@ -68,9 +67,6 @@ Blackboard::Blackboard()
 
     theHeadJointRequest = new HeadJointRequest;
     insert(CLASS2STRING(HeadJointRequest));
-
-    theStiffnessSettings = new StiffnessSettings;
-    insert(CLASS2STRING(StiffnessSettings), configMap);
 
     theMotionInfo = new MotionInfo;
     insert(CLASS2STRING(MotionInfo));
@@ -90,8 +86,23 @@ Blackboard::Blackboard()
     theRobotModel = new RobotModel;
     insert(CLASS2STRING(RobotModel));
 
+    theLegJointRequest = new LegJointRequest;
+    insert(CLASS2STRING(LegJointRequest));
+
+    theSpecialActionEngineOutput = new SpecialActionEngineOutput;
+    insert(CLASS2STRING(SpecialActionEngineOutput));
+
+    theStiffnessSettings = new StiffnessSettings;
+    insert(CLASS2STRING(StiffnessSettings), configMap);
+
+    theJointLimits = new JointLimits;
+    insert(CLASS2STRING(JointLimits), configMap);
+
     theRobotDimensions = new RobotDimensions;
-    insert(CLASS2STRING(RobotDimensions));
+    insert(CLASS2STRING(RobotDimensions), configMap);
+
+    theHeadLimits = new HeadLimits;
+    insert(CLASS2STRING(HeadLimits), configMap);
 }
 
 Blackboard::~Blackboard()
@@ -134,6 +145,12 @@ Blackboard::~Blackboard()
         delete (RobotModel *)theRobotModel;
     if (theRobotDimensions != nullptr)
         delete (RobotDimensions *)theRobotDimensions;
+    if (theLegJointRequest != nullptr)
+        delete (LegJointRequest *)theLegJointRequest;
+    if (theSpecialActionEngineOutput != nullptr)
+        delete (SpecialActionEngineOutput *)theSpecialActionEngineOutput;
+    if (theJointLimits != nullptr)
+        delete (JointLimits *)theJointLimits;
 }
 
 Blackboard &Blackboard::getInstance()

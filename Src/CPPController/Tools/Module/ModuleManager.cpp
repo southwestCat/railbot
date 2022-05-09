@@ -6,6 +6,9 @@
 #include "Modules/MotionControl/MotionCombinator/HeadMotionCombinator.h"
 #include "Modules/Infrastructure/JointAnglesProvider/JointAnglesProvider.h"
 #include "Modules/MotionControl/MotionSelector/MotionSelector.h"
+#include "Modules/MotionControl/MotionCombinator/LegMotionCombinator.h"
+#include "Modules/MotionControl/StandEngine/StandEngine.h"
+#include "Modules/MotionControl/SpecialActionEngine/SpecialActionEngine.h"
 
 #define UPDATE_REPRESENTATION_WITH_PROVIDER(representation, provider)                                           \
     if (!Blackboard::getInstance().updatedRepresentation[CLASS2STRING(representation)])                         \
@@ -30,6 +33,9 @@ ModuleManager::ModuleManager()
     theHeadMotionCombinator = new HeadMotionCombinator;
     theJointAnglesProvider = new JointAnglesProvider;
     theMotionSelector = new MotionSelector;
+    theLegMotionCombinator = new LegMotionCombinator;
+    theStandEngine = new StandEngine;
+    theSpecialActionEngine = new SpecialActionEngine;
 }
 
 ModuleManager::~ModuleManager()
@@ -48,6 +54,10 @@ ModuleManager::~ModuleManager()
         delete (JointAnglesProvider *)theJointAnglesProvider;
     if (theMotionSelector != nullptr)
         delete (MotionSelector *)theMotionSelector;
+    if (theLegMotionCombinator != nullptr)
+        delete (LegMotionCombinator *)theLegMotionCombinator;
+    if (theSpecialActionEngine != nullptr)
+        delete (SpecialActionEngine *)theSpecialActionEngine;
 }
 
 void ModuleManager::setInstance(ModuleManager *instance)
@@ -132,13 +142,17 @@ void ModuleManager::updateRepresentation(std::string representation)
     {
         UPDATE_REPRESENTATION_WITH_PROVIDER(LegMotionSelection, MotionSelector);
     }
-    else if (representation == CLASS2STRING(StiffnessSettings))
+    else if (representation == CLASS2STRING(LegJointRequest))
     {
-        // Configurations
+        UPDATE_REPRESENTATION_WITH_PROVIDER(LegJointRequest, LegMotionCombinator);
     }
-    else if (representation == CLASS2STRING(HeadLimits))
+    else if (representation == CLASS2STRING(StandEngineOuptut))
     {
-        // Configurations
+        UPDATE_REPRESENTATION_WITH_PROVIDER(StandEngineOuptut, StandEngine);
+    }
+    else if (representation == CLASS2STRING(SpecialActionEngineOutput))
+    {
+        UPDATE_REPRESENTATION_WITH_PROVIDER(SpecialActionEngineOutput, SpecialActionEngine);
     }
     else if (representation == CLASS2STRING(HeadMotionRequest))
     {

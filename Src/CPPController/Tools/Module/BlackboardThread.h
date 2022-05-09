@@ -50,4 +50,5 @@ public:
     void *theHeadMotionRequest = nullptr;
     void *theHeadMotionEngineOutput = nullptr;
     void *theMotionRequest = nullptr;
+    void *theMotionInfo = nullptr;
 };

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Representations/Infrastructure/FrameInfo.h"
-#include "Representations/MotionControl/MotionRequest.h"
+#include "Representations/MotionControl/LegMotionSelection.h"
 #include "Representations/Configuration//RobotDimensions.h"
 #include "Representations/MotionControl/StandEngineOutput.h"
 #include "Representations/Infrastructure/Stiffness.h"
@@ -12,12 +12,12 @@ class StandEngineBase
 public:
     REQUIRES_REPRESENTATION(FrameInfo);
     REQUIRES_REPRESENTATION(JointAngles);
+    REQUIRES_REPRESENTATION(LegMotionSelection);
     
-    USES_REPRESENTATION(MotionRequest);
     USES_REPRESENTATION(RobotDimensions);
     USES_REPRESENTATION(StiffnessSettings);
 
-    const int interpolateTime = 2000;
+    const int interpolateTime = 5000;
 
     unsigned startTime = 0;
     unsigned nowTime = 0;
