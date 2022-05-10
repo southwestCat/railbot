@@ -7,6 +7,7 @@ public:
     {
         walk,
         stand,
+        sitDown,
         balance,
         specialAction,
         numOfMotions

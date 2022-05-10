@@ -28,6 +28,7 @@
 #include "Representations/Sensing/RobotModel.h"
 #include "Representations/MotionControl/SpecialActionEngineOutput.h"
 #include "Representations/Configuration/JointLimits.h"
+#include "Representations/MotionControl/SitDownEngineOutput.h"
 
 static thread_local Blackboard *theInstance = nullptr;
 
@@ -92,6 +93,9 @@ Blackboard::Blackboard()
     theSpecialActionEngineOutput = new SpecialActionEngineOutput;
     insert(CLASS2STRING(SpecialActionEngineOutput));
 
+    theSitDownEngineOutput = new SitDownEngineOutput;
+    insert(CLASS2STRING(SitDownEngineOutput));
+
     theStiffnessSettings = new StiffnessSettings;
     insert(CLASS2STRING(StiffnessSettings), configMap);
 
@@ -151,6 +155,8 @@ Blackboard::~Blackboard()
         delete (SpecialActionEngineOutput *)theSpecialActionEngineOutput;
     if (theJointLimits != nullptr)
         delete (JointLimits *)theJointLimits;
+    if (theSitDownEngineOutput != nullptr)
+        delete (SitDownEngineOutput *)theSitDownEngineOutput;
 }
 
 Blackboard &Blackboard::getInstance()

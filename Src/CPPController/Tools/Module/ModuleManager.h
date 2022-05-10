@@ -27,4 +27,5 @@ private:
     void *theLegMotionCombinator = nullptr;
     void *theStandEngine = nullptr;
     void *theSpecialActionEngine = nullptr;
+    void *theSitDownEngine = nullptr;
 };

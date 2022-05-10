@@ -52,6 +52,7 @@ public:
     void *theLegJointRequest = nullptr;
     void *theSpecialActionEngineOutput = nullptr;
     void *theJointLimits = nullptr;
+    void *theSitDownEngineOutput = nullptr;
     
     //! LOG
     std::vector<float> logLeftPitchd;

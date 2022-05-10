@@ -29,7 +29,7 @@ void Motion::updateModules()
     UPDATE_REPRESENTATION(JointRequest);
     UPDATE_REPRESENTATION(MotionInfo);
 
-    // test();
+    test();
 }
 
 void Motion::afterModules()
@@ -84,16 +84,4 @@ void Motion::receive()
 
 void Motion::test()
 {
-    // FrameInfo *_theFrameInfo = (FrameInfo *)Blackboard::getInstance().theFrameInfo;
-    // static unsigned startTime = _theFrameInfo->time;
-    // unsigned nowTime = _theFrameInfo->getTimeSince(startTime);
-    // float headYawAngle = 10_deg * sin(2*pi/4000.0 * (float)nowTime);
-    // JointRequest *j = (JointRequest *)Blackboard::getInstance().theJointRequest;
-    // j->angles[Joints::headYaw] = headYawAngle;
-    // j->stiffnessData.stiffnesses[Joints::headYaw] = 50;
-
-
-    // JointRequest *j = (JointRequest *)Blackboard::getInstance().theJointRequest;
-    // j->angles[Joints::headYaw] = -30_deg;
-    // j->stiffnessData.stiffnesses[Joints::headYaw] = 20;
 }
