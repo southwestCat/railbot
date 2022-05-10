@@ -6,3 +6,5 @@
 #include "Options/HeadControl/LookDead.h"
 #include "Options/Output/MotionRequest/Stand.h"
 #include "Options/Output/MotionRequest/SitDown.h"
+#include "Options/GameControl/HandlePenaltyState.h"
+#include "Options/GameControl/PlayingState.h"
