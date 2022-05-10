@@ -93,7 +93,7 @@ void Motion::test()
     // j->stiffnessData.stiffnesses[Joints::headYaw] = 50;
 
 
-    JointRequest *j = (JointRequest *)Blackboard::getInstance().theJointRequest;
-    j->angles[Joints::headYaw] = -30_deg;
-    j->stiffnessData.stiffnesses[Joints::headYaw] = 50;
+    // JointRequest *j = (JointRequest *)Blackboard::getInstance().theJointRequest;
+    // j->angles[Joints::headYaw] = -30_deg;
+    // j->stiffnessData.stiffnesses[Joints::headYaw] = 20;
 }

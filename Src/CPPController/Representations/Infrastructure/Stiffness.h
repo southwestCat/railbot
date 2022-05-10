@@ -39,8 +39,8 @@ class StiffnessSettings : public StiffnessData
 public:
     StiffnessSettings()
     {
-        stiffnesses[Joints::headYaw] = 70;
-        stiffnesses[Joints::headPitch] = 70;
+        stiffnesses[Joints::headYaw] = 20;
+        stiffnesses[Joints::headPitch] = 30;
 
         stiffnesses[Joints::lShoulderPitch] = 10;
         stiffnesses[Joints::lShoulderRoll] = 20;

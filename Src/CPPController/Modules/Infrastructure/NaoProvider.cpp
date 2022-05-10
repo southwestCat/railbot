@@ -61,6 +61,7 @@ void NaoProvider::send()
         }
         else
         {
+            actuators[j] = theJointRequest->angles[i];
             actuators[j + numOfPositionActuatorIds] = static_cast<float>(theJointRequest->stiffnessData.stiffnesses[i]) / 100.f;
         }
     }
