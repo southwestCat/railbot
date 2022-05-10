@@ -31,9 +31,14 @@ define_option(Root)
 
     define_state(playSoccer)
     {
+        define_transition
+        {
+            if (action_done)
+                goto playDead;
+        }
         define_action
         {
-            printf("In playSoccer\n");
+            SitDown();
         }
     }
 }

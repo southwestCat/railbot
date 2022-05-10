@@ -22,7 +22,6 @@ void SitDownEngine::update()
 {
     UPDATE_REPRESENTATION(FrameInfo);
     UPDATE_REPRESENTATION(JointAngles);
-    UPDATE_REPRESENTATION(LegMotionSelection);
 }
 
 void SitDownEngine::update(SitDownEngineOutput &s)

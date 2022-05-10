@@ -6,6 +6,7 @@
 #include "Representations/MotionControl/StandEngineOutput.h"
 #include "Representations/Infrastructure/Stiffness.h"
 #include "Representations/MotionControl/SpecialActionEngineOutput.h"
+#include "Representations/MotionControl/SitDownEngineOutput.h"
 #include "Tools/Module/Blackboard.h"
 
 class LegMotionCombinatorBase
@@ -16,6 +17,7 @@ public:
     REQUIRES_REPRESENTATION(WalkingEngineOutput);
     REQUIRES_REPRESENTATION(StandEngineOuptut);   
     REQUIRES_REPRESENTATION(SpecialActionEngineOutput);
+    REQUIRES_REPRESENTATION(SitDownEngineOutput);
 
     USES_REPRESENTATION(StiffnessSettings);
 };

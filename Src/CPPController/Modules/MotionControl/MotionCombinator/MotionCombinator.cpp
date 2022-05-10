@@ -8,6 +8,7 @@ void MotionCombinator::update()
     UPDATE_REPRESENTATION(LegJointRequest);
     UPDATE_REPRESENTATION(LegMotionSelection);
     UPDATE_REPRESENTATION(StandEngineOuptut);
+    UPDATE_REPRESENTATION(SitDownEngineOutput);
 }
 
 void MotionCombinator::update(JointRequest &jointRequest)
@@ -26,6 +27,13 @@ void MotionCombinator::update(JointRequest &jointRequest)
             if (theStandEngineOuptut->isLeavingPossible)
             {
                 motionInfo.motion = MotionRequest::stand;
+            }
+        }
+        else if (theLegMotionSelection->targetMotion == MotionRequest::sitDown)
+        {
+            if (theSitDownEngineOutput->isLeavingPossible)
+            {
+                motionInfo.motion = MotionRequest::sitDown;
             }
         }
         else if (theLegMotionSelection->ratios[theLegMotionSelection->targetMotion] == 1.f)

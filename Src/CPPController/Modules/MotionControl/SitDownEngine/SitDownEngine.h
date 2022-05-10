@@ -12,8 +12,8 @@ class SitDownEngineBase
 public:
     REQUIRES_REPRESENTATION(FrameInfo);
     REQUIRES_REPRESENTATION(JointAngles);
-    REQUIRES_REPRESENTATION(LegMotionSelection);
-
+    
+    USES_REPRESENTATION(LegMotionSelection);
     USES_REPRESENTATION(RobotDimensions);
     USES_REPRESENTATION(StiffnessSettings);
 

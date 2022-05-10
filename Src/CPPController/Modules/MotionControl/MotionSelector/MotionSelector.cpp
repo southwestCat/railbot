@@ -6,6 +6,7 @@ void MotionSelector::update()
     UPDATE_REPRESENTATION(FrameInfo);
     UPDATE_REPRESENTATION(SpecialActionEngineOutput);
     UPDATE_REPRESENTATION(StandEngineOuptut);
+    UPDATE_REPRESENTATION(SitDownEngineOutput);
 }
 
 void MotionSelector::update(LegMotionSelection &legMotionSelection)
@@ -15,7 +16,8 @@ void MotionSelector::update(LegMotionSelection &legMotionSelection)
     MotionRequest::Motion requestLegMotion = theMotionRequest->motion;
 
     if ((lastLegMotion == MotionRequest::specialAction && theSpecialActionEngineOutput->isLeavingPossible) ||
-        (lastLegMotion == MotionRequest::stand && theStandEngineOuptut->isLeavingPossible) )
+        (lastLegMotion == MotionRequest::stand && theStandEngineOuptut->isLeavingPossible) ||
+        (lastLegMotion == MotionRequest::sitDown && theSitDownEngineOutput->isLeavingPossible) )
     {
         legMotionSelection.targetMotion = requestLegMotion;
     }

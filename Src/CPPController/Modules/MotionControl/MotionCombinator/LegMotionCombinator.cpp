@@ -8,6 +8,7 @@ void LegMotionCombinator::update()
     UPDATE_REPRESENTATION(LegMotionSelection);
     UPDATE_REPRESENTATION(StandEngineOuptut);
     UPDATE_REPRESENTATION(SpecialActionEngineOutput);
+    UPDATE_REPRESENTATION(SitDownEngineOutput);
 }
 
 void LegMotionCombinator::update(LegJointRequest &legJointRequest)
@@ -17,6 +18,7 @@ void LegMotionCombinator::update(LegJointRequest &legJointRequest)
     const JointRequest *jointRequest[MotionRequest::numOfMotions];
     jointRequest[MotionRequest::walk] = theWalkingEngineOutput;
     jointRequest[MotionRequest::stand] = theStandEngineOuptut;
+    jointRequest[MotionRequest::sitDown] = theSitDownEngineOutput;
     jointRequest[MotionRequest::specialAction] = theSpecialActionEngineOutput;
 
     MotionUtilities::copy(*jointRequest[theLegMotionSelection->targetMotion], legJointRequest, *theStiffnessSettings, Joints::firstLegJoint, Joints::rAnkleRoll);

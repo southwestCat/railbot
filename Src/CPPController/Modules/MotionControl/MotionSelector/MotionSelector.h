@@ -5,6 +5,7 @@
 #include "Representations/MotionControl/LegMotionSelection.h"
 #include "Representations/MotionControl/SpecialActionEngineOutput.h"
 #include "Representations/MotionControl/StandEngineOutput.h"
+#include "Representations/MotionControl/SitDownEngineOutput.h"
 #include "Tools/Module/Blackboard.h"
 
 class MotionSelectorBase
@@ -13,6 +14,7 @@ public:
     REQUIRES_REPRESENTATION(FrameInfo);
     REQUIRES_REPRESENTATION(SpecialActionEngineOutput);
     REQUIRES_REPRESENTATION(StandEngineOuptut);
+    REQUIRES_REPRESENTATION(SitDownEngineOutput);
 
     USES_REPRESENTATION(MotionRequest);
 
