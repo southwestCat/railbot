@@ -25,4 +25,6 @@ public:
     void afterFrame() override;
 
 private:
+
+    void test();
 };

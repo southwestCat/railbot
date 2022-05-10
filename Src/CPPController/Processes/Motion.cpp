@@ -28,6 +28,8 @@ void Motion::updateModules()
     UPDATE_REPRESENTATION(KeyStates);
     UPDATE_REPRESENTATION(JointRequest);
     UPDATE_REPRESENTATION(MotionInfo);
+
+    // test();
 }
 
 void Motion::afterModules()
@@ -65,7 +67,7 @@ void Motion::send()
     sendHeadMotionEngineOutput->write(*_theHeadMotionEngineOutput);
 
     MotionInfo *_theMotionInfo = (MotionInfo *)Blackboard::getInstance().theMotionInfo;
-    RepresentationTemplate<MotionInfo> *sendMotionInfo = (RepresentationTemplate<MotionInfo>* )blackboard->theMotionInfo;
+    RepresentationTemplate<MotionInfo> *sendMotionInfo = (RepresentationTemplate<MotionInfo> *)blackboard->theMotionInfo;
     sendMotionInfo->write(*_theMotionInfo);
 }
 
@@ -78,4 +80,20 @@ void Motion::receive()
     MotionRequest *_theMotionRequest = (MotionRequest *)Blackboard::getInstance().theMotionRequest;
     RepresentationTemplate<MotionRequest> *recvMotionRequest = (RepresentationTemplate<MotionRequest> *)blackboard->theMotionRequest;
     *_theMotionRequest = recvMotionRequest->read();
+}
+
+void Motion::test()
+{
+    // FrameInfo *_theFrameInfo = (FrameInfo *)Blackboard::getInstance().theFrameInfo;
+    // static unsigned startTime = _theFrameInfo->time;
+    // unsigned nowTime = _theFrameInfo->getTimeSince(startTime);
+    // float headYawAngle = 10_deg * sin(2*pi/4000.0 * (float)nowTime);
+    // JointRequest *j = (JointRequest *)Blackboard::getInstance().theJointRequest;
+    // j->angles[Joints::headYaw] = headYawAngle;
+    // j->stiffnessData.stiffnesses[Joints::headYaw] = 50;
+
+
+    JointRequest *j = (JointRequest *)Blackboard::getInstance().theJointRequest;
+    j->angles[Joints::headYaw] = -30_deg;
+    j->stiffnessData.stiffnesses[Joints::headYaw] = 50;
 }

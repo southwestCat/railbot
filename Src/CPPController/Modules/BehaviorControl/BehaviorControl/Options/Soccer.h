@@ -25,7 +25,7 @@ define_option(Root)
         define_action
         {
             LookForward();
-            Stand();
+            // Stand();
         }
     }
 
