@@ -7,6 +7,7 @@ void MotionSelector::update()
     UPDATE_REPRESENTATION(SpecialActionEngineOutput);
     UPDATE_REPRESENTATION(StandEngineOuptut);
     UPDATE_REPRESENTATION(SitDownEngineOutput);
+    UPDATE_REPRESENTATION(BalanceEngineOutput);
 }
 
 void MotionSelector::update(LegMotionSelection &legMotionSelection)
@@ -17,7 +18,8 @@ void MotionSelector::update(LegMotionSelection &legMotionSelection)
 
     if ((lastLegMotion == MotionRequest::specialAction && theSpecialActionEngineOutput->isLeavingPossible) ||
         (lastLegMotion == MotionRequest::stand && theStandEngineOuptut->isLeavingPossible) ||
-        (lastLegMotion == MotionRequest::sitDown && theSitDownEngineOutput->isLeavingPossible) )
+        (lastLegMotion == MotionRequest::sitDown && theSitDownEngineOutput->isLeavingPossible) || 
+        (lastLegMotion == MotionRequest::balance && theBalanceEngineOutput->isLeavingPossible) )
     {
         legMotionSelection.targetMotion = requestLegMotion;
     }
@@ -34,7 +36,6 @@ void MotionSelector::update(LegMotionSelection &legMotionSelection)
 
     lastLegMotion = legMotionSelection.targetMotion;
 }   
-
 
 void MotionSelector::interpolate(float *ratios, const int amount, const int interpolationTime, const int targetMotion)
 {

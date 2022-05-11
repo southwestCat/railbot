@@ -18,7 +18,6 @@ public:
     REQUIRES_REPRESENTATION(LegMotionSelection);
     REQUIRES_REPRESENTATION(StandEngineOuptut);
     REQUIRES_REPRESENTATION(SitDownEngineOutput);
-    REQUIRES_REPRESENTATION(BalanceEngineOutput);
 
     USES_REPRESENTATION(StiffnessSettings);
     USES_REPRESENTATION(JointLimits);

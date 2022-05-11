@@ -4,7 +4,8 @@ define_option(PlayingState)
     {
         define_action
         {
-            printf("In PlayingState.\n");
+            printf("demo. \n");
+            Stabilizer();
         }
     }
 }

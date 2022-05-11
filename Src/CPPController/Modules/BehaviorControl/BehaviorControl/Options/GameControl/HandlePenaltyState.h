@@ -9,6 +9,7 @@ define_option(HandlePenaltyState)
         }
         define_action
         {
+            printf("penalized.\n");
             Stand();
             ButtonPressedAndReleased(KeyStates::chest, 1000, 0);
         }
@@ -23,7 +24,8 @@ define_option(HandlePenaltyState)
         }
         define_action
         {
-            PlayingState();
+            printf("not penalized.\n");
+            HandleGameState();
         }
     }
 }
