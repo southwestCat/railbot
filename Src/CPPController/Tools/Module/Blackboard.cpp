@@ -29,6 +29,7 @@
 #include "Representations/MotionControl/SpecialActionEngineOutput.h"
 #include "Representations/Configuration/JointLimits.h"
 #include "Representations/MotionControl/SitDownEngineOutput.h"
+#include "Representations/MotionControl/BalanceEngineOutput.h"
 
 static thread_local Blackboard *theInstance = nullptr;
 
@@ -96,6 +97,9 @@ Blackboard::Blackboard()
     theSitDownEngineOutput = new SitDownEngineOutput;
     insert(CLASS2STRING(SitDownEngineOutput));
 
+    theBalanceEngineOutput = new BalanceEngineOutput;
+    insert(CLASS2STRING(BalanceEngineOutput));
+
     theStiffnessSettings = new StiffnessSettings;
     insert(CLASS2STRING(StiffnessSettings), configMap);
 
@@ -157,6 +161,8 @@ Blackboard::~Blackboard()
         delete (JointLimits *)theJointLimits;
     if (theSitDownEngineOutput != nullptr)
         delete (SitDownEngineOutput *)theSitDownEngineOutput;
+    if (theBalanceEngineOutput != nullptr)
+        delete (BalanceEngineOutput *)theBalanceEngineOutput;
 }
 
 Blackboard &Blackboard::getInstance()

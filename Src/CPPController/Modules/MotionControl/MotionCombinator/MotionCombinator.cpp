@@ -9,6 +9,7 @@ void MotionCombinator::update()
     UPDATE_REPRESENTATION(LegMotionSelection);
     UPDATE_REPRESENTATION(StandEngineOuptut);
     UPDATE_REPRESENTATION(SitDownEngineOutput);
+    UPDATE_REPRESENTATION(BalanceEngineOutput);
 }
 
 void MotionCombinator::update(JointRequest &jointRequest)

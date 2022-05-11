@@ -53,6 +53,7 @@ public:
     void *theSpecialActionEngineOutput = nullptr;
     void *theJointLimits = nullptr;
     void *theSitDownEngineOutput = nullptr;
+    void *theBalanceEngineOutput = nullptr;
     
     //! LOG
     std::vector<float> logLeftPitchd;

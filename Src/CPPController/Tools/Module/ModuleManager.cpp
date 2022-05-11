@@ -10,6 +10,7 @@
 #include "Modules/MotionControl/StandEngine/StandEngine.h"
 #include "Modules/MotionControl/SpecialActionEngine/SpecialActionEngine.h"
 #include "Modules/MotionControl/SitDownEngine/SitDownEngine.h"
+#include "Modules/MotionControl/BalanceEngine/BalanceEngine.h"
 
 #define UPDATE_REPRESENTATION_WITH_PROVIDER(representation, provider)                                           \
     if (!Blackboard::getInstance().updatedRepresentation[CLASS2STRING(representation)])                         \
@@ -38,6 +39,7 @@ ModuleManager::ModuleManager()
     theStandEngine = new StandEngine;
     theSpecialActionEngine = new SpecialActionEngine;
     theSitDownEngine = new SitDownEngine;
+    theBalanceEngine = new BalanceEngine;
 }
 
 ModuleManager::~ModuleManager()
@@ -62,6 +64,8 @@ ModuleManager::~ModuleManager()
         delete (SpecialActionEngine *)theSpecialActionEngine;
     if (theSitDownEngine != nullptr)
         delete (SitDownEngine *)theSitDownEngine;
+    if (theBalanceEngine != nullptr)
+        delete (BalanceEngine *)theBalanceEngine;
 }
 
 void ModuleManager::setInstance(ModuleManager *instance)
@@ -161,6 +165,10 @@ void ModuleManager::updateRepresentation(std::string representation)
     else if (representation == CLASS2STRING(SitDownEngineOutput))
     {
         UPDATE_REPRESENTATION_WITH_PROVIDER(SitDownEngineOutput, SitDownEngine);
+    }
+    else if (representation == CLASS2STRING(BalanceEngineOutput))
+    {
+        UPDATE_REPRESENTATION_WITH_PROVIDER(BalanceEngineOutput, BalanceEngine);
     }
     else if (representation == CLASS2STRING(HeadMotionRequest))
     {

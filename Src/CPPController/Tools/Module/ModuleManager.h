@@ -28,4 +28,5 @@ private:
     void *theStandEngine = nullptr;
     void *theSpecialActionEngine = nullptr;
     void *theSitDownEngine = nullptr;
+    void *theBalanceEngine = nullptr;
 };
