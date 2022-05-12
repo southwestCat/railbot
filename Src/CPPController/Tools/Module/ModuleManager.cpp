@@ -11,6 +11,10 @@
 #include "Modules/MotionControl/SpecialActionEngine/SpecialActionEngine.h"
 #include "Modules/MotionControl/SitDownEngine/SitDownEngine.h"
 #include "Modules/MotionControl/BalanceEngine/BalanceEngine.h"
+#include "Modules/Motion/Utils/NetWrenchObserver.h"
+#include "Modules/Motion/LIPM/LIPMController.h"
+#include "Modules/Motion/ContactProvider/ContactProvider.h"
+#include "Modules/Motion/Utils/FloatingBaseObserver.h"
 
 #define UPDATE_REPRESENTATION_WITH_PROVIDER(representation, provider)                                           \
     if (!Blackboard::getInstance().updatedRepresentation[CLASS2STRING(representation)])                         \
@@ -40,6 +44,10 @@ ModuleManager::ModuleManager()
     theSpecialActionEngine = new SpecialActionEngine;
     theSitDownEngine = new SitDownEngine;
     theBalanceEngine = new BalanceEngine;
+    theLIPMController = new LIPMController;
+    theNetWrenchObserver = new NetWrenchObserver;
+    theContactProvider = new ContactProvider;
+    theFloatingBaseObserver = new FloatingBaseObserver;
 }
 
 ModuleManager::~ModuleManager()
@@ -66,6 +74,14 @@ ModuleManager::~ModuleManager()
         delete (SitDownEngine *)theSitDownEngine;
     if (theBalanceEngine != nullptr)
         delete (BalanceEngine *)theBalanceEngine;
+    if (theLIPMController != nullptr)
+        delete (LIPMController *)theLIPMController;
+    if (theNetWrenchObserver != nullptr)
+        delete (NetWrenchObserver *)theNetWrenchObserver;
+    if (theContactProvider != nullptr)
+        delete (ContactProvider *)theContactProvider;
+    if (theFloatingBaseObserver != nullptr)
+        delete (FloatingBaseObserver *)theFloatingBaseObserver;
 }
 
 void ModuleManager::setInstance(ModuleManager *instance)
@@ -126,6 +142,10 @@ void ModuleManager::updateRepresentation(std::string representation)
             Blackboard::getInstance().updatedRepresentation[CLASS2STRING(KeyStates)] = true;
         }
     }
+    else if (representation == CLASS2STRING(InertialData))
+    {
+        UPDATE_REPRESENTATION_WITH_PROVIDER(InertialData, InertialDataProvider);
+    }
     else if (representation == CLASS2STRING(JointRequest))
     {
         UPDATE_REPRESENTATION_WITH_PROVIDER(JointRequest, MotionCombinator);
@@ -169,6 +189,22 @@ void ModuleManager::updateRepresentation(std::string representation)
     else if (representation == CLASS2STRING(BalanceEngineOutput))
     {
         UPDATE_REPRESENTATION_WITH_PROVIDER(BalanceEngineOutput, BalanceEngine);
+    }
+    else if (representation == CLASS2STRING(StabilizerJointRequest))
+    {
+        UPDATE_REPRESENTATION_WITH_PROVIDER(StabilizerJointRequest, LIPMController);
+    }
+    else if (representation == CLASS2STRING(NetWrenchEstimation))
+    {
+        UPDATE_REPRESENTATION_WITH_PROVIDER(NetWrenchEstimation, NetWrenchObserver);
+    }
+    else if (representation == CLASS2STRING(Contact))
+    {
+        UPDATE_REPRESENTATION_WITH_PROVIDER(Contact, ContactProvider);
+    }
+    else if (representation == CLASS2STRING(FloatingBaseEstimation))
+    {
+        UPDATE_REPRESENTATION_WITH_PROVIDER(FloatingBaseEstimation, FloatingBaseObserver);
     }
     else if (representation == CLASS2STRING(HeadMotionRequest))
     {

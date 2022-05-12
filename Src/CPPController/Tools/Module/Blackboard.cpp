@@ -30,6 +30,8 @@
 #include "Representations/Configuration/JointLimits.h"
 #include "Representations/MotionControl/SitDownEngineOutput.h"
 #include "Representations/MotionControl/BalanceEngineOutput.h"
+#include "Representations/Sensing/FloatingBaseEstimation.h"
+#include "Modules/Motion/Utils/Contact.h"
 
 static thread_local Blackboard *theInstance = nullptr;
 
@@ -100,6 +102,18 @@ Blackboard::Blackboard()
     theBalanceEngineOutput = new BalanceEngineOutput;
     insert(CLASS2STRING(BalanceEngineOutput));
 
+    theFloatingBaseEstimation = new FloatingBaseEstimation;
+    insert(CLASS2STRING(FloatingBaseEstimation));
+
+    theContact = new Contact;
+    insert(CLASS2STRING(Contact));
+
+    theNetWrenchEstimation = new NetWrenchEstimation;
+    insert(CLASS2STRING(NetWrenchEstimation));
+
+    theStabilizerJointRequest = new StabilizerJointRequest;
+    insert(CLASS2STRING(StabilizerJointRequest));
+
     theStiffnessSettings = new StiffnessSettings;
     insert(CLASS2STRING(StiffnessSettings), configMap);
 
@@ -163,6 +177,14 @@ Blackboard::~Blackboard()
         delete (SitDownEngineOutput *)theSitDownEngineOutput;
     if (theBalanceEngineOutput != nullptr)
         delete (BalanceEngineOutput *)theBalanceEngineOutput;
+    if (theFloatingBaseEstimation != nullptr)
+        delete (FloatingBaseEstimation *)theFloatingBaseEstimation;
+    if (theContact != nullptr)
+        delete (Contact *)theContact;
+    if (theNetWrenchEstimation != nullptr)
+        delete (NetWrenchEstimation *)theNetWrenchEstimation;
+    if (theStabilizerJointRequest != nullptr)
+        delete (StabilizerJointRequest *)theStabilizerJointRequest;
 }
 
 Blackboard &Blackboard::getInstance()

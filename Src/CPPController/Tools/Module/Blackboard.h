@@ -54,6 +54,10 @@ public:
     void *theJointLimits = nullptr;
     void *theSitDownEngineOutput = nullptr;
     void *theBalanceEngineOutput = nullptr;
+    void *theFloatingBaseEstimation = nullptr;
+    void *theContact = nullptr;
+    void *theStabilizerJointRequest = nullptr;
+    void *theNetWrenchEstimation = nullptr;
     
     //! LOG
     std::vector<float> logLeftPitchd;

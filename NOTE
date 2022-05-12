@@ -8,3 +8,7 @@
 15:56
 找到问题所在了，在 NaoProvider::send 中，没有给lola传递关节角度的值，只传递了stiffness的值。
 
+-2022年5月12日-
+
+16:03
+ContactProvider中需要requires FloatingBaseEstimator

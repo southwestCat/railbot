@@ -29,4 +29,8 @@ private:
     void *theSpecialActionEngine = nullptr;
     void *theSitDownEngine = nullptr;
     void *theBalanceEngine = nullptr;
+    void *theLIPMController = nullptr;
+    void *theNetWrenchObserver = nullptr;
+    void *theContactProvider = nullptr;
+    void *theFloatingBaseObserver = nullptr;
 };

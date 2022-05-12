@@ -14,6 +14,7 @@ public:
     REQUIRES_REPRESENTATION(FrameInfo);
     REQUIRES_REPRESENTATION(JointAngles);
     REQUIRES_REPRESENTATION(InertialData);
+    REQUIRES_REPRESENTATION(StabilizerJointRequest);
 
     USES_REPRESENTATION(LegMotionSelection);
     USES_REPRESENTATION(RobotDimensions);

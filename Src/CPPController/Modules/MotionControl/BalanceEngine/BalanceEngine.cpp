@@ -5,7 +5,8 @@ void BalanceEngine::update()
 {
     UPDATE_REPRESENTATION(FrameInfo);
     UPDATE_REPRESENTATION(JointAngles);
-    REQUIRES_REPRESENTATION(InertialData);
+    UPDATE_REPRESENTATION(InertialData);
+    UPDATE_REPRESENTATION(StabilizerJointRequest);
 }
 
 void BalanceEngine::update(BalanceEngineOutput &o)

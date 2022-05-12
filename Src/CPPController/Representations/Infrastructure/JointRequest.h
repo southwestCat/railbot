@@ -31,3 +31,7 @@ class LegJointRequest : public JointRequest
 class ArmJointRequest : public JointRequest
 {
 };
+
+class StabilizerJointRequest : public JointRequest
+{
+};

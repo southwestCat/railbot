@@ -9,7 +9,7 @@ define_option(Root)
         }
         define_action
         {
-            printf("playDead.\n");
+            // printf("playDead.\n");
             ButtonPressedAndReleased(KeyStates::chest, 1000, 0);
         }
     }
@@ -25,7 +25,7 @@ define_option(Root)
         }
         define_action
         {
-            printf("standUp.\n");
+            // printf("standUp.\n");
             LookForward();
             Stand();
         }
@@ -40,7 +40,7 @@ define_option(Root)
         }
         define_action
         {
-            printf("playSoccer.\n");
+            // printf("playSoccer.\n");
             HandlePenaltyState();
             ButtonPressedAndReleased(KeyStates::chest, 1000, 200);
         }

@@ -9,7 +9,7 @@ define_option(HandleGameState)
         }
         define_action
         {
-            printf("ready.\n");
+            // printf("ready.\n");
             Stand();
         }
     }
@@ -18,7 +18,7 @@ define_option(HandleGameState)
     {
         define_action
         {
-            printf("playing.\n");
+            // printf("playing.\n");
             PlayingState();
         }
     }
