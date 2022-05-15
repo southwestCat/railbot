@@ -15,6 +15,7 @@
 #include "Modules/Motion/LIPM/LIPMController.h"
 #include "Modules/Motion/ContactProvider/ContactProvider.h"
 #include "Modules/Motion/Utils/FloatingBaseObserver.h"
+#include "Modules/Sensing/RobotModelProvider/RobotModelProvider.h"
 
 #define UPDATE_REPRESENTATION_WITH_PROVIDER(representation, provider)                                           \
     if (!Blackboard::getInstance().updatedRepresentation[CLASS2STRING(representation)])                         \
@@ -48,6 +49,7 @@ ModuleManager::ModuleManager()
     theNetWrenchObserver = new NetWrenchObserver;
     theContactProvider = new ContactProvider;
     theFloatingBaseObserver = new FloatingBaseObserver;
+    theRobotModelProvider = new RobotModelProvider;
 }
 
 ModuleManager::~ModuleManager()
@@ -82,6 +84,8 @@ ModuleManager::~ModuleManager()
         delete (ContactProvider *)theContactProvider;
     if (theFloatingBaseObserver != nullptr)
         delete (FloatingBaseObserver *)theFloatingBaseObserver;
+    if (theRobotModelProvider != nullptr)
+        delete (RobotModelProvider *)theRobotModelProvider;
 }
 
 void ModuleManager::setInstance(ModuleManager *instance)
@@ -205,6 +209,10 @@ void ModuleManager::updateRepresentation(std::string representation)
     else if (representation == CLASS2STRING(FloatingBaseEstimation))
     {
         UPDATE_REPRESENTATION_WITH_PROVIDER(FloatingBaseEstimation, FloatingBaseObserver);
+    }
+    else if (representation == CLASS2STRING(RobotModel))
+    {
+        UPDATE_REPRESENTATION_WITH_PROVIDER(RobotModel, RobotModelProvider);
     }
     else if (representation == CLASS2STRING(HeadMotionRequest))
     {

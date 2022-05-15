@@ -58,6 +58,7 @@ public:
     void *theContact = nullptr;
     void *theStabilizerJointRequest = nullptr;
     void *theNetWrenchEstimation = nullptr;
+    void *theMassCalibration = nullptr;
     
     //! LOG
     std::vector<float> logLeftPitchd;

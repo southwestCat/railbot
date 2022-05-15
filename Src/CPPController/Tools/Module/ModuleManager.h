@@ -33,4 +33,5 @@ private:
     void *theNetWrenchObserver = nullptr;
     void *theContactProvider = nullptr;
     void *theFloatingBaseObserver = nullptr;
+    void *theRobotModelProvider = nullptr;
 };

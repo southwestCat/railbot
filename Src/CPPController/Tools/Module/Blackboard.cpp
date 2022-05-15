@@ -31,6 +31,7 @@
 #include "Representations/MotionControl/SitDownEngineOutput.h"
 #include "Representations/MotionControl/BalanceEngineOutput.h"
 #include "Representations/Sensing/FloatingBaseEstimation.h"
+#include "Representations/Configuration/MassCalibration.h"
 #include "Modules/Motion/Utils/Contact.h"
 
 static thread_local Blackboard *theInstance = nullptr;
@@ -125,6 +126,9 @@ Blackboard::Blackboard()
 
     theHeadLimits = new HeadLimits;
     insert(CLASS2STRING(HeadLimits), configMap);
+
+    theMassCalibration = new MassCalibration;
+    insert(CLASS2STRING(MassCalibration), configMap);
 }
 
 Blackboard::~Blackboard()
@@ -185,6 +189,8 @@ Blackboard::~Blackboard()
         delete (NetWrenchEstimation *)theNetWrenchEstimation;
     if (theStabilizerJointRequest != nullptr)
         delete (StabilizerJointRequest *)theStabilizerJointRequest;
+    if (theMassCalibration != nullptr)
+        delete (MassCalibration *)theMassCalibration;
 }
 
 Blackboard &Blackboard::getInstance()
