@@ -32,6 +32,7 @@
 #include "Representations/MotionControl/BalanceEngineOutput.h"
 #include "Representations/Sensing/FloatingBaseEstimation.h"
 #include "Representations/Configuration/MassCalibration.h"
+#include "Representations/MotionControl/FootTask.h"
 
 static thread_local Blackboard *theInstance = nullptr;
 
@@ -111,6 +112,12 @@ Blackboard::Blackboard()
     theStabilizerJointRequest = new StabilizerJointRequest;
     insert(CLASS2STRING(StabilizerJointRequest));
 
+    theLeftFootTask = new LeftFootTask;
+    insert(CLASS2STRING(LeftFootTask));
+
+    theRightFootTask = new RightFootTask;
+    insert(CLASS2STRING(RightFootTask));
+
     theStiffnessSettings = new StiffnessSettings;
     insert(CLASS2STRING(StiffnessSettings), configMap);
 
@@ -185,6 +192,10 @@ Blackboard::~Blackboard()
         delete (StabilizerJointRequest *)theStabilizerJointRequest;
     if (theMassCalibration != nullptr)
         delete (MassCalibration *)theMassCalibration;
+    if (theLeftFootTask != nullptr)
+        delete (LeftFootTask *)theLeftFootTask;
+    if (theRightFootTask != nullptr)
+        delete (RightFootTask *)theRightFootTask;
 }
 
 Blackboard &Blackboard::getInstance()

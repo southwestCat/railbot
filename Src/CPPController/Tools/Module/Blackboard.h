@@ -58,6 +58,8 @@ public:
     void *theStabilizerJointRequest = nullptr;
     void *theNetWrenchEstimation = nullptr;
     void *theMassCalibration = nullptr;
+    void *theLeftFootTask = nullptr;
+    void *theRightFootTask = nullptr;
     
     //! LOG
     std::vector<float> logLeftPitchd;

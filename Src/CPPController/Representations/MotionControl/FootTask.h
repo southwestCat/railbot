@@ -14,3 +14,13 @@ public:
     Vector2f targetCoP;
     Vector3f targetForce;
 };
+
+class LeftFootTask : public FootTask
+{
+public:
+};
+
+class RightFootTask : public FootTask
+{
+public:
+};
