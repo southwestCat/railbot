@@ -13,7 +13,6 @@ void NetWrenchObserver::update(const Contact &contact)
     update();
     updateNetWrench();
     updateZMP(contact);
-    printf("In NetWrenchObserver.\n");
 }
 
 void NetWrenchObserver::updateNetWrench()

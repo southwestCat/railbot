@@ -1,6 +1,17 @@
 #include "LIPMController.h"
 #include "Tools/Module/ModuleManager.h"
 
+void LIPMController::configureOnce()
+{
+    static bool once = true;
+    if (once)
+    {
+        comVelFilter_.cutoffPeriod(dt_ * 2);
+        leftAnkleVelFilter_.cutoffPeriod(dt_ * 2);
+        rightAnkleVelFilter_.cutoffPeriod(dt_ * 2);
+    }
+}
+
 void LIPMController::update()
 {
 }
