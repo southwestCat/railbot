@@ -30,7 +30,5 @@ private:
     void *theSitDownEngine = nullptr;
     void *theBalanceEngine = nullptr;
     void *theLIPMController = nullptr;
-    void *theNetWrenchObserver = nullptr;
-    void *theFloatingBaseObserver = nullptr;
     void *theRobotModelProvider = nullptr;
 };

@@ -15,16 +15,16 @@ public:
 class FloatingBaseObserver : public FloatingBaseObserverBase
 {
 public:
-    void update(FloatingBaseEstimation &f);
+    void leftFootRatio(float ratio) { leftFootRatio_ = ratio; }
     
 private:
     void update();
     void estimateOrientation();
-    void estimatePosition(FloatingBaseEstimation &f);
+    void estimatePosition();
     void updateRobot(FloatingBaseEstimation &f);
     sva::PTransform getAnchorFrame();
     void reset(const sva::PTransform &X_o_fb);
-    void run(FloatingBaseEstimation &f);
+    void run();
     Vector2f m2rp(Matrix3f m);
 
     Matrix3f orientation_;

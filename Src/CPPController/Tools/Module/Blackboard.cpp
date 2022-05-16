@@ -32,7 +32,6 @@
 #include "Representations/MotionControl/BalanceEngineOutput.h"
 #include "Representations/Sensing/FloatingBaseEstimation.h"
 #include "Representations/Configuration/MassCalibration.h"
-#include "Modules/Motion/Utils/Contact.h"
 
 static thread_local Blackboard *theInstance = nullptr;
 
@@ -105,9 +104,6 @@ Blackboard::Blackboard()
 
     theFloatingBaseEstimation = new FloatingBaseEstimation;
     insert(CLASS2STRING(FloatingBaseEstimation));
-
-    theContact = new Contact;
-    insert(CLASS2STRING(Contact));
 
     theNetWrenchEstimation = new NetWrenchEstimation;
     insert(CLASS2STRING(NetWrenchEstimation));
@@ -183,8 +179,6 @@ Blackboard::~Blackboard()
         delete (BalanceEngineOutput *)theBalanceEngineOutput;
     if (theFloatingBaseEstimation != nullptr)
         delete (FloatingBaseEstimation *)theFloatingBaseEstimation;
-    if (theContact != nullptr)
-        delete (Contact *)theContact;
     if (theNetWrenchEstimation != nullptr)
         delete (NetWrenchEstimation *)theNetWrenchEstimation;
     if (theStabilizerJointRequest != nullptr)

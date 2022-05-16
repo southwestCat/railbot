@@ -11,9 +11,7 @@
 #include "Modules/MotionControl/SpecialActionEngine/SpecialActionEngine.h"
 #include "Modules/MotionControl/SitDownEngine/SitDownEngine.h"
 #include "Modules/MotionControl/BalanceEngine/BalanceEngine.h"
-#include "Modules/Motion/Utils/NetWrenchObserver.h"
 #include "Modules/Motion/LIPM/LIPMController.h"
-#include "Modules/Motion/Utils/FloatingBaseObserver.h"
 #include "Modules/Sensing/RobotModelProvider/RobotModelProvider.h"
 
 #define UPDATE_REPRESENTATION_WITH_PROVIDER(representation, provider)                                           \
@@ -45,8 +43,6 @@ ModuleManager::ModuleManager()
     theSitDownEngine = new SitDownEngine;
     theBalanceEngine = new BalanceEngine;
     theLIPMController = new LIPMController;
-    theNetWrenchObserver = new NetWrenchObserver;
-    theFloatingBaseObserver = new FloatingBaseObserver;
     theRobotModelProvider = new RobotModelProvider;
 }
 
@@ -76,10 +72,6 @@ ModuleManager::~ModuleManager()
         delete (BalanceEngine *)theBalanceEngine;
     if (theLIPMController != nullptr)
         delete (LIPMController *)theLIPMController;
-    if (theNetWrenchObserver != nullptr)
-        delete (NetWrenchObserver *)theNetWrenchObserver;
-    if (theFloatingBaseObserver != nullptr)
-        delete (FloatingBaseObserver *)theFloatingBaseObserver;
     if (theRobotModelProvider != nullptr)
         delete (RobotModelProvider *)theRobotModelProvider;
 }
@@ -193,14 +185,6 @@ void ModuleManager::updateRepresentation(std::string representation)
     else if (representation == CLASS2STRING(StabilizerJointRequest))
     {
         UPDATE_REPRESENTATION_WITH_PROVIDER(StabilizerJointRequest, LIPMController);
-    }
-    else if (representation == CLASS2STRING(NetWrenchEstimation))
-    {
-        UPDATE_REPRESENTATION_WITH_PROVIDER(NetWrenchEstimation, NetWrenchObserver);
-    }
-    else if (representation == CLASS2STRING(FloatingBaseEstimation))
-    {
-        UPDATE_REPRESENTATION_WITH_PROVIDER(FloatingBaseEstimation, FloatingBaseObserver);
     }
     else if (representation == CLASS2STRING(RobotModel))
     {

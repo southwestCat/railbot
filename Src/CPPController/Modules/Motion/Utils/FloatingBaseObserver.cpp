@@ -7,23 +7,17 @@ void FloatingBaseObserver::update()
     UPDATE_REPRESENTATION(RobotModel);
 }
 
-void FloatingBaseObserver::update(FloatingBaseEstimation &f)
-{
-    update();
-    run(f);
-}
-
 void FloatingBaseObserver::reset(const sva::PTransform &X_o_fb)
 {
     orientation_ = X_o_fb.rotation();
     position_ = X_o_fb.translation();
 }
 
-void FloatingBaseObserver::run(FloatingBaseEstimation &f)
+void FloatingBaseObserver::run()
 {
+    update();
     estimateOrientation();
-    estimatePosition(f);
-    updateRobot(f);
+    estimatePosition();
 }
 
 void FloatingBaseObserver::estimateOrientation()
@@ -34,10 +28,10 @@ void FloatingBaseObserver::estimateOrientation()
     orientation_ = R_measured * R_forward.transpose();
 }
 
-void FloatingBaseObserver::estimatePosition(FloatingBaseEstimation &f)
+void FloatingBaseObserver::estimatePosition()
 {
     const Vector3f &com = theRobotModel->centerOfMass;
-    sva::PTransform &OTA = f.OTA;
+    sva::PTransform OTA = getAnchorFrame();
     OTA = getAnchorFrame();
     sva::PTransform OTB = sva::PTransform(Matrix3f::Identity(), com);
     sva::PTransform ATB = OTA.inv() * OTB;
@@ -59,7 +53,8 @@ void FloatingBaseObserver::updateRobot(FloatingBaseEstimation &f)
     sva::PTransform &WTB = f.WTB;
     WTB = sva::PTransform(orientation_, position_);
 
-    const sva::PTransform &OTA = f.OTA;
+    sva::PTransform &OTA = f.OTA;
+    OTA = getAnchorFrame();
     sva::PTransform WTA = {orientation_, {0.f, 0.f, 0.f}};
     sva::PTransform &WTO = f.WTO;
     WTO = WTA * OTA.inv();
