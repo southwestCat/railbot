@@ -25,6 +25,7 @@ void LIPMController::update(StabilizerJointRequest &s)
 void LIPMController::run()
 {
     netWrenchObs_.update(supportContact());
+    stabilizer_.run();
 }
 
 Contact LIPMController::supportContact()

@@ -39,6 +39,7 @@ public:
     float hipToNeckLength = 211.5f;
     float halfSoleLength = 80.f;
     float halfSoleWidth = 44.4f;
+    float soleFriction = 0.7f;
 
     float xOffsetNeckToLowerCamera = 50.71f;
     float zOffsetNeckToLowerCamera = 17.74f;

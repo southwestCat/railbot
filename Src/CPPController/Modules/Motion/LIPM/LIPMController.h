@@ -8,6 +8,7 @@
 #include "Modules/Motion/Utils/NetWrenchObserver.h"
 #include "Modules/Motion/Utils/Contact.h"
 #include "Modules/Motion/Utils/LowPassVelocityFilter.h"
+#include "Modules/Motion/Utils/Stabilizer.h"
 #include "Tools/Module/Blackboard.h"
 
 class LIPMControllerBase
@@ -51,6 +52,7 @@ private:
     LowPassVelocityFilter<Vector3f> comVelFilter_;
     LowPassVelocityFilter<Vector2f> leftAnkleVelFilter_;
     LowPassVelocityFilter<Vector2f> rightAnkleVelFilter_;
+    Stabilizer stabilizer_;
 
 private:
     static constexpr float FOOT_DAMPING_ADMITTANCE_K_TauX = 0.001f;
