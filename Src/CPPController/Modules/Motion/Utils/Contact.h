@@ -1,15 +1,12 @@
 #pragma once
 
 #include "SpaceVecAlg/PTransform.h"
-#include "Tools/Module/Blackboard.h"
 #include "Tools/Math/Eigen.h"
 #include "Tools/Math/Pose3f.h"
+#include "Representations/Sensing/RobotModel.h"
 
 class Contact
 {
-public:
-    Contact() = default;
-
 public:
     enum class ContactState
     {
@@ -26,19 +23,20 @@ public:
     };
 
 public:
-    sva::PTransform anklePose;
-    float halfLength;
-    float halfWidth;
-    sva::PTransform pose;
-    Pose3f solePose;
-    SurfaceType SurfaceType;
+    Contact()
+        : halfLength_(-1.f), halfWidth_(-1.f), pose_(), surfaceType_(SurfaceType::defaultContact) {}
+
+    Contact(const float &halfL, const float &halfW, const sva::PTransform &p, SurfaceType s)
+        : halfLength_(halfL), halfWidth_(halfW), pose_(p), surfaceType_(s) {}
 
 public:
-    const sva::PTransform &poseW() const { return pose; }
-    Vector3f sagital() const { return pose.rotation().row(0); }
-    Vector3f lateral() const { return pose.rotation().row(1); }
-    Vector3f normal() const { return pose.rotation().row(2); }
-    const Vector3f &position() const { return pose.translation(); }
+    const float &halfLength() const { return halfLength_; }
+    const float &halfWidth() const { return halfWidth_; };
+    const sva::PTransform &poseW() const { return pose_; }
+    Vector3f sagital() const { return pose_.rotation().row(0); }
+    Vector3f lateral() const { return pose_.rotation().row(1); }
+    Vector3f normal() const { return pose_.rotation().row(2); }
+    const Vector3f &position() const { return pose_.translation(); }
     const Vector3f &b() const { return lateral(); }
     const Vector3f &n() const { return normal(); }
     const Vector3f &t() const { return sagital(); }
@@ -47,12 +45,15 @@ public:
     float y() const { return position()(1); }
     float z() const { return position()(2); }
 
+    void calcPose(const RobotModel &robotModel, float halfLength, float halfWidth, SurfaceType surface, const sva::PTransform &WTO);
+    sva::PTransform anklePose(const RobotModel &model, const sva::PTransform &WTO);
+    
     /** Corner vertex of the contact area.
      *
      */
     Vector3f vertex0() const
     {
-        return position() + halfLength * t() + halfWidth * b();
+        return position() + halfLength_ * t() + halfWidth_ * b();
     }
 
     /** Corner vertex of the contact area.
@@ -60,7 +61,7 @@ public:
      */
     Vector3f vertex1() const
     {
-        return position() + halfLength * t() - halfWidth * b();
+        return position() + halfLength_ * t() - halfWidth_ * b();
     }
 
     /** Corner vertex of the contact area.
@@ -68,7 +69,7 @@ public:
      */
     Vector3f vertex2() const
     {
-        return position() - halfLength * t() - halfWidth * b();
+        return position() - halfLength_ * t() - halfWidth_ * b();
     }
 
     /** Corner vertex of the contact area.
@@ -76,7 +77,7 @@ public:
      */
     Vector3f vertex3() const
     {
-        return position() - halfLength * t() + halfWidth * b();
+        return position() - halfLength_ * t() + halfWidth_ * b();
     }
 
     template <int i>
@@ -111,10 +112,10 @@ public:
             -1, 0,
             0, +1,
             0, -1;
-        localHrepVec << halfLength,
-            halfLength,
-            halfWidth,
-            halfWidth;
+        localHrepVec << halfLength_,
+            halfLength_,
+            halfWidth_,
+            halfWidth_;
         return HrepXf(localHrepMat, localHrepVec);
     }
 
@@ -130,7 +131,7 @@ public:
         HrepXf local = localHrep();
         auto &localHrepMat = local.first;
         auto &localHrepVec = local.second;
-        const sva::PTransform &X_0_c = pose;
+        const sva::PTransform &X_0_c = pose_;
         worldHrepMat = localHrepMat * X_0_c.rotation().topLeftCorner<2, 2>();
         worldHrepVec = worldHrepMat * X_0_c.translation().head<2>() + localHrepVec;
         return HrepXf(worldHrepMat, worldHrepVec);
@@ -146,14 +147,22 @@ public:
         Contact noisedContact = *this;
         Vector3f unitRandom = Vector3f::Random().normalized();
         Vector3f displacement = magnitude * unitRandom;
-        noisedContact.pose = sva::PTransform(displacement) * this->pose;
+        noisedContact.pose_ = sva::PTransform(displacement) * this->pose_;
         return noisedContact;
     }
 
     friend Contact operator*(const sva::PTransform &X, const Contact &contact)
     {
         Contact result = contact;
-        result.pose = X * contact.pose;
+        result.pose_ = X * contact.pose_;
         return result;
     }
+
+private:
+    // sva::PTransform anklePose;
+    float halfLength_;
+    float halfWidth_;
+    sva::PTransform pose_;
+    // Pose3f solePose;
+    SurfaceType surfaceType_;
 };

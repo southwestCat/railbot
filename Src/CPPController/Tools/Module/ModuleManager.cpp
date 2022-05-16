@@ -13,7 +13,6 @@
 #include "Modules/MotionControl/BalanceEngine/BalanceEngine.h"
 #include "Modules/Motion/Utils/NetWrenchObserver.h"
 #include "Modules/Motion/LIPM/LIPMController.h"
-#include "Modules/Motion/ContactProvider/ContactProvider.h"
 #include "Modules/Motion/Utils/FloatingBaseObserver.h"
 #include "Modules/Sensing/RobotModelProvider/RobotModelProvider.h"
 
@@ -47,7 +46,6 @@ ModuleManager::ModuleManager()
     theBalanceEngine = new BalanceEngine;
     theLIPMController = new LIPMController;
     theNetWrenchObserver = new NetWrenchObserver;
-    theContactProvider = new ContactProvider;
     theFloatingBaseObserver = new FloatingBaseObserver;
     theRobotModelProvider = new RobotModelProvider;
 }
@@ -80,8 +78,6 @@ ModuleManager::~ModuleManager()
         delete (LIPMController *)theLIPMController;
     if (theNetWrenchObserver != nullptr)
         delete (NetWrenchObserver *)theNetWrenchObserver;
-    if (theContactProvider != nullptr)
-        delete (ContactProvider *)theContactProvider;
     if (theFloatingBaseObserver != nullptr)
         delete (FloatingBaseObserver *)theFloatingBaseObserver;
     if (theRobotModelProvider != nullptr)
@@ -201,10 +197,6 @@ void ModuleManager::updateRepresentation(std::string representation)
     else if (representation == CLASS2STRING(NetWrenchEstimation))
     {
         UPDATE_REPRESENTATION_WITH_PROVIDER(NetWrenchEstimation, NetWrenchObserver);
-    }
-    else if (representation == CLASS2STRING(Contact))
-    {
-        UPDATE_REPRESENTATION_WITH_PROVIDER(Contact, ContactProvider);
     }
     else if (representation == CLASS2STRING(FloatingBaseEstimation))
     {

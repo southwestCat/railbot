@@ -31,7 +31,6 @@ private:
     void *theBalanceEngine = nullptr;
     void *theLIPMController = nullptr;
     void *theNetWrenchObserver = nullptr;
-    void *theContactProvider = nullptr;
     void *theFloatingBaseObserver = nullptr;
     void *theRobotModelProvider = nullptr;
 };
