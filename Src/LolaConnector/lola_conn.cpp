@@ -271,10 +271,6 @@ void writeActuators(local::stream_protocol::socket &socket)
         float *actuators = readingActuators;
         auto &leds = frame_handler.actuator_frame.leds;
 
-        float ledRequest[numOfLedActuatorIds] = {0.f};
-        setEyeLeds(ledRequest);
-        writeLEDs(leds, ledRequest);
-
         float positionRequest[numOfPositionActuatorIds];
         float stiffnessRequest[numOfPositionActuatorIds];
         for (int i = 0; i < numOfPositionActuatorIds; i++)
@@ -288,6 +284,25 @@ void writeActuators(local::stream_protocol::socket &socket)
 
         auto &joints = frame_handler.actuator_frame.joints;
         writeJoints(joints, positionRequest, stiffnessRequest);
+
+        float ledRequest[numOfLedActuatorIds] = {0.f};
+        int ledIndex = 0;
+
+        if (actuatorsDrop > 5)
+        {
+            setEyeLeds(ledRequest);
+            writeLEDs(leds, ledRequest);
+        }
+        else
+        {
+            for (int i = 0; i < numOfLedActuatorIds; i++)
+            {
+                int index = faceLedRedLeft0DegActuator + ledIndex;
+                ledIndex++;
+                ledRequest[i] = actuators[index];
+            }
+            writeLEDs(leds, ledRequest);
+        }
 
         char *buffer;
         size_t size;

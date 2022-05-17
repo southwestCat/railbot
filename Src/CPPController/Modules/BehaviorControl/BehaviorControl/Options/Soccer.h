@@ -9,7 +9,8 @@ define_option(Root)
         }
         define_action
         {
-            // printf("playDead.\n");
+            theRobotInfo->state = STATE_READY;
+            SetHeadPanTilt(JointAngles::off, JointAngles::off, 10_deg);
             ButtonPressedAndReleased(KeyStates::chest, 1000, 0);
         }
     }
@@ -25,7 +26,7 @@ define_option(Root)
         }
         define_action
         {
-            // printf("standUp.\n");
+            theRobotInfo->state = STATE_SET;
             LookForward();
             Stand();
         }
@@ -40,7 +41,7 @@ define_option(Root)
         }
         define_action
         {
-            // printf("playSoccer.\n");
+            theRobotInfo->state = STATE_PLAYING;
             HandlePenaltyState();
             ButtonPressedAndReleased(KeyStates::chest, 1000, 200);
         }

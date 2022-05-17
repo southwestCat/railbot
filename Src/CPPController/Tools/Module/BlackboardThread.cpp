@@ -1,6 +1,6 @@
 #include "BlackboardThread.h"
 
-// #include "Representations/Infrastructure/LEDRequest.h"
+#include "Representations/Infrastructure/LEDRequest.h"
 #include "Representations/Infrastructure/SensorData/KeyStates.h"
 #include "Representations/MotionControl/MotionInfo.h"
 // #include "Representations/MotionControl/MotionRequest.h"
@@ -19,6 +19,7 @@ BlackboardThread::BlackboardThread()
     theHeadMotionEngineOutput = new RepresentationTemplate<HeadMotionEngineOutput>;
     theMotionRequest = new RepresentationTemplate<MotionRequest>;
     theMotionInfo = new RepresentationTemplate<MotionInfo>;
+    theLEDRequest = new RepresentationTemplate<LEDRequest>;
 }
 
 BlackboardThread::~BlackboardThread()
@@ -35,6 +36,8 @@ BlackboardThread::~BlackboardThread()
         delete (RepresentationTemplate<MotionRequest> *)theMotionRequest;
     if (theMotionInfo != nullptr)
         delete (RepresentationTemplate<MotionInfo> *)theMotionInfo;
+    if (theLEDRequest != nullptr)
+        delete (RepresentationTemplate<LEDRequest> *)theLEDRequest;
 }
 
 BlackboardThread &BlackboardThread::getInstance()

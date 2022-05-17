@@ -7,6 +7,7 @@
 #include "Representations/MotionControl/HeadMotionEngineOutput.h"
 #include "Representations/Infrastructure/JointAngles.h"
 #include "Representations/MotionControl/MotionInfo.h"
+#include "Representations/Communication/RobotInfo.h"
 #include "Tools/Module/Blackboard.h"
 
 class SoccerBase
@@ -20,6 +21,7 @@ public:
 
     MODIFIES_REPRESENTATION(HeadMotionRequest);
     MODIFIES_REPRESENTATION(MotionRequest);
+    MODIFIES_REPRESENTATION(RobotInfo);
 };
 
 class Soccer : public SoccerBase, public Cabsl<Soccer>

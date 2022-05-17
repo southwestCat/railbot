@@ -8,13 +8,16 @@
 #include "Representations/Infrastructure/SensorData/InertialSensorData.h"
 #include "Representations/Infrastructure/SensorData/FsrSensorData.h"
 #include "Representations/Infrastructure/SensorData/KeyStates.h"
+#include "Representations/Infrastructure/LEDRequest.h"
 #include "Tools/Module/Blackboard.h"
 
 class NaoProviderBase
 {
 public:
-    USES_REPRESENTATION(JointRequest);
     REQUIRES_REPRESENTATION(FrameInfo);
+
+    USES_REPRESENTATION(JointRequest);
+    USES_REPRESENTATION(LEDRequest);
 };
 
 class NaoProvider : public NaoProviderBase

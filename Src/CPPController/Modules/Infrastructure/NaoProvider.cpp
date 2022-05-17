@@ -68,6 +68,14 @@ void NaoProvider::send()
     j += numOfPositionActuatorIds;
     assert(j == faceLedRedLeft0DegActuator);
 
+    const LEDRequest &ledRequest(*theLEDRequest);
+    bool on = (theFrameInfo->time / 50 & 8) != 0;
+    bool fastOn = (theFrameInfo->time / 10 & 8) != 0;
+    for (int i = 0; i < LEDRequest::numOfLEDs; ++i)
+    {
+        actuators[j++] = (ledRequest.ledStates[i] == LEDRequest::on || (ledRequest.ledStates[i] == LEDRequest::blinking && on) || (ledRequest.ledStates[i] == LEDRequest::fastBlinking && fastOn)) ? 1.0f : (ledRequest.ledStates[i] == LEDRequest::half ? 0.5f : 0.0f);
+    }
+
     naoBody.closeActuators();
 }
 

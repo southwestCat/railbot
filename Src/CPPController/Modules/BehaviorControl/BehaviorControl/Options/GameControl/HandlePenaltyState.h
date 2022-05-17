@@ -9,7 +9,7 @@ define_option(HandlePenaltyState)
         }
         define_action
         {
-            // printf("penalized.\n");
+            theRobotInfo->penalty = PENALTY_SPL_REQUEST_FOR_PICKUP;
             Stand();
             ButtonPressedAndReleased(KeyStates::chest, 1000, 0);
         }
@@ -24,7 +24,7 @@ define_option(HandlePenaltyState)
         }
         define_action
         {
-            // printf("not penalized.\n");
+            theRobotInfo->penalty = PENALTY_NONE;
             HandleGameState();
         }
     }

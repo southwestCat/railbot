@@ -1,5 +1,6 @@
 #include "BalanceEngine.h"
 #include "Tools/Module/ModuleManager.h"
+#include "Tools/Motion/MotionUtilities.h"
 
 void BalanceEngine::update()
 {
@@ -22,4 +23,5 @@ void BalanceEngine::update(BalanceEngineOutput &o)
     o.isLeavingPossible = true;
     nowTime = theFrameInfo->getTimeSince(startTime);
 
+    MotionUtilities::copy(*theStabilizerJointRequest, o, *theStiffnessSettings, Joints::firstLegJoint, Joints::rAnkleRoll);
 }

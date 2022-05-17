@@ -31,4 +31,5 @@ private:
     void *theBalanceEngine = nullptr;
     void *theLIPMController = nullptr;
     void *theRobotModelProvider = nullptr;
+    void *theLEDHandler = nullptr;
 };

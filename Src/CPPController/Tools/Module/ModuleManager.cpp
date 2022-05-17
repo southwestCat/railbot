@@ -13,6 +13,7 @@
 #include "Modules/MotionControl/BalanceEngine/BalanceEngine.h"
 #include "Modules/Motion/LIPM/LIPMController.h"
 #include "Modules/Sensing/RobotModelProvider/RobotModelProvider.h"
+#include "Modules/BehaviorControl/LEDHandler/LEDHandler.h"
 
 #define UPDATE_REPRESENTATION_WITH_PROVIDER(representation, provider)                                           \
     if (!Blackboard::getInstance().updatedRepresentation[CLASS2STRING(representation)])                         \
@@ -44,6 +45,7 @@ ModuleManager::ModuleManager()
     theBalanceEngine = new BalanceEngine;
     theLIPMController = new LIPMController;
     theRobotModelProvider = new RobotModelProvider;
+    theLEDHandler = new LEDHandler;
 }
 
 ModuleManager::~ModuleManager()
@@ -74,6 +76,8 @@ ModuleManager::~ModuleManager()
         delete (LIPMController *)theLIPMController;
     if (theRobotModelProvider != nullptr)
         delete (RobotModelProvider *)theRobotModelProvider;
+    if (theLEDHandler != nullptr)
+        delete (LEDHandler *)theLEDHandler;
 }
 
 void ModuleManager::setInstance(ModuleManager *instance)
@@ -189,6 +193,10 @@ void ModuleManager::updateRepresentation(std::string representation)
     else if (representation == CLASS2STRING(RobotModel))
     {
         UPDATE_REPRESENTATION_WITH_PROVIDER(RobotModel, RobotModelProvider);
+    }
+    else if (representation == CLASS2STRING(LEDRequest))
+    {
+        UPDATE_REPRESENTATION_WITH_PROVIDER(LEDRequest, LEDHandler);
     }
     else if (representation == CLASS2STRING(HeadMotionRequest))
     {

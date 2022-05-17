@@ -1,4 +1,5 @@
 #include "Cognition.h"
+#include "Representations/Infrastructure/LEDRequest.h"
 #include "Tools/Module/BlackboardThread.h"
 
 void Cognition::tick()
@@ -23,6 +24,7 @@ void Cognition::beforeModules()
 void Cognition::updateModules()
 {
     soccer.execute();
+    UPDATE_REPRESENTATION(LEDRequest);
 }
 
 void Cognition::afterModules()
@@ -72,4 +74,8 @@ void Cognition::send()
     MotionRequest *_theMotionRequest = (MotionRequest *)Blackboard::getInstance().theMotionRequest;
     RepresentationTemplate<MotionRequest> *sendMotionRequest = (RepresentationTemplate<MotionRequest> *)blackboard->theMotionRequest;
     sendMotionRequest->write(*_theMotionRequest);
+
+    LEDRequest *_theLEDRequest = (LEDRequest *)Blackboard::getInstance().theLEDRequest;
+    RepresentationTemplate<LEDRequest> *sendLEDRequest = (RepresentationTemplate<LEDRequest> *)blackboard->theLEDRequest;
+    sendLEDRequest->write(*_theLEDRequest);
 }

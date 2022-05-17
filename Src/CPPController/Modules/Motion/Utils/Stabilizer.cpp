@@ -244,9 +244,6 @@ void Stabilizer::run()
     checkGains();
     checkInTheAir(); // void
     updateSupportFootGains();
-
-    std::cout << leftFootContact.t() << std::endl << std::endl;
-    return;
     updateZMPFrame();
 
     sva::ForceVec desiredWrench = computeDesiredWrench();

@@ -2,17 +2,62 @@
 #include "Modules/Motion/MotionConfigure.h"
 #include "Tools/Module/ModuleManager.h"
 #include "Tools/Motion/InverseKinematic.h"
+#include "Tools/Motion/MotionUtilities.h"
 
 void LIPMController::update()
 {
     UPDATE_REPRESENTATION(InertialData);
     UPDATE_REPRESENTATION(FrameInfo);
+    UPDATE_REPRESENTATION(RobotModel);
+    UPDATE_REPRESENTATION(JointAngles);
 }
 
 void LIPMController::update(StabilizerJointRequest &s)
 {
     update();
+
+    if (theLegMotionSelection->targetMotion != MotionRequest::balance)
+    {
+        startTime = theFrameInfo->time;
+        float soleL = theRobotModel->soleLeft.translation.z();
+        float soleR = theRobotModel->soleRight.translation.z();
+        initHeight = abs((soleL + soleR) / 2.f);
+
+        startJoints_ = *theJointAngles;
+
+        return;
+    }
+
+    //! stand high to stand posture.
+    if (!readyPosture(s))
+        return;
+
     run();
+}
+
+bool LIPMController::readyPosture(StabilizerJointRequest &s)
+{
+    unsigned nowTime = theFrameInfo->time - startTime;
+    if (nowTime > readyPostureTime)
+    {
+        return true;
+    }
+
+    float t = (float)nowTime / 1000.f;
+    const float duringT = (readyPostureTime) / 1000.f;
+    float target = hipHeight;
+    Pose3f targetL = Pose3f(Vector3f(0.f, theRobotDimensions->yHipOffset, -target));
+    Pose3f targetR = Pose3f(Vector3f(0.f, -theRobotDimensions->yHipOffset, -target));
+    bool isPossible = InverseKinematic::calcLegJoints(targetL, targetR, Vector2f::Zero(), targetJointRequest_, *theRobotDimensions);
+    for (int i = Joints::firstLegJoint; i <= Joints::rAnkleRoll; i++)
+    {
+        jointRequest_.angles[i] = startJoints_.angles[i] + t / duringT * (targetJointRequest_.angles[i] - startJoints_.angles[i]);
+    }
+    if (isPossible)
+    {
+        MotionUtilities::copy(jointRequest_, s, *theStiffnessSettings, Joints::firstLegJoint, Joints::rAnkleRoll);
+    }
+    return false;
 }
 
 void LIPMController::configureOnce()
@@ -115,6 +160,11 @@ void LIPMController::applyAnkleControl()
     left_pitch_d = leftAnkleVelFilter_.vel().y();
     right_roll_d = rightAnkleVelFilter_.vel().x();
     right_pitch_d = rightAnkleVelFilter_.vel().y();
+
+    leftRollD = left_roll_d;
+    leftPitchD = left_pitch_d;
+    rightRollD = right_roll_d;
+    rightPitchD = right_pitch_d;
 
     // static float timeNow = 0.f;
     // float angleOffset = cos(pi/2.f * timeNow) * 3_deg;

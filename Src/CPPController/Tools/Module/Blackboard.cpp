@@ -33,6 +33,8 @@
 #include "Representations/Sensing/FloatingBaseEstimation.h"
 #include "Representations/Configuration/MassCalibration.h"
 #include "Representations/MotionControl/FootTask.h"
+#include "Representations/Infrastructure/LEDRequest.h"
+#include "Representations/Communication/RobotInfo.h"
 
 static thread_local Blackboard *theInstance = nullptr;
 
@@ -118,6 +120,12 @@ Blackboard::Blackboard()
     theRightFootTask = new RightFootTask;
     insert(CLASS2STRING(RightFootTask));
 
+    theLEDRequest = new LEDRequest;
+    insert(CLASS2STRING(LEDRequest));
+
+    theRobotInfo = new RobotInfo;
+    insert(CLASS2STRING(RobotInfo));
+
     theStiffnessSettings = new StiffnessSettings;
     insert(CLASS2STRING(StiffnessSettings), configMap);
 
@@ -196,6 +204,10 @@ Blackboard::~Blackboard()
         delete (LeftFootTask *)theLeftFootTask;
     if (theRightFootTask != nullptr)
         delete (RightFootTask *)theRightFootTask;
+    if (theLEDRequest != nullptr)
+        delete (LEDRequest *)theLEDRequest;
+    if (theRobotInfo != nullptr)
+        delete (RobotInfo *)theRobotInfo;
 }
 
 Blackboard &Blackboard::getInstance()

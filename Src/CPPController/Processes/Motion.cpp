@@ -2,6 +2,7 @@
 #include "Motion.h"
 #include "Representations/MotionControl/HeadMotionRequest.h"
 #include "Representations/MotionControl/HeadMotionEngineOutput.h"
+#include "Representations/Infrastructure/LEDRequest.h"
 #include "Tools/Module/BlackboardThread.h"
 
 void Motion::tick()
@@ -80,6 +81,10 @@ void Motion::receive()
     MotionRequest *_theMotionRequest = (MotionRequest *)Blackboard::getInstance().theMotionRequest;
     RepresentationTemplate<MotionRequest> *recvMotionRequest = (RepresentationTemplate<MotionRequest> *)blackboard->theMotionRequest;
     *_theMotionRequest = recvMotionRequest->read();
+
+    LEDRequest *_theLEDRequest = (LEDRequest *)Blackboard::getInstance().theLEDRequest;
+    RepresentationTemplate<LEDRequest> *recvLEDRequest = (RepresentationTemplate<LEDRequest> *)blackboard->theLEDRequest;
+    *_theLEDRequest = recvLEDRequest->read();
 }
 
 void Motion::test()
