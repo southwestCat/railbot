@@ -15,9 +15,9 @@ class LIPMControllerBase
 {
 public:
     REQUIRES_REPRESENTATION(InertialData);
-    REQUIRES_REPRESENTATION(RobotDimensions);
     REQUIRES_REPRESENTATION(FrameInfo);
     
+    USES_REPRESENTATION(RobotDimensions);
     USES_REPRESENTATION(LeftFootTask);
     USES_REPRESENTATION(RightFootTask);
     USES_REPRESENTATION(NetWrenchEstimation);
@@ -53,6 +53,8 @@ private:
     LowPassVelocityFilter<Vector2f> leftAnkleVelFilter_;
     LowPassVelocityFilter<Vector2f> rightAnkleVelFilter_;
     Stabilizer stabilizer_;
+
+    JointRequest jointRequest_;
 
 private:
     static constexpr float FOOT_DAMPING_ADMITTANCE_K_TauX = 0.001f;

@@ -237,5 +237,305 @@ Vector3f Stabilizer::computeZMP(const sva::ForceVec &wrench) const
 void Stabilizer::run()
 {
     update();
-    printf("In Stabilizer. \n");
+
+    resetPendulum();
+    configureContact();
+
+    checkGains();
+    checkInTheAir(); // void
+    updateSupportFootGains();
+
+    std::cout << leftFootContact.t() << std::endl << std::endl;
+    return;
+    updateZMPFrame();
+
+    sva::ForceVec desiredWrench = computeDesiredWrench();
+
+    distributeWrench(desiredWrench);
+    updateCoMTaskZMPCC();
+    updateFootForceDifferenceControl();
+}
+
+sva::ForceVec Stabilizer::computeDesiredWrench()
+{
+    sva::ForceVec desiredWrench;
+    if (model_ == TemplateModel::LinearInvertedPendulum)
+    {
+        desiredWrench = computeLIPDesiredWrench();
+    }
+    else
+    {
+        desiredWrench = computeVHIPDesiredWrench();
+    }
+    return desiredWrench;
+}
+
+sva::ForceVec Stabilizer::computeLIPDesiredWrench()
+{
+    float omega = pendulum_.omega();
+    Vector3f comError = pendulum_.com() - measuredCoM_;
+    Vector3f comdError = pendulum_.comd() - measuredCoMd_;
+
+    dcmError_ = comError + comdError / omega;
+    dcmError_.z() = 0.f;
+
+    zmpError_ = pendulum_.zmp() - measuredZMP_;
+
+    zmpError_.z() = 0.f;
+    dcmDerivator_.update(omega * (dcmError_ - zmpError_));
+    dcmIntegrator_.append(dcmError_);
+
+    dcmAverageError_ = dcmIntegrator_.eval();
+    dcmVelError_ = dcmDerivator_.eval();
+
+    Vector3f desiredCoMAccel = pendulum_.comdd();
+    desiredCoMAccel += omega * (dcmPropGain_ * dcmError_ + comdError);
+    desiredCoMAccel += omega * dcmIntegralGain_ * dcmAverageError_;
+    desiredCoMAccel += omega * dcmDerivGain_ * dcmVelError_;
+
+    Vector3f desiredForce = mass_ / 1000.f * (desiredCoMAccel - Constants::gravity) / 1000.f;
+
+    return {measuredCoM_.cross(desiredForce) / 1000.f, desiredForce};
+}
+
+sva::ForceVec Stabilizer::computeVHIPDesiredWrench()
+{
+    // float vrpGain = dcmGain_ + 1.f;
+    // float refOmega = pendulum_.omega();
+    // float refLambda = refOmega * refOmega;
+    // Vector3f comError = measuredCoM_ - pendulum_.com();
+
+    return sva::ForceVec();
+}
+
+void Stabilizer::distributeWrench(const sva::ForceVec &desiredWrench)
+{
+    const RobotModel &model = *theRobotModel;
+    const sva::PTransform &WTO = theFloatingBaseEstimation->WTO;
+    //! World frame in left contact frame.
+    const sva::PTransform &X_lc_0 = leftFootContact.poseW().inv().toMeter();
+    //! World frame in right contact frame.
+    const sva::PTransform &X_rc_0 = rightFootContact.poseW().inv().toMeter();
+    //! World frame in left ankle frame.
+    const sva::PTransform &X_lankle_0 = leftFootContact.anklePose(model, WTO).inv().toMeter();
+    //! World frame in right ankle frame.
+    const sva::PTransform &X_rankle_0 = rightFootContact.anklePose(model, WTO).inv().toMeter();
+
+    constexpr unsigned NB_VAR = 6 + 6;
+    constexpr unsigned COST_DIM = 6 + NB_VAR + 1;
+    MatrixXd A;
+    VectorXd b;
+    A.setZero(COST_DIM, NB_VAR);
+    b.setZero(COST_DIM);
+
+    // |w_l_0 + w_r_0 - desiredWrench|^2
+    auto A_net = A.block<6, 12>(0, 0);
+    auto b_net = b.segment<6>(0);
+    A_net.block<6, 6>(0, 0) = Matrix6d::Identity();
+    A_net.block<6, 6>(0, 6) = Matrix6d::Identity();
+    b_net = desiredWrench.vector().cast<double>();
+
+    // |ankle torques|^2
+    auto A_lankle = A.block<6, 6>(6, 0);
+    auto A_rankle = A.block<6, 6>(12, 6);
+    // anisotropic weights:  taux, tauy, tauz,   fx,   fy,   fz;
+    A_lankle.diagonal() << 1., 1., 1e-4, 1e-3, 1e-3, 1e-4;
+    A_rankle.diagonal() << 1., 1., 1e-4, 1e-3, 1e-3, 1e-4;
+
+    A_lankle *= X_lankle_0.dualMatrix().cast<double>();
+    A_rankle *= X_rankle_0.dualMatrix().cast<double>();
+
+    // |(1 - lfr) * w_l_lc.force().z() - lfr * w_r_rc.force().z()|^2
+    double lfr = leftFootRatio_;
+    auto A_fratio = A.block<1, 12>(18, 0);
+    A_fratio.block<1, 6>(0, 0) = (1 - lfr) * X_lc_0.dualMatrix().cast<double>().bottomRows<1>();
+    A_fratio.block<1, 6>(0, 6) = -lfr * X_rc_0.dualMatrix().cast<double>().bottomRows<1>();
+
+    // Apply weights
+    A_net *= (double)fdqpWeights_.netWrenchSqrt;
+    b_net *= (double)fdqpWeights_.netWrenchSqrt;
+    A_lankle *= (double)fdqpWeights_.ankleTorqueSqrt;
+    A_rankle *= (double)fdqpWeights_.ankleTorqueSqrt;
+
+    A_fratio *= (double)fdqpWeights_.forceRatioSqrt;
+
+    MatrixXd Q = A.transpose() * A;
+    VectorXd c = -A.transpose() * b;
+
+    constexpr unsigned NB_CONS = 16 + 16 + 2;
+    Eigen::Matrix<double, NB_CONS, NB_VAR> A_ineq;
+    Eigen::VectorXd b_ineq;
+    A_ineq.setZero(NB_CONS, NB_VAR);
+    b_ineq.setZero(NB_CONS);
+    // CWC * w_l_lc <= 0
+    A_ineq.block<16, 6>(0, 0) = wrenchFaceMatrix_.cast<double>() * X_lc_0.dualMatrix().cast<double>();
+    // b_ineq.segment<16>(0) is already zero
+    // CWC * w_r_rc <= 0
+    A_ineq.block<16, 6>(16, 6) = wrenchFaceMatrix_.cast<double>() * X_rc_0.dualMatrix().cast<double>();
+    // b_ineq.segment<16>(16) is already zero
+    // w_l_lc.force().z() >= MIN_DSP_FZ
+    A_ineq.block<1, 6>(32, 0) = -X_lc_0.dualMatrix().cast<double>().bottomRows<1>();
+    b_ineq(32) = -MIN_DSP_FZ;
+    // w_r_rc.force().z() >= MIN_DSP_FZ
+    A_ineq.block<1, 6>(33, 6) = -X_rc_0.dualMatrix().cast<double>().bottomRows<1>();
+    b_ineq(33) = -MIN_DSP_FZ;
+
+    qpSolver_.problem(NB_VAR, 0, NB_CONS);
+    MatrixXd A_eq(0, 0);
+    VectorXd b_eq;
+    b_eq.resize(0);
+
+    bool solutionFound = qpSolver_.solve(Q, c, A_eq, b_eq, A_ineq, b_ineq);
+    if (!solutionFound)
+    {
+        std::cout << "DS Force distribution QP: solver found no solution." << std::endl;
+        return;
+    }
+
+    VectorXd x = qpSolver_.result();
+
+    sva::ForceVec w_0_l(x.cast<float>().segment<3>(0), x.cast<float>().segment<3>(3));
+    sva::ForceVec w_0_r(x.cast<float>().segment<3>(6), x.cast<float>().segment<3>(9));
+    distribWrench_ = w_0_l + w_0_r;
+
+    sva::ForceVec w_lc_l = X_lc_0.dualMul(w_0_l);
+    sva::ForceVec w_rc_r = X_rc_0.dualMul(w_0_r);
+    Vector3f e_z = {0.f, 0.f, 1.f};
+    Vector2f leftCoP = (e_z.cross(w_lc_l.couple()) / w_lc_l.force()(2)).head<2>();
+    Vector2f rightCoP = (e_z.cross(w_rc_r.couple()) / w_rc_r.force()(2)).head<2>();
+
+    leftCoP.x() *= 1000.f;
+    leftCoP.y() *= 1000.f;
+    rightCoP.x() *= 1000.f;
+    rightCoP.y() *= 1000.f;
+
+    theLeftFootTask->targetCoP = leftCoP;
+    theRightFootTask->targetCoP = rightCoP;
+    theLeftFootTask->targetForce = w_lc_l.force();
+    theRightFootTask->targetForce = w_rc_r.force();
+}
+
+void Stabilizer::saturateWrench(const sva::ForceVec &desiredWrench, FootTask &footTask)
+{
+    constexpr unsigned NB_CONS = 16;
+    constexpr unsigned NB_VAR = 6;
+    const sva::PTransform &X_0_c = (contactState_ == Contact::ContactState::LeftSupport) ? leftFootContact.poseW().inv() : rightFootContact.poseW().inv();
+    Matrix6d Q = Matrix6d::Identity();
+    Vector6d c = -desiredWrench.vector().cast<double>();
+
+    MatrixXd A_ineq = wrenchFaceMatrix_.cast<double>() * X_0_c.dualMatrix().cast<double>();
+    VectorXd b_ineq;
+    b_ineq.setZero(NB_CONS);
+
+    qpSolver_.problem(NB_VAR, 0, NB_CONS);
+    MatrixXd A_eq(0, 0);
+    VectorXd b_eq;
+    b_eq.resize(0);
+
+    bool solutionFound = qpSolver_.solve(Q, c, A_eq, b_eq, A_ineq, b_ineq);
+    if (!solutionFound)
+    {
+        std::cout << "SS force distribution QP: solver found no solution." << std::endl;
+        return;
+    }
+
+    VectorXd x = qpSolver_.result();
+    sva::ForceVec w_0(x.head<3>().cast<float>(), x.tail<3>().cast<float>());
+    sva::ForceVec w_c = X_0_c.dualMul(w_0);
+    Vector3f e_z = {0.f, 0.f, 1.f};
+    Vector2f cop = (e_z.cross(w_c.couple()) / w_c.force()(2)).head<2>();
+
+    footTask.targetCoP = cop;
+    footTask.targetForce = w_c.force();
+    distribWrench_ = w_0;
+}
+
+void Stabilizer::updateCoMTaskZMPCC()
+{
+    if (zmpccOnlyDS_ && contactState_ != Contact::ContactState::DoubleSupport)
+    {
+        zmpccCoMAccel_.setZero();
+        zmpccCoMVel_.setZero();
+        zmpccIntegrator_.add(Vector3f::Zero(), dt_);
+    }
+    else
+    {
+        auto distribZMP = computeZMP(distribWrench_);
+        zmpccError_ = distribZMP - measuredZMP_;
+        const Matrix3f &R_0_c = zmpFrame_.inv().rotation();
+        Matrix3f R_c_0 = R_0_c.transpose();
+        Vector3f comAdmittance = {comAdmittance_.x(), comAdmittance_.y(), 0.f};
+        Vector3f newVel = R_c_0 * (comAdmittance.cwiseProduct(R_0_c * zmpccError_));
+        Vector3f newAccel = (newVel - zmpccCoMVel_) / dt_;
+        zmpccIntegrator_.add(newVel, dt_);
+        zmpccCoMVel_ = newVel;
+        zmpccCoMAccel_ = newAccel;
+    }
+    zmpccCoMOffset_ = zmpccIntegrator_.eval();
+    // comTask->com(pendulum_.com() + zmpccCoMOffset_);
+    // comTask->refVel(pendulum_.comd() + zmpccCoMVel_);
+    // comTask->refAccel(pendulum_.comdd() + zmpccCoMAccel_);
+}
+
+void Stabilizer::updateFootForceDifferenceControl()
+{
+    if (contactState_ != Contact::ContactState::DoubleSupport)
+    {
+        dfzForceError_ = 0.f;
+        dfzHeightError_ = 0.f;
+        vdcHeightError_ = 0.f;
+        // leftFootTask->refVelB({{0., 0., 0.}, {0., 0., 0.}});
+        // rightFootTask->refVelB({{0., 0., 0.}, {0., 0., 0.}});
+        theLeftFootTask->refVelB = {{0.f, 0.f, 0.f}, {0.f, 0.f, 0.f}};
+        theRightFootTask->refVelB = {{0.f, 0.f, 0.f}, {0.f, 0.f, 0.f}};
+        return;
+    }
+    float LFz_d = theLeftFootTask->targetWrench.force().z();
+    float RFz_d = theRightFootTask->targetWrench.force().z();
+    float LFz = theLeftFootTask->measuredWrench.force().z();
+    float RFz = theRightFootTask->measuredWrench.force().z();
+    dfzForceError_ = (LFz_d - RFz_d) - (LFz - RFz);
+
+    float dz_ctrl = dfzAdmittance_ * dfzForceError_;
+    sva::MotionVec velF = {{0.f, 0.f, 0.f}, {0.f, 0.f, dz_ctrl}};
+    theLeftFootTask->refVelB = -0.5f * velF;
+    theRightFootTask->refVelB = 0.5f * velF;
+}
+
+void Stabilizer::updateState(const Vector3f &com, const Vector3f &comd, const sva::ForceVec &wrench, float leftFootRatio)
+{
+    leftFootRatio_ = leftFootRatio;
+    measuredCoM_ = com;
+    measuredCoMd_ = comd;
+    measuredWrench_ = wrench;
+}
+
+void Stabilizer::resetPendulum()
+{
+    if (pendulum_.needReset())
+    {
+        //! reset com height, must be done before reset pendulum.
+        const Vector3f &OPcom = theRobotModel->centerOfMass;
+        float comHeight = OPcom.z() + MotionConfig::hipHeight;
+        pendulum_.comHeight() = comHeight;
+        //! reset pendulum
+        Vector3f com = theFloatingBaseEstimation->WTB.translation();
+        pendulum_.reset(com, {0.f, 0.f, 0.f}, {0.f, 0.f, 0.f});
+        //! run once
+        pendulum_.needReset() = false;
+    }
+}
+
+void Stabilizer::configureContact()
+{
+    static bool once = true;
+    if (once)
+    {
+        const float halfLength = theRobotDimensions->halfSoleLength;
+        const float halfWidth = theRobotDimensions->halfSoleWidth;
+        const sva::PTransform WTO = theFloatingBaseEstimation->WTO;
+        leftFootContact.calcPose(*theRobotModel, halfLength, halfWidth, Contact::SurfaceType::LeftFootContact, WTO);
+        rightFootContact.calcPose(*theRobotModel, halfLength, halfWidth, Contact::SurfaceType::RightFootContact, WTO);
+        once = false;
+    }
 }
