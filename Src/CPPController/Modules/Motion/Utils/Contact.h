@@ -37,9 +37,9 @@ public:
     Vector3f lateral() const { return pose_.rotation().row(1); }
     Vector3f normal() const { return pose_.rotation().row(2); }
     const Vector3f &position() const { return pose_.translation(); }
-    const Vector3f &b() const { return lateral(); }
-    const Vector3f &n() const { return normal(); }
-    const Vector3f &t() const { return sagital(); }
+    Vector3f b() const { return lateral(); }
+    Vector3f n() const { return normal(); }
+    Vector3f t() const { return sagital(); }
     const Vector3f &p() const { return position(); }
     float x() const { return position()(0); }
     float y() const { return position()(1); }
