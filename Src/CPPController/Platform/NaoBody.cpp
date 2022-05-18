@@ -143,3 +143,23 @@ float *NaoBody::getSensors()
     assert(naoBodyAccess.shData != (SharedData*)MAP_FAILED);
     return naoBodyAccess.shData->sensors[naoBodyAccess.shData->readingSensors];
 }
+
+float NaoBody::getCPUTemperature()
+{
+    float cpu = 0.f;
+
+    if (!fdCpuTemp)
+    {
+        fdCpuTemp = fopen("/sys/class/hwmon/hwmon1/temp2_input", "r");
+        assert(fdCpuTemp);
+    }
+    if (fdCpuTemp)
+    {
+        int r = fscanf(fdCpuTemp, "%f", &cpu);
+        fclose(fdCpuTemp);
+        fdCpuTemp = nullptr;
+    }
+    cpu /= 1000.f;
+
+    return cpu;
+}

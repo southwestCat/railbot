@@ -45,4 +45,7 @@ public:
 private:
     void update();
     void send();
+
+private:
+    unsigned lastBodyTemperatureReadTime = 0;
 };

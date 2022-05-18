@@ -153,6 +153,16 @@ void ModuleManager::updateRepresentation(std::string representation)
             Blackboard::getInstance().updatedRepresentation[CLASS2STRING(KeyStates)] = true;
         }
     }
+    else if (representation == CLASS2STRING(SystemSensorData))
+    {
+        if (!Blackboard::getInstance().updatedRepresentation[CLASS2STRING(SystemSensorData)])
+        {
+            SystemSensorData *_theSystemSensorData = (SystemSensorData *)Blackboard::getInstance().theSystemSensorData;
+            assert(_theSystemSensorData != nullptr);
+            NaoProvider::getInstance().update(*_theSystemSensorData);
+            Blackboard::getInstance().updatedRepresentation[CLASS2STRING(SystemSensorData)] = true;
+        }
+    }
     else if (representation == CLASS2STRING(InertialData))
     {
         UPDATE_REPRESENTATION_WITH_PROVIDER(InertialData, InertialDataProvider);

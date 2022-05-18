@@ -1,9 +1,12 @@
 #include "LEDHandler.h"
 #include "Tools/Module/ModuleManager.h"
 
+#include <iostream>
+
 void LEDHandler::update()
 {
     UPDATE_REPRESENTATION(FrameInfo);
+    UPDATE_REPRESENTATION(SystemSensorData);
 }
 
 void LEDHandler::update(LEDRequest &ledRequest)
@@ -13,10 +16,16 @@ void LEDHandler::update(LEDRequest &ledRequest)
     //! reset
     for (int led = 0; led < LEDRequest::numOfLEDs; led++)
         ledRequest.ledStates[led] = LEDRequest::off;
-    
+
     setLeftEye(ledRequest);
     setRightEye(ledRequest);
+    
     setChestButton(ledRequest);
+
+    setLeftEar(ledRequest);
+    setRightEar(ledRequest);
+
+    setHead(ledRequest);
 }
 
 void LEDHandler::setEyeColor(LEDRequest &ledRequest, bool left, EyeColor col, LEDRequest::LEDState s)
@@ -108,5 +117,47 @@ void LEDHandler::setChestButton(LEDRequest &ledRequest)
         default:
             break;
         }
+    }
+}
+
+void LEDHandler::setBatteryLevelInEar(LEDRequest &ledRequest, LEDRequest::LED baseLED)
+{
+    int onLEDs = std::min(static_cast<int>(theSystemSensorData->batteryLevel / 0.1f), 9);
+
+    for (int i = 0; i <= onLEDs; ++i)
+        ledRequest.ledStates[baseLED + i] = LEDRequest::on;
+}
+
+void LEDHandler::setRightEar(LEDRequest &ledRequest)
+{
+    // right ear -> battery
+    setBatteryLevelInEar(ledRequest, LEDRequest::earsRight0Deg);
+}
+
+void LEDHandler::setLeftEar(LEDRequest &ledRequest)
+{
+    setBatteryLevelInEar(ledRequest, LEDRequest::earsLeft0Deg);
+}
+
+void LEDHandler::setHead(LEDRequest &ledRequest)
+{
+    if (theSystemSensorData->batteryLevel > 0.9f)
+    {
+        for (int i = LEDRequest::firstHeadLED; i <= LEDRequest::lastHeadLED; i++)
+        {
+            ledRequest.ledStates[i] = LEDRequest::on;
+        }
+    }
+    else if (theSystemSensorData->batteryCharging)
+    {
+        for (LEDRequest::LED i = LEDRequest::firstHeadLED; i <= LEDRequest::lastHeadLED; i = LEDRequest::LED(unsigned(i) + 1))
+        {
+            ledRequest.ledStates[i] = LEDRequest::off;
+        }
+        ++chargingLED %= (LEDRequest::numOfHeadLEDs * chargingLightSlowness);
+        const LEDRequest::LED currentLED = headLEDCircle[chargingLED / chargingLightSlowness];
+        const LEDRequest::LED nextLED = headLEDCircle[(chargingLED / chargingLightSlowness + 1u) % LEDRequest::numOfHeadLEDs];
+        ledRequest.ledStates[currentLED] = LEDRequest::on;
+        ledRequest.ledStates[nextLED] = LEDRequest::on;
     }
 }

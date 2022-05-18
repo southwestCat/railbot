@@ -159,4 +159,17 @@ void NaoProvider::update(KeyStates &keyStates)
 void NaoProvider::update(SystemSensorData &systemSensorData)
 {
     UPDATE_REPRESENTATION(FrameInfo);
+
+    float *sensors = naoBody.getSensors();
+
+    if (theFrameInfo->getTimeSince(lastBodyTemperatureReadTime) * 1000 > 10)
+    {
+        lastBodyTemperatureReadTime = theFrameInfo->time;
+        systemSensorData.cpuTemperature = naoBody.getCPUTemperature();
+    }
+    systemSensorData.batteryCurrent = sensors[batteryCurrentSensor];
+    systemSensorData.batteryLevel = sensors[batteryChargeSensor];
+    systemSensorData.batteryTemperature = sensors[batteryTemperatureSensor];
+    const short statusValue = static_cast<short>(sensors[batteryStatusSensor]);
+    systemSensorData.batteryCharging = statusValue & 0b10000000;
 }
