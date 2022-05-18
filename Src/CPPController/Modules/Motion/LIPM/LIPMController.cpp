@@ -15,6 +15,7 @@ void LIPMController::update()
 void LIPMController::update(StabilizerJointRequest &s)
 {
     update();
+    
 
     if (theLegMotionSelection->targetMotion != MotionRequest::balance)
     {

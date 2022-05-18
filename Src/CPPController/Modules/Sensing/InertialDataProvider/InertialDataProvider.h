@@ -7,6 +7,8 @@ class InertialDataProviderBase
 {
 public:
     REQUIRES_REPRESENTATION(InertialSensorData);
+
+    // USES_REPRESENTATION();
 };
 
 class InertialDataProvider : public InertialDataProviderBase
