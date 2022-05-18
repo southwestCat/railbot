@@ -385,7 +385,7 @@ void Stabilizer::distributeWrench(const sva::ForceVec &desiredWrench)
     bool solutionFound = qpSolver_.solve(Q, c, A_eq, b_eq, A_ineq, b_ineq);
     if (!solutionFound)
     {
-        std::cout << "DS Force distribution QP: solver found no solution." << std::endl;
+        // std::cout << "DS Force distribution QP: solver found no solution." << std::endl;
         return;
     }
 
@@ -432,7 +432,7 @@ void Stabilizer::saturateWrench(const sva::ForceVec &desiredWrench, FootTask &fo
     bool solutionFound = qpSolver_.solve(Q, c, A_eq, b_eq, A_ineq, b_ineq);
     if (!solutionFound)
     {
-        std::cout << "SS force distribution QP: solver found no solution." << std::endl;
+        // std::cout << "SS force distribution QP: solver found no solution." << std::endl;
         return;
     }
 

@@ -8,8 +8,6 @@ StandEngine::StandEngine()
     {
         targetJoint.angles[i] = 0_deg;
     }
-    targetJoint.angles[Joints::lHipPitch] = -3_deg;
-    targetJoint.angles[Joints::rHipPitch] = -3_deg;
 }
 
 void StandEngine::update()

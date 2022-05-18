@@ -10,6 +10,8 @@ void LIPMController::update()
     UPDATE_REPRESENTATION(FrameInfo);
     UPDATE_REPRESENTATION(RobotModel);
     UPDATE_REPRESENTATION(JointAngles);
+
+    // printf("%3.3f\n", (float)toDegrees(theJointAngles->angles[Joints::lHipPitch]));
 }
 
 void LIPMController::update(StabilizerJointRequest &s)
@@ -109,6 +111,9 @@ void LIPMController::updateRealFromKinematics()
     realCom_ = theFloatingBaseEstimation->WTB.translation();
     comVelFilter_.update(realCom_);
     realComd_ = comVelFilter_.vel();
+
+    // std::cout << realCom_.transpose() << std::endl;
+    // std::cout << theRobotModel->centerOfMass.transpose() << std::endl;
 }
 
 Contact LIPMController::supportContact()

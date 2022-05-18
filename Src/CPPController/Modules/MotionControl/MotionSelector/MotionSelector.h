@@ -23,7 +23,7 @@ public:
 public:
     MotionSelectorBase()
     {
-        interpolationTimes.fill(300.f);
+        interpolationTimes.fill(100.f);
     }
 
     int playDeadDelay = 2000;

@@ -19,6 +19,16 @@ void InertialDataProvider::update()
 {
     UPDATE_REPRESENTATION(InertialSensorData);
     UPDATE_REPRESENTATION(IMUCalibration);
+
+    // float ax = theInertialSensorData->acc.x();
+    // float ay = theInertialSensorData->acc.y();
+    // float az = theInertialSensorData->acc.z();
+    // printf("acc: %3.3f %3.3f %3.3f \n\n", ax, ay, az);
+
+    // float gx = theInertialSensorData->gyro.x();
+    // float gy = theInertialSensorData->gyro.y();
+    // float gz = theInertialSensorData->gyro.z();
+    // printf("gyro: %3.3f %3.3f %3.3f \n\n", gx, gy, gz);
 }
 
 void InertialDataProvider::update(InertialData &inertialData)

@@ -32,7 +32,6 @@ void FloatingBaseObserver::estimatePosition()
 {
     const Vector3f &com = theRobotModel->centerOfMass;
     sva::PTransform OTA = getAnchorFrame();
-    OTA = getAnchorFrame();
     sva::PTransform OTB = sva::PTransform(Matrix3f::Identity(), com);
     sva::PTransform ATB = OTA.inv() * OTB;
     Vector3f APB = ATB.translation();
