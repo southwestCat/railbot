@@ -9,6 +9,7 @@
 #include "Representations/Infrastructure/SensorData/FsrSensorData.h"
 #include "Representations/Infrastructure/SensorData/KeyStates.h"
 #include "Representations/Infrastructure/LEDRequest.h"
+#include "Representations/Infrastructure/SensorData/SystemSensorData.h"
 #include "Tools/Module/Blackboard.h"
 
 class NaoProviderBase
@@ -39,6 +40,7 @@ public:
     void update(InertialSensorData &inertialSensorData);
     void update(JointSensorData &jointSensorData);
     void update(KeyStates &keyStates);
+    void update(SystemSensorData &s);
 
 private:
     void update();

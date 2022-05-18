@@ -36,6 +36,7 @@
 #include "Representations/Infrastructure/LEDRequest.h"
 #include "Representations/Communication/RobotInfo.h"
 #include "Representations/Configuration/IMUCalibration.h"
+#include "Representations/Infrastructure/SensorData/SystemSensorData.h"
 
 static thread_local Blackboard *theInstance = nullptr;
 
@@ -127,6 +128,9 @@ Blackboard::Blackboard()
     theRobotInfo = new RobotInfo;
     insert(CLASS2STRING(RobotInfo));
 
+    theSystemSensorData = new SystemSensorData;
+    insert(CLASS2STRING(SystemSensorData));
+
     theStiffnessSettings = new StiffnessSettings;
     insert(CLASS2STRING(StiffnessSettings), configMap);
 
@@ -214,6 +218,8 @@ Blackboard::~Blackboard()
         delete (RobotInfo *)theRobotInfo;
     if (theIMUCalibration != nullptr)
         delete (IMUCalibration *)theIMUCalibration;
+    if (theSystemSensorData != nullptr)
+        delete (SystemSensorData *)theSystemSensorData;
 }
 
 Blackboard &Blackboard::getInstance()

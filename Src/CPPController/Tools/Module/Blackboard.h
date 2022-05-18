@@ -63,6 +63,7 @@ public:
     void *theLEDRequest = nullptr;
     void *theRobotInfo = nullptr;
     void *theIMUCalibration = nullptr;
+    void *theSystemSensorData = nullptr;
     
     //! LOG
     std::vector<float> logLeftPitchd;

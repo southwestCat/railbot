@@ -155,3 +155,8 @@ void NaoProvider::update(KeyStates &keyStates)
         keyStates.pressed[i] = sensors[j] != 0;
     }
 }
+
+void NaoProvider::update(SystemSensorData &systemSensorData)
+{
+    UPDATE_REPRESENTATION(FrameInfo);
+}
