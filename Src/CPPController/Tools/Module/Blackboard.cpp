@@ -35,6 +35,7 @@
 #include "Representations/MotionControl/FootTask.h"
 #include "Representations/Infrastructure/LEDRequest.h"
 #include "Representations/Communication/RobotInfo.h"
+#include "Representations/Configuration/IMUCalibration.h"
 
 static thread_local Blackboard *theInstance = nullptr;
 
@@ -140,6 +141,9 @@ Blackboard::Blackboard()
 
     theMassCalibration = new MassCalibration;
     insert(CLASS2STRING(MassCalibration), configMap);
+
+    theIMUCalibration = new IMUCalibration;
+    insert(CLASS2STRING(IMUCalibration), configMap);
 }
 
 Blackboard::~Blackboard()
@@ -208,6 +212,8 @@ Blackboard::~Blackboard()
         delete (LEDRequest *)theLEDRequest;
     if (theRobotInfo != nullptr)
         delete (RobotInfo *)theRobotInfo;
+    if (theIMUCalibration != nullptr)
+        delete (IMUCalibration *)theIMUCalibration;
 }
 
 Blackboard &Blackboard::getInstance()

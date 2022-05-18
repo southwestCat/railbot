@@ -75,7 +75,7 @@ private:
     static constexpr float FOOT_DAMPING_ADMITTANCE_K_TauY = 0.f;
 
     unsigned startTime;
-    const int readyPostureTime = 2000;
+    const unsigned readyPostureTime = 2000;
     float initHeight = 0.f;
     const int hipHeight = MotionConfig::hipHeight;
     JointAngles startJoints_;

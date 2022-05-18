@@ -15,7 +15,6 @@ HeadMotionEngine::HeadMotionEngine()
 void HeadMotionEngine::update()
 {
     UPDATE_REPRESENTATION(FrameInfo);
-    UPDATE_REPRESENTATION(HeadMotionRequest);
     UPDATE_REPRESENTATION(JointAngles);
 }
 

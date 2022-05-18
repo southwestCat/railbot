@@ -11,10 +11,9 @@ class HeadMotionEngineBase
 {
 public:
     REQUIRES_REPRESENTATION(FrameInfo);
-    REQUIRES_REPRESENTATION(HeadMotionRequest);
     REQUIRES_REPRESENTATION(JointAngles);
 
-
+    USES_REPRESENTATION(HeadMotionRequest);
     USES_REPRESENTATION(HeadLimits);
 };
 

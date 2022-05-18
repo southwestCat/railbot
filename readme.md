@@ -35,7 +35,7 @@
 
 5. 使用wpa_passphrase 生成连接wifi的配置文件，`wpa_passphrase [ssid] [password] >> file.config` 如wifi的ssid为tjrg3009，密码是 tjrg3009，保存配置文件到`~/wpa_supplicant.conf`
     ```bash
-    wpa_passphrase tjrg3009 tjrg3009 >> ~/wps_supplicant.conf
+    wpa_passphrase tjrg3009 tjrg3009 >> /home/nao/wps_supplicant.conf
     ```
 6. 使用`wpa_supplicant`连接`wifi`
    ```bash

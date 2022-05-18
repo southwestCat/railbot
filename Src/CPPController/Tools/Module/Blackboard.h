@@ -62,6 +62,7 @@ public:
     void *theRightFootTask = nullptr;
     void *theLEDRequest = nullptr;
     void *theRobotInfo = nullptr;
+    void *theIMUCalibration = nullptr;
     
     //! LOG
     std::vector<float> logLeftPitchd;

@@ -1,14 +1,14 @@
 #pragma once
 
 #include "Representations/Sensing/InertialData.h"
+#include "Representations/Configuration/IMUCalibration.h"
 #include "Tools/Module/Blackboard.h"
 
 class InertialDataProviderBase
 {
 public:
     REQUIRES_REPRESENTATION(InertialSensorData);
-
-    // USES_REPRESENTATION();
+    REQUIRES_REPRESENTATION(IMUCalibration);
 };
 
 class InertialDataProvider : public InertialDataProviderBase

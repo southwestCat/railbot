@@ -14,6 +14,7 @@
 #include "Modules/Motion/LIPM/LIPMController.h"
 #include "Modules/Sensing/RobotModelProvider/RobotModelProvider.h"
 #include "Modules/BehaviorControl/LEDHandler/LEDHandler.h"
+#include "Modules/Configurations/ConfigurationsProvider.h"
 
 #define UPDATE_REPRESENTATION_WITH_PROVIDER(representation, provider)                                           \
     if (!Blackboard::getInstance().updatedRepresentation[CLASS2STRING(representation)])                         \
@@ -24,6 +25,17 @@
         assert(_the##provider != nullptr);                                                                      \
         _the##provider->update(*_the##representation);                                                          \
         Blackboard::getInstance().updatedRepresentation[CLASS2STRING(representation)] = true;                   \
+    }
+
+#define UPDATE_CONFIGURATION_WITH_PROVIDER(representation, provider)                                            \
+    if (!Blackboard::getInstance().updatedConfig[CLASS2STRING(representation)])                                 \
+    {                                                                                                           \
+        representation *_the##representation = (representation *)Blackboard::getInstance().the##representation; \
+        assert(_the##representation != nullptr);                                                                \
+        provider *_the##provider = (provider *)ModuleManager::getInstance().the##provider;                      \
+        assert(_the##provider != nullptr);                                                                      \
+        _the##provider->update(*_the##representation);                                                          \
+        Blackboard::getInstance().updatedConfig[CLASS2STRING(representation)] = true;                           \
     }
 
 thread_local ModuleManager *ModuleManager::theInstance = nullptr;
@@ -46,6 +58,7 @@ ModuleManager::ModuleManager()
     theLIPMController = new LIPMController;
     theRobotModelProvider = new RobotModelProvider;
     theLEDHandler = new LEDHandler;
+    theConfigurationsProvider = new ConfigurationsProvider;
 }
 
 ModuleManager::~ModuleManager()
@@ -78,6 +91,8 @@ ModuleManager::~ModuleManager()
         delete (RobotModelProvider *)theRobotModelProvider;
     if (theLEDHandler != nullptr)
         delete (LEDHandler *)theLEDHandler;
+    if (theConfigurationsProvider != nullptr)
+        delete (ConfigurationsProvider *)theConfigurationsProvider;
 }
 
 void ModuleManager::setInstance(ModuleManager *instance)
@@ -198,9 +213,9 @@ void ModuleManager::updateRepresentation(std::string representation)
     {
         UPDATE_REPRESENTATION_WITH_PROVIDER(LEDRequest, LEDHandler);
     }
-    else if (representation == CLASS2STRING(HeadMotionRequest))
+    else if (representation == CLASS2STRING(IMUCalibration))
     {
-        // Modified in cognition
+        UPDATE_CONFIGURATION_WITH_PROVIDER(IMUCalibration, ConfigurationsProvider);
     }
     else
     {

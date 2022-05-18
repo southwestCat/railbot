@@ -32,4 +32,5 @@ private:
     void *theLIPMController = nullptr;
     void *theRobotModelProvider = nullptr;
     void *theLEDHandler = nullptr;
+    void *theConfigurationsProvider = nullptr;
 };
