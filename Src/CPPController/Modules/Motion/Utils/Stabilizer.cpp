@@ -250,8 +250,6 @@ void Stabilizer::run()
     distributeWrench(desiredWrench);
     updateCoMTaskZMPCC();
     updateFootForceDifferenceControl();
-
-    std::cout << theFrameInfo->time << std::endl;
 }
 
 sva::ForceVec Stabilizer::computeDesiredWrench()

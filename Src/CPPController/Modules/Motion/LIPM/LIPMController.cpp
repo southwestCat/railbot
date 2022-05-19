@@ -35,7 +35,7 @@ void LIPMController::update(StabilizerJointRequest &s)
     if (!readyPosture(s))
         return;
 
-    run();
+    run(s);
 }
 
 bool LIPMController::readyPosture(StabilizerJointRequest &s)
@@ -77,7 +77,7 @@ void LIPMController::configureOnce()
     }
 }
 
-void LIPMController::run()
+void LIPMController::run(StabilizerJointRequest &s)
 {
     //! Configure once.
     configureOnce();
@@ -101,8 +101,8 @@ void LIPMController::run()
     stabilizer_.run();
 
     //! Apply control
-    applyAnkleControl();
-    applyCoMControl();
+    applyAnkleControl(s);
+    // applyCoMControl(s);
 }
 
 void LIPMController::updateRealFromKinematics()
@@ -122,7 +122,7 @@ Contact LIPMController::supportContact()
     return Contact(0.f, 0.f, pose, Contact::SurfaceType::defaultContact);
 }
 
-void LIPMController::applyAnkleControl()
+void LIPMController::applyAnkleControl(StabilizerJointRequest &s)
 {
     float left_roll_d;
     float left_pitch_d;
@@ -180,11 +180,13 @@ void LIPMController::applyAnkleControl()
     // jointRequest.angles[Joints::rAnklePitch] += angleOffset * dt_;
 
     // jointRequest.angles[Joints::lAnkleRoll] += left_roll_d * dt_;
-    // jointRequest.angles[Joints::lAnklePitch] += left_pitch_d * dt_;
+    // s.angles[Joints::lAnklePitch] += left_pitch_d * dt_;
     // jointRequest.angles[Joints::rAnkleRoll] += right_roll_d * dt_;
-    // jointRequest.angles[Joints::rAnklePitch] += right_pitch_d * dt_;
+    // s.angles[Joints::rAnklePitch] += right_pitch_d * dt_;
 
-    // log.push_back(left_pitch_d);
+    // printf(">\n");
+    // printf("left: %3.3f right: %3.3f\n", left_pitch_d, right_pitch_d);
+    // printf("----\n\n");
 
     // printf(">\n");
     // printf("left:\n");
@@ -201,7 +203,7 @@ void LIPMController::applyAnkleControl()
     // printf("----\n\n");
 }
 
-void LIPMController::applyCoMControl()
+void LIPMController::applyCoMControl(StabilizerJointRequest &s)
 {
     const sva::PTransform &WTB = theFloatingBaseEstimation->WTB;
     const sva::PTransform &OTA = theFloatingBaseEstimation->OTA;
@@ -212,7 +214,8 @@ void LIPMController::applyCoMControl()
 
     float comK = 0.5f;
     static float timeNow = 0.f;
-    float comx_desire = 5.f * sin(pi / 4.f * timeNow - pi / 2.f) + 5.f;
+    // float comx_desire = 5.f * sin(pi / 4.f * timeNow - pi / 2.f) + 5.f;
+    float comx_desire = 0.f;
     timeNow += dt_;
     float comx_err = comx_desire - comx;
 

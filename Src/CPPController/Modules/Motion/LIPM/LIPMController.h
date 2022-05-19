@@ -42,12 +42,12 @@ public:
 
 private:
     void update();
-    void run();
+    void run(StabilizerJointRequest &s);
     void configureOnce();
     void updateRealFromKinematics();
     Contact supportContact();
-    void applyAnkleControl();
-    void applyCoMControl();
+    void applyAnkleControl(StabilizerJointRequest &s);
+    void applyCoMControl(StabilizerJointRequest &s);
     bool readyPosture(StabilizerJointRequest &s);
 
 private:
