@@ -28,7 +28,7 @@ define_option(Root)
         {
             theRobotInfo->state = STATE_SET;
             LookForward();
-            Stand();
+            SpecialAction(SpecialActionRequest::stand);
         }
     }
 

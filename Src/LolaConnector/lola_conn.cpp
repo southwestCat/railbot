@@ -161,13 +161,19 @@ void extractSensors(float *sensors, const LolaSensorFrame &sensor_frame)
 
 void setEyeLeds(float *request)
 {
+    constexpr int eyeBlink = 200;
     static int i = 0;
-    if (i < 10)
+    if (i < eyeBlink)
     {
-        request[faceLedBlueLeft135DegActuator - faceLedRedLeft0DegActuator] = 1.f;
-        request[faceLedBlueRight225DegActuator - faceLedRedLeft0DegActuator] = 1.f;
+        request[faceLedBlueLeft135DegActuator - faceLedRedLeft0DegActuator] = (float)i / (float)eyeBlink;
+        request[faceLedBlueRight225DegActuator - faceLedRedLeft0DegActuator] = (float)i / (float)eyeBlink;
     }
-    if (i == 20)
+    else
+    {
+        request[faceLedBlueLeft135DegActuator - faceLedRedLeft0DegActuator] = 2.f - (float)i / (float)eyeBlink;
+        request[faceLedBlueRight225DegActuator - faceLedRedLeft0DegActuator] = 2.f - (float)i / (float)eyeBlink;
+    }
+    if (i == (eyeBlink + eyeBlink))
         i = 0;
     i++;
 }

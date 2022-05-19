@@ -4,7 +4,7 @@ define_option(SpecialAction, (SpecialActionRequest::SpecialActionID)id, (bool)(f
     {
         define_transition
         {
-            if (theMotionInfo->motion == MotionRequest::specialAction && theMotionInfo->specialActionRequest.specialAction == id && theMotionInfo->specialActionRequest.mirror == mirror)
+            if (theMotionInfo->motion == MotionRequest::specialAction && theMotionInfo->specialActionRequest.specialAction == id)
             {
                 goto requestIsExecuted;
             }
@@ -13,7 +13,6 @@ define_option(SpecialAction, (SpecialActionRequest::SpecialActionID)id, (bool)(f
         {
             theMotionRequest->motion = MotionRequest::specialAction;
             theMotionRequest->specialActionRequest.specialAction = id;
-            theMotionRequest->specialActionRequest.mirror = mirror;
         }
     }
 
@@ -21,7 +20,7 @@ define_option(SpecialAction, (SpecialActionRequest::SpecialActionID)id, (bool)(f
     {
         define_transition
         {
-            if (theMotionInfo->motion != MotionRequest::specialAction || theMotionInfo->specialActionRequest.specialAction != id || theMotionInfo->specialActionRequest.mirror != mirror)
+            if (theMotionInfo->motion != MotionRequest::specialAction || theMotionInfo->specialActionRequest.specialAction != id)
             {
                 goto setRequest;
             }
@@ -30,7 +29,6 @@ define_option(SpecialAction, (SpecialActionRequest::SpecialActionID)id, (bool)(f
         {
             theMotionRequest->motion = MotionRequest::specialAction;
             theMotionRequest->specialActionRequest.specialAction = id;
-            theMotionRequest->specialActionRequest.mirror = mirror;
         }
     }
 }
