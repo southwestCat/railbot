@@ -18,3 +18,9 @@ ContactProvider中需要requires FloatingBaseEstimator
 
 22:41
 机器人 InertialData 数据不对，fuccccccck!每次都是你。
+
+
+-2022年5月19日-
+
+16:17
+InertialData主要由两个原因导致不正确，一个是IMCalibration json文件中给的初始值错了.. 还有就是 provider 中使用了 *factor 应该是 /factor

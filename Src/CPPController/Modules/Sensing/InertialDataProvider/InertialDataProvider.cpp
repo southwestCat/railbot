@@ -21,17 +21,17 @@ void InertialDataProvider::update()
     UPDATE_REPRESENTATION(IMUCalibration);
     UPDATE_REPRESENTATION(FrameInfo);
 
-    if (theKeyStates->pressed[KeyStates::headMiddle])
-    {
-        if (theFrameInfo->getTimeSince(lastKeyPressed) > 500)
-        {
-            float ax = theInertialSensorData->acc.x();
-            float ay = theInertialSensorData->acc.y();
-            float az = theInertialSensorData->acc.z();
-            printf("[INFO] acc %3.3f %3.3f %3.3f \n", ax, ay, az);
-            lastKeyPressed = theFrameInfo->time;
-        }
-    }
+    // if (theKeyStates->pressed[KeyStates::headMiddle])
+    // {
+    //     if (theFrameInfo->getTimeSince(lastKeyPressed) > 500)
+    //     {
+    //         float ax = theInertialSensorData->acc.x();
+    //         float ay = theInertialSensorData->acc.y();
+    //         float az = theInertialSensorData->acc.z();
+    //         printf("[INFO] acc %3.3f %3.3f %3.3f \n", ax, ay, az);
+    //         lastKeyPressed = theFrameInfo->time;
+    //     }
+    // }
 
     // float ax = theInertialSensorData->acc.x();
     // float ay = theInertialSensorData->acc.y();
@@ -53,9 +53,9 @@ void InertialDataProvider::update(InertialData &inertialData)
     gx = theInertialSensorData->gyro.x();
     gy = theInertialSensorData->gyro.y();
     gz = theInertialSensorData->gyro.z();
-    ax = (theInertialSensorData->acc.x() - theIMUCalibration->accBias.x()) * theIMUCalibration->accFactor.x();
-    ay = (theInertialSensorData->acc.y() - theIMUCalibration->accBias.y()) * theIMUCalibration->accFactor.y();
-    az = (theInertialSensorData->acc.z() - theIMUCalibration->accBias.z()) * theIMUCalibration->accFactor.z();
+    ax = (theInertialSensorData->acc.x() - theIMUCalibration->accBias.x()) / theIMUCalibration->accFactor.x();
+    ay = (theInertialSensorData->acc.y() - theIMUCalibration->accBias.y()) / theIMUCalibration->accFactor.y();
+    az = (theInertialSensorData->acc.z() - theIMUCalibration->accBias.z()) / theIMUCalibration->accFactor.z();
 
     float recipNorm;
     float s0, s1, s2, s3;
@@ -132,9 +132,8 @@ void InertialDataProvider::update(InertialData &inertialData)
     inertialData.orientation2D = Rotation::removeZRotation(inertialData.orientation3D);
 
     float roll, pitch;
-    // Eigen::Matrix3f t_m = inertialData.orientation2D.matrix();
+
     Eigen::Vector3f g_v(0.f, 0.f, -1.f);
-    // Eigen::Vector3f acc_v = t_m.inverse() * g_v;
     Eigen::Vector3f acc_v = inertialData.orientation2D.conjugate() * g_v;
     if (acc_v.z() <= 0.f)
     {
@@ -148,4 +147,6 @@ void InertialDataProvider::update(InertialData &inertialData)
     }
 
     inertialData.angle << roll, pitch, 0.f;
+
+    // printf("[INFO] roll %3.3f, pitch %3.3f\n", toDegrees(roll), toDegrees(pitch));
 }
