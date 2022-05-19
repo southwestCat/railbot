@@ -37,6 +37,7 @@
 #include "Representations/Communication/RobotInfo.h"
 #include "Representations/Configuration/IMUCalibration.h"
 #include "Representations/Infrastructure/SensorData/SystemSensorData.h"
+#include "Representations/MotionControl/SpecialActionRequest.h"
 
 static thread_local Blackboard *theInstance = nullptr;
 
@@ -131,6 +132,9 @@ Blackboard::Blackboard()
     theSystemSensorData = new SystemSensorData;
     insert(CLASS2STRING(SystemSensorData));
 
+    theSpecialActionRequest = new SpecialActionRequest;
+    insert(CLASS2STRING(SpecialActionRequest));
+
     theStiffnessSettings = new StiffnessSettings;
     insert(CLASS2STRING(StiffnessSettings), configMap);
 
@@ -220,6 +224,8 @@ Blackboard::~Blackboard()
         delete (IMUCalibration *)theIMUCalibration;
     if (theSystemSensorData != nullptr)
         delete (SystemSensorData *)theSystemSensorData;
+    if (theSpecialActionRequest != nullptr)
+        delete (SpecialActionRequest *)theSpecialActionRequest;
 }
 
 Blackboard &Blackboard::getInstance()

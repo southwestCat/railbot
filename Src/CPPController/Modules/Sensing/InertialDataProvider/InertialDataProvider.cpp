@@ -19,6 +19,19 @@ void InertialDataProvider::update()
 {
     UPDATE_REPRESENTATION(InertialSensorData);
     UPDATE_REPRESENTATION(IMUCalibration);
+    UPDATE_REPRESENTATION(FrameInfo);
+
+    if (theKeyStates->pressed[KeyStates::headMiddle])
+    {
+        if (theFrameInfo->getTimeSince(lastKeyPressed) > 500)
+        {
+            float ax = theInertialSensorData->acc.x();
+            float ay = theInertialSensorData->acc.y();
+            float az = theInertialSensorData->acc.z();
+            printf("[INFO] acc %3.3f %3.3f %3.3f \n", ax, ay, az);
+            lastKeyPressed = theFrameInfo->time;
+        }
+    }
 
     // float ax = theInertialSensorData->acc.x();
     // float ay = theInertialSensorData->acc.y();

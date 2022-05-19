@@ -64,6 +64,7 @@ public:
     void *theRobotInfo = nullptr;
     void *theIMUCalibration = nullptr;
     void *theSystemSensorData = nullptr;
+    void *theSpecialActionRequest = nullptr;
     
     //! LOG
     std::vector<float> logLeftPitchd;
