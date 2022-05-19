@@ -20,7 +20,6 @@ BlackboardThread::BlackboardThread()
     theMotionRequest = new RepresentationTemplate<MotionRequest>;
     theMotionInfo = new RepresentationTemplate<MotionInfo>;
     theLEDRequest = new RepresentationTemplate<LEDRequest>;
-    theSpecialActionRequest = new RepresentationTemplate<SpecialActionRequest>;
 }
 
 BlackboardThread::~BlackboardThread()
@@ -39,8 +38,6 @@ BlackboardThread::~BlackboardThread()
         delete (RepresentationTemplate<MotionInfo> *)theMotionInfo;
     if (theLEDRequest != nullptr)
         delete (RepresentationTemplate<LEDRequest> *)theLEDRequest;
-    if (theSpecialActionRequest != nullptr)
-        delete (RepresentationTemplate<SpecialActionRequest> *)theSpecialActionRequest;
 }
 
 BlackboardThread &BlackboardThread::getInstance()

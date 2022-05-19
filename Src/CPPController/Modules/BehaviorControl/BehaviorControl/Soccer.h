@@ -8,6 +8,7 @@
 #include "Representations/Infrastructure/JointAngles.h"
 #include "Representations/MotionControl/MotionInfo.h"
 #include "Representations/Communication/RobotInfo.h"
+#include "Representations/MotionControl/SpecialActionRequest.h"
 #include "Tools/Module/Blackboard.h"
 
 class SoccerBase

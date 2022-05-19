@@ -1,5 +1,7 @@
 #pragma once
 
+#include "SpecialActionRequest.h"
+
 class MotionRequest
 {
 public:
@@ -14,4 +16,5 @@ public:
     };
 
     Motion motion = specialAction;
+    SpecialActionRequest specialActionRequest;
 };

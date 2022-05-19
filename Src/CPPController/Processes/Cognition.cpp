@@ -1,5 +1,6 @@
 #include "Cognition.h"
 #include "Representations/Infrastructure/LEDRequest.h"
+#include "Representations/MotionControl/SpecialActionRequest.h"
 #include "Tools/Module/BlackboardThread.h"
 
 void Cognition::tick()

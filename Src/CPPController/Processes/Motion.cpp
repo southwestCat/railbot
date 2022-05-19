@@ -3,6 +3,7 @@
 #include "Representations/MotionControl/HeadMotionRequest.h"
 #include "Representations/MotionControl/HeadMotionEngineOutput.h"
 #include "Representations/Infrastructure/LEDRequest.h"
+#include "Representations/MotionControl/SpecialActionRequest.h"
 #include "Tools/Module/BlackboardThread.h"
 
 void Motion::tick()

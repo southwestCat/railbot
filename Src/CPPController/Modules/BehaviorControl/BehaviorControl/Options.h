@@ -8,6 +8,7 @@
 #include "Options/Output/MotionRequest/Stand.h"
 #include "Options/Output/MotionRequest/SitDown.h"
 #include "Options/Output/MotionRequest/Stabilizer.h"
+#include "Options/Output/MotionRequest/SpecialAction.h"
 #include "Options/Output/HeadMotionRequest/SetHeadPanTilt.h"
 
 #include "Options/GameControl/HandlePenaltyState.h"

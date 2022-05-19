@@ -16,4 +16,5 @@ public:
     };
 
     SpecialActionID specialAction = playDead;
+    bool mirror = false;
 };

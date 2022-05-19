@@ -132,9 +132,6 @@ Blackboard::Blackboard()
     theSystemSensorData = new SystemSensorData;
     insert(CLASS2STRING(SystemSensorData));
 
-    theSpecialActionRequest = new SpecialActionRequest;
-    insert(CLASS2STRING(SpecialActionRequest));
-
     theStiffnessSettings = new StiffnessSettings;
     insert(CLASS2STRING(StiffnessSettings), configMap);
 
@@ -224,8 +221,6 @@ Blackboard::~Blackboard()
         delete (IMUCalibration *)theIMUCalibration;
     if (theSystemSensorData != nullptr)
         delete (SystemSensorData *)theSystemSensorData;
-    if (theSpecialActionRequest != nullptr)
-        delete (SpecialActionRequest *)theSpecialActionRequest;
 }
 
 Blackboard &Blackboard::getInstance()

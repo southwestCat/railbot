@@ -52,5 +52,4 @@ public:
     void *theMotionRequest = nullptr;
     void *theMotionInfo = nullptr;
     void *theLEDRequest = nullptr;
-    void *theSpecialActionRequest = nullptr;
 };
