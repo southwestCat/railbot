@@ -17,7 +17,7 @@ public:
     USES_REPRESENTATION(RobotDimensions);
     USES_REPRESENTATION(StiffnessSettings);
 
-    const int interpolateTime = 3000;
+    const int interpolateTime = 1500;
 
     unsigned startTime = 0;
     unsigned nowTime = 0;

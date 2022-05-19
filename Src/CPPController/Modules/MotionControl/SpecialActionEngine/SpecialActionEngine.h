@@ -33,6 +33,6 @@ private:
     void reset(SpecialActionEngineOutput &s);
 
     unsigned startTime_ = 0;
-    const int standInterpolateTime = 2000; 
+    const int standInterpolateTime = 1000; 
     JointAngles startJoints_;
 };

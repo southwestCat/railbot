@@ -12,6 +12,7 @@
 #include "Representations/Sensing/FloatingBaseEstimation.h"
 #include "Representations/Sensing/NetWrenchEstimation.h"
 #include "Representations/Infrastructure/SensorData/FsrSensorData.h"
+#include "Representations/Infrastructure/FrameInfo.h"
 
 #include <vector>
 #include <eigen-quadprog/QuadProg.h>
@@ -21,6 +22,7 @@ class StabilizerBase
 public:
     REQUIRES_REPRESENTATION(RobotModel);
     REQUIRES_REPRESENTATION(FsrSensorData);
+    REQUIRES_REPRESENTATION(FrameInfo);
 
     USES_REPRESENTATION(RobotDimensions);
     USES_REPRESENTATION(MassCalibration);
