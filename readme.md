@@ -46,3 +46,7 @@
     sudo apt update
     ```
 8. 这样nao机器人就有了和一般ubuntu系统几乎相同的体验，安装build-essential等都可以用apt安装。
+
+## 运行程序
+
+1. eigen-quadprog 复制到机器人 /usr/local/lib/ 目录下。该库文件可以先在PC上编译好， 在机器上运行可执行文件提醒缺少库文件，ldd 查看链接库，再查看机器人缺少哪些库文件，然后复制到对应路径。Ubuntu20.04编译程序可以在nao-bhkernel上运行，其他版本的操作系统没有测试。

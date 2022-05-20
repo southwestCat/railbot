@@ -337,6 +337,24 @@ void readSensors(local::stream_protocol::socket &socket, LolaFrameHandler &frame
         //! read sensors and write data to shared memory.
         float *sensors = shData->sensors[writingSensors];
         extractSensors(sensors, sensor_frame);
+
+        // float lfl = sensor_frame.fsr.left.fl;
+        // float lfr = sensor_frame.fsr.left.fr;
+        // float lrl = sensor_frame.fsr.left.rl;
+        // float lrr = sensor_frame.fsr.left.rr;
+
+        // float rfl = sensor_frame.fsr.right.fl;
+        // float rfr = sensor_frame.fsr.right.fr;
+        // float rrl = sensor_frame.fsr.right.rl;
+        // float rrr = sensor_frame.fsr.right.rr;
+        // printf("----------foot sensors----------\n");
+        // printf("   left       right\n");
+        // printf("+--------+ +--------+\n");
+        // printf("|%3.3f  %3.3f| |%3.3f  %3.3f|  front\n", lfl, lfr, lrl, lrr);
+        // printf("|        | |        |\n");
+        // printf("|%3.3f  %3.3f| |%3.3f  %3.3f|  back\n", rfl, rfr, rrl, rrr);
+        // printf("+--------+ +--------+\n");
+
         shData->newestSensors = writingSensors;
         //! press chest button to shotdown robot.
         if (sensors[chestButtonSensor] == 0.f)

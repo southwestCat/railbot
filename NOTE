@@ -32,3 +32,8 @@ InertialData主要由两个原因导致不正确，一个是IMCalibration json�
 在 Stabilizer中没有更新 mass_ 质量值，
 updateMass(theMassCalibration->totalMass);
 
+
+-2022年5月20日-
+
+11:33
+FSR传感器数据异常，重新换一台机器人看看是不是44号机器人的传感器坏了。

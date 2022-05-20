@@ -117,6 +117,24 @@ void NaoProvider::update(FsrSensorData &fsrSensorData)
         }
         fsrSensorData.totals[leg] = sensors[lFSRTotalSensor + leg];
     }
+
+    float lfl = fsrSensorData.pressures[Legs::left][FsrSensors::fl];
+    float lfr = fsrSensorData.pressures[Legs::left][FsrSensors::fr];
+    float lbl = fsrSensorData.pressures[Legs::left][FsrSensors::bl];
+    float lbr = fsrSensorData.pressures[Legs::left][FsrSensors::br];
+
+    float rfl = fsrSensorData.pressures[Legs::right][FsrSensors::fl];
+    float rfr = fsrSensorData.pressures[Legs::right][FsrSensors::fr];
+    float rbl = fsrSensorData.pressures[Legs::right][FsrSensors::bl];
+    float rbr = fsrSensorData.pressures[Legs::right][FsrSensors::br];
+
+    printf("----------foot sensors----------\n");
+    printf("   left       right\n");
+    printf("+--------+ +--------+\n");
+    printf("|%3.3f  %3.3f| |%3.3f  %3.3f|  front\n", lfl, lfr, lbl, lbr);
+    printf("|        | |        |\n");
+    printf("|%3.3f  %3.3f| |%3.3f  %3.3f|  back\n", rfl, rfr, rbl, rbr);
+    printf("+--------+ +--------+\n");
 }
 
 void NaoProvider::update(JointSensorData &jointSensorData)
