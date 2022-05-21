@@ -21,7 +21,8 @@ class StabilizerBase
 {
 public:
     REQUIRES_REPRESENTATION(RobotModel);
-    REQUIRES_REPRESENTATION(FsrSensorData);
+    // REQUIRES_REPRESENTATION(FsrSensorData);
+    REQUIRES_REPRESENTATION(FsrFilteredData);
     REQUIRES_REPRESENTATION(FrameInfo);
 
     USES_REPRESENTATION(RobotDimensions);

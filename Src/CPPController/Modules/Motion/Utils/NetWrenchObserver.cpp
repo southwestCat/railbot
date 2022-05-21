@@ -5,7 +5,7 @@
 void NetWrenchObserver::update()
 {
     UPDATE_REPRESENTATION(FsrFilteredData);
-    UPDATE_REPRESENTATION(FsrSensorData);
+    // UPDATE_REPRESENTATION(FsrSensorData);
     UPDATE_REPRESENTATION(RobotModel);
 }
 
@@ -18,7 +18,8 @@ void NetWrenchObserver::update(const Contact &contact)
 
 void NetWrenchObserver::updateNetWrench()
 {
-    const FsrSensorData &fsr = *theFsrSensorData;
+    // const FsrSensorData &fsr = *theFsrSensorData;
+    const FsrSensorData &fsr = *theFsrFilteredData;
 
     //! Force
     const float &Flfl = fsr.pressures[Legs::left][FsrSensors::fl];

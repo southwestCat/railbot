@@ -9,7 +9,8 @@ Stabilizer::Stabilizer()
 void Stabilizer::update()
 {
     UPDATE_REPRESENTATION(RobotModel);
-    UPDATE_REPRESENTATION(FsrSensorData);
+    // UPDATE_REPRESENTATION(FsrSensorData);
+    UPDATE_REPRESENTATION(FsrFilteredData);
     UPDATE_REPRESENTATION(FrameInfo);
 }
 
@@ -174,7 +175,8 @@ Vector3f Stabilizer::computeZMP() const
 {
     const Pose3f &soleL = theRobotModel->soleLeft;
     const Pose3f &soleR = theRobotModel->soleRight;
-    const FsrSensorData &fsr = *theFsrSensorData;
+    // const FsrSensorData &fsr = *theFsrSensorData;
+    const FsrSensorData &fsr = *theFsrFilteredData;
 
     //! Force
     const float &Flfl = fsr.pressures[Legs::left][FsrSensors::fl];

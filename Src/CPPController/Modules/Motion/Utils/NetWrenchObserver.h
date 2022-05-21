@@ -12,7 +12,8 @@
 class NetWrenchObserverBase
 {
 public:
-    REQUIRES_REPRESENTATION(FsrSensorData);
+    REQUIRES_REPRESENTATION(FsrFilteredData);
+    // REQUIRES_REPRESENTATION(FsrSensorData);
     REQUIRES_REPRESENTATION(RobotModel);
 
     USES_REPRESENTATION(RobotDimensions);
