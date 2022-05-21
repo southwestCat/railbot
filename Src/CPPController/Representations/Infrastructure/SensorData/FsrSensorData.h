@@ -13,3 +13,8 @@ public:
     std::array<std::array<float, FsrSensors::numOfFsrSensors>, Legs::numOfLegs> pressures;
     std::array<float, Legs::numOfLegs> totals;
 };
+
+class FsrFilteredData : public FsrSensorData
+{
+public:
+};

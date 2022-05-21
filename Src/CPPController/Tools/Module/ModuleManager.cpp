@@ -15,6 +15,7 @@
 #include "Modules/Sensing/RobotModelProvider/RobotModelProvider.h"
 #include "Modules/BehaviorControl/LEDHandler/LEDHandler.h"
 #include "Modules/Configurations/ConfigurationsProvider.h"
+#include "Modules/Sensing/FsrFilteredDataProvider/FsrFilteredDataProvider.h"
 
 #define UPDATE_REPRESENTATION_WITH_PROVIDER(representation, provider)                                           \
     if (!Blackboard::getInstance().updatedRepresentation[CLASS2STRING(representation)])                         \
@@ -59,6 +60,7 @@ ModuleManager::ModuleManager()
     theRobotModelProvider = new RobotModelProvider;
     theLEDHandler = new LEDHandler;
     theConfigurationsProvider = new ConfigurationsProvider;
+    theFsrFilteredDataProvider = new FsrFilteredDataProvider;
 }
 
 ModuleManager::~ModuleManager()
@@ -93,6 +95,8 @@ ModuleManager::~ModuleManager()
         delete (LEDHandler *)theLEDHandler;
     if (theConfigurationsProvider != nullptr)
         delete (ConfigurationsProvider *)theConfigurationsProvider;
+    if (theFsrFilteredDataProvider != nullptr)
+        delete (FsrFilteredDataProvider *)theFsrFilteredDataProvider;
 }
 
 void ModuleManager::setInstance(ModuleManager *instance)
@@ -222,6 +226,10 @@ void ModuleManager::updateRepresentation(std::string representation)
     else if (representation == CLASS2STRING(LEDRequest))
     {
         UPDATE_REPRESENTATION_WITH_PROVIDER(LEDRequest, LEDHandler);
+    }
+        else if (representation == CLASS2STRING(FsrFilteredData))
+    {
+        UPDATE_REPRESENTATION_WITH_PROVIDER(FsrFilteredData, FsrFilteredDataProvider);
     }
     else if (representation == CLASS2STRING(IMUCalibration))
     {

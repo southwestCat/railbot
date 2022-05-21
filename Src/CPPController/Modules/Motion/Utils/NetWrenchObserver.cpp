@@ -4,6 +4,7 @@
 
 void NetWrenchObserver::update()
 {
+    UPDATE_REPRESENTATION(FsrFilteredData);
     UPDATE_REPRESENTATION(FsrSensorData);
     UPDATE_REPRESENTATION(RobotModel);
 }

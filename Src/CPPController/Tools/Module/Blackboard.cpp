@@ -132,6 +132,9 @@ Blackboard::Blackboard()
     theSystemSensorData = new SystemSensorData;
     insert(CLASS2STRING(SystemSensorData));
 
+    theFsrFilteredData = new FsrFilteredData;
+    insert(CLASS2STRING(FsrFilteredData));
+
     theStiffnessSettings = new StiffnessSettings;
     insert(CLASS2STRING(StiffnessSettings), configMap);
 
@@ -221,6 +224,8 @@ Blackboard::~Blackboard()
         delete (IMUCalibration *)theIMUCalibration;
     if (theSystemSensorData != nullptr)
         delete (SystemSensorData *)theSystemSensorData;
+    if (theFsrFilteredData != nullptr)
+        delete (FsrFilteredData *)theFsrFilteredData;
 }
 
 Blackboard &Blackboard::getInstance()

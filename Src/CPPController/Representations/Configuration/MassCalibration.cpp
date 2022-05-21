@@ -3,7 +3,7 @@
 MassCalibration::MassCalibration()
 {
     masses[Limbs::neck] = MassInfo(78.42f, Vector3f(-0.01f, 0.f, -27.42f));
-    masses[Limbs::head] = MassInfo(605.33f, -1.12f, 0.f, 52.58f);
+    masses[Limbs::head] = MassInfo(659.37f, 1.09f, 1.46f, 57.19f);
     masses[Limbs::shoulderLeft] = MassInfo(93.04f, -1.65f, -26.63f, 0.14f);
     masses[Limbs::bicepsLeft] = MassInfo(157.77f, 24.55f, 5.63f, 3.3f);
     masses[Limbs::elbowLeft] = MassInfo(64.83f, -27.44f, 0.f, -0.14f);

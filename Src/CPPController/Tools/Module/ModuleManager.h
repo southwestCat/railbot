@@ -33,4 +33,5 @@ private:
     void *theRobotModelProvider = nullptr;
     void *theLEDHandler = nullptr;
     void *theConfigurationsProvider = nullptr;
+    void *theFsrFilteredDataProvider = nullptr;
 };
