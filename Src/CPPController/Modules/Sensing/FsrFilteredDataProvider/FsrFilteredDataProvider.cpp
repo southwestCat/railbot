@@ -1,5 +1,6 @@
 #include "FsrFilteredDataProvider.h"
 #include "Tools/Module/ModuleManager.h"
+#include "Tools/Math/Constants.h"
 
 void FsrFilteredDataProvider::update()
 {
@@ -16,7 +17,7 @@ void FsrFilteredDataProvider::update(FsrFilteredData &fsr)
 
     if (sum > 2.f)
     {
-        float rate = theMassCalibration->totalMass / 100.f / sum;
+        float rate = theMassCalibration->totalMass / 1000.f * Constants::g_1000 / sum;
         for (int leg = 0; leg < Legs::numOfLegs; leg++)
         {
             for (int sensor = 0; sensor < FsrSensors::numOfFsrSensors; sensor++)

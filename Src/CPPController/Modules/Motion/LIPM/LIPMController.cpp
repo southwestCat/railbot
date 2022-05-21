@@ -17,7 +17,6 @@ void LIPMController::update()
 void LIPMController::update(StabilizerJointRequest &s)
 {
     update();
-    
 
     if (theLegMotionSelection->targetMotion != MotionRequest::balance)
     {
@@ -113,6 +112,7 @@ void LIPMController::updateRealFromKinematics()
     realComd_ = comVelFilter_.vel();
 
     // std::cout << realCom_.transpose() << std::endl;
+    // printf("vel: %3.3f, %3.3f\n", realCom_.x(), realCom_.y());
     // std::cout << theRobotModel->centerOfMass.transpose() << std::endl;
 }
 
@@ -172,12 +172,14 @@ void LIPMController::applyAnkleControl(StabilizerJointRequest &s)
     rightRollD = right_roll_d;
     rightPitchD = right_pitch_d;
 
+    // s.angles[Joints::lAnklePitch] += leftPitchD * dt_;
+    // s.angles[Joints::rAnklePitch] += rightPitchD * dt_;
+
     // static float timeNow = 0.f;
     // float angleOffset = cos(pi/2.f * timeNow) * 3_deg;
     // timeNow += dt_;
-
-    // jointRequest.angles[Joints::lAnklePitch] += angleOffset * dt_;
-    // jointRequest.angles[Joints::rAnklePitch] += angleOffset * dt_;
+    // s.angles[Joints::lAnklePitch] += angleOffset * dt_;
+    // s.angles[Joints::rAnklePitch] += angleOffset * dt_;
 
     // jointRequest.angles[Joints::lAnkleRoll] += left_roll_d * dt_;
     // s.angles[Joints::lAnklePitch] += left_pitch_d * dt_;

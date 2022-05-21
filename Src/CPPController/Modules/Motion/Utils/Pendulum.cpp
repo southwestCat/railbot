@@ -3,6 +3,7 @@
 
 void Pendulum::reset(const Vector3f &com, const Vector3f &comd, const Vector3f &comdd)
 {
+    comHeight_ = com.z();
     assert(comHeight_ > 0);
     float DEFAULT_HEIGHT = comHeight_;
     float DEFAULT_LAMDA = Constants::g / DEFAULT_HEIGHT;

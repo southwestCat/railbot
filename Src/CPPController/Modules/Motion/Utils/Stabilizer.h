@@ -15,6 +15,7 @@
 #include "Representations/Infrastructure/FrameInfo.h"
 
 #include <vector>
+#include <fstream>
 #include <eigen-quadprog/QuadProg.h>
 
 class StabilizerBase
@@ -69,6 +70,7 @@ public:
     };
 
     Stabilizer();
+    ~Stabilizer();
 
     void disable();
 
@@ -249,4 +251,6 @@ private:
     sva::MotionVec contactDamping_;
     sva::MotionVec contactStiffness_;
     sva::PTransform zmpFrame_;
+
+    std::ofstream log;
 };

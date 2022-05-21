@@ -4,7 +4,14 @@
 #include "Tools/Module/ModuleManager.h"
 
 Stabilizer::Stabilizer()
-    : dcmIntegrator_(5.f), dcmDerivator_(1.f) {}
+    : dcmIntegrator_(5.f), dcmDerivator_(1.f)
+{
+    log.open("log.txt");
+}
+Stabilizer::~Stabilizer()
+{
+    log.close();
+}
 
 void Stabilizer::update()
 {
@@ -287,11 +294,13 @@ sva::ForceVec Stabilizer::computeLIPDesiredWrench()
     dcmVelError_ = dcmDerivator_.eval();
 
     Vector3f desiredCoMAccel = pendulum_.comdd();
-    desiredCoMAccel += omega * (dcmPropGain_ * dcmError_ + comdError);
-    desiredCoMAccel += omega * dcmIntegralGain_ * dcmAverageError_;
-    desiredCoMAccel += omega * dcmDerivGain_ * dcmVelError_;
+    // desiredCoMAccel += omega * (dcmPropGain_ * dcmError_ + comdError);
+    // desiredCoMAccel += omega * dcmIntegralGain_ * dcmAverageError_;
+    // desiredCoMAccel += omega * dcmDerivGain_ * dcmVelError_;
 
     Vector3f desiredForce = mass_ / 1000.f * (desiredCoMAccel - Constants::gravity) / 1000.f;
+
+    std::cout << mass_ / 1000.f * Constants::g_1000 << std::endl;
 
     return {measuredCoM_.cross(desiredForce) / 1000.f, desiredForce};
 }
@@ -387,6 +396,17 @@ void Stabilizer::distributeWrench(const sva::ForceVec &desiredWrench)
     if (!solutionFound)
     {
         std::cout << "DS Force distribution QP: solver found no solution." << std::endl;
+        log << "[INFO]: > \n";
+        log << "timestamp: " << theFrameInfo->time << std::endl;
+        log << "desired force:" << std::endl;
+        log << desiredWrench.force().transpose() << std::endl;
+        log << "desired couple:" << std::endl;
+        log << desiredWrench.couple().transpose() << std::endl;
+        log << "A: \n";
+        log << A << std::endl;
+        log << "b: \n";
+        log << b << std::endl;
+        log << "----\n\n";
         return;
     }
 
@@ -513,9 +533,10 @@ void Stabilizer::resetPendulum()
     if (pendulum_.needReset())
     {
         //! reset com height, must be done before reset pendulum.
-        const Vector3f &OPcom = theRobotModel->centerOfMass;
-        float comHeight = OPcom.z() + MotionConfig::hipHeight;
-        pendulum_.comHeight() = comHeight;
+        // const Vector3f &OPcom = theRobotModel->centerOfMass;
+        // float comHeight = OPcom.z() + MotionConfig::hipHeight;
+        // pendulum_.comHeight() = comHeight;
+
         //! reset pendulum
         Vector3f com = theFloatingBaseEstimation->WTB.translation();
         pendulum_.reset(com, {0.f, 0.f, 0.f}, {0.f, 0.f, 0.f});
