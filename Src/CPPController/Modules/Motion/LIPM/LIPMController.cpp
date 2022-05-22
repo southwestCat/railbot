@@ -139,11 +139,16 @@ void LIPMController::applyAnkleControl(StabilizerJointRequest &s)
     const Vector2f leftCoP = theLeftFootTask->targetCoP;
     const Vector2f rightCoP = theRightFootTask->targetCoP;
 
+    // std::cout << ">\n";
+    // std::cout << " left cop: " << leftCoP.transpose() << std::endl;
+    // std::cout << "right cop: " << rightCoP.transpose() << std::endl;
+    // std::cout << "----\n\n";
     //! Convert to sole frame
-    // Vector3f left_cop_target = Vector3f(leftCoP.x(), leftCoP.y(), 0.f) + Vector3f(30.f, 5.62f, 0.f);
-    // Vector3f right_cop_target = Vector3f(rightCoP.x(), rightCoP.y(), 0.f) + Vector3f(30.f, -5.62f, 0.f);
-    Vector3f left_cop_target = Vector3f(30.f, 5.62f, 0.f);
-    Vector3f right_cop_target = Vector3f(30.f, -5.62f, 0.f);
+    Vector3f left_cop_target = Vector3f(leftCoP.x(), leftCoP.y(), 0.f) + Vector3f(30.f, 5.62f, 0.f);
+    Vector3f right_cop_target = Vector3f(rightCoP.x(), rightCoP.y(), 0.f) + Vector3f(30.f, -5.62f, 0.f);
+
+    // Vector3f left_cop_target = Vector3f(30.f, 5.62f, 0.f);
+    // Vector3f right_cop_target = Vector3f(30.f, -5.62f, 0.f);
 
     // mm to meter
     left_cop_target.x() /= 1000.f;

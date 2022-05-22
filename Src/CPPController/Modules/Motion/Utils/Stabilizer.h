@@ -167,6 +167,8 @@ private:
     void resetPendulum();
     void configureContact();
 
+    void clampCoP(Vector2f &cop);
+
 public:
     Contact leftFootContact;
     Contact rightFootContact;

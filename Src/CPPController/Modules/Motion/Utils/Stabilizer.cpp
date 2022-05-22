@@ -351,8 +351,11 @@ void Stabilizer::distributeWrench(const sva::ForceVec &desiredWrench)
     auto A_lankle = A.block<6, 6>(6, 0);
     auto A_rankle = A.block<6, 6>(12, 6);
     // anisotropic weights:  taux, tauy, tauz,   fx,   fy,   fz;
-    A_lankle.diagonal() << 1., 1., 1e-4, 1e-3, 1e-3, 1e-4;
-    A_rankle.diagonal() << 1., 1., 1e-4, 1e-3, 1e-3, 1e-4;
+    // A_lankle.diagonal() << 1., 1., 1e-4, 1e-3, 1e-3, 1e-4;
+    // A_rankle.diagonal() << 1., 1., 1e-4, 1e-3, 1e-3, 1e-4;
+
+    A_lankle.diagonal() << 1., 1., 1., 1., 1., 1.;
+    A_rankle.diagonal() << 1., 1., 1., 1., 1., 1.;
 
     A_lankle *= X_lankle_0.dualMatrix().cast<double>();
     A_rankle *= X_rankle_0.dualMatrix().cast<double>();
@@ -421,11 +424,24 @@ void Stabilizer::distributeWrench(const sva::ForceVec &desiredWrench)
     sva::ForceVec w_0_r(x.cast<float>().segment<3>(6), x.cast<float>().segment<3>(9));
     distribWrench_ = w_0_l + w_0_r;
 
+    // std::cout << ">\n";
+    // std::cout << " left distrib  force: " << w_0_l.force().transpose() << std::endl;
+    // std::cout << " left distrib couple: " << w_0_l.couple().transpose() << std::endl;
+    // std::cout << "right distrib  force: " << w_0_r.force().transpose() << std::endl;
+    // std::cout << "right distrib couple: " << w_0_r.couple().transpose() << std::endl;
+    // std::cout << "       distrib force: " << distribWrench_.force().transpose() << std::endl;
+    // std::cout << "      distrib couple: " << distribWrench_.couple().transpose() << std::endl;
+    // printf("couple pitch: %3.3f\n", distribWrench_.couple().y());
+    // std::cout << "----\n\n";
+
     sva::ForceVec w_lc_l = X_lc_0.dualMul(w_0_l);
     sva::ForceVec w_rc_r = X_rc_0.dualMul(w_0_r);
     Vector3f e_z = {0.f, 0.f, 1.f};
     Vector2f leftCoP = (e_z.cross(w_lc_l.couple()) / w_lc_l.force()(2)).head<2>();
     Vector2f rightCoP = (e_z.cross(w_rc_r.couple()) / w_rc_r.force()(2)).head<2>();
+
+    clampCoP(leftCoP);
+    clampCoP(rightCoP);
 
     leftCoP.x() *= 1000.f;
     leftCoP.y() *= 1000.f;
@@ -436,6 +452,21 @@ void Stabilizer::distributeWrench(const sva::ForceVec &desiredWrench)
     theRightFootTask->targetCoP = rightCoP;
     theLeftFootTask->targetForce = w_lc_l.force();
     theRightFootTask->targetForce = w_rc_r.force();
+}
+
+void Stabilizer::clampCoP(Vector2f &cop)
+{
+    const float copXMax = theRobotDimensions->halfSoleLength * 0.8f;
+    const float copYMax = theRobotDimensions->halfSoleWidth * 0.8f;
+    if (cop.x() > copXMax)
+        cop.x() = copXMax;
+    else if (cop.x() < -copXMax)
+        cop.x() = -copXMax;
+    
+    if (cop.y() > copYMax)
+        cop.y() = copYMax;
+    else if (cop.y() < -copYMax)
+        cop.y() = -copYMax;
 }
 
 void Stabilizer::saturateWrench(const sva::ForceVec &desiredWrench, FootTask &footTask)
