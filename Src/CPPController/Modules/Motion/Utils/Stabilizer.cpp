@@ -431,8 +431,8 @@ void Stabilizer::distributeWrench(const sva::ForceVec &desiredWrench)
     // std::cout << "right distrib couple: " << w_0_r.couple().transpose() << std::endl;
     // std::cout << "       distrib force: " << distribWrench_.force().transpose() << std::endl;
     // std::cout << "      distrib couple: " << distribWrench_.couple().transpose() << std::endl;
-    // printf("couple pitch: %3.3f\n", distribWrench_.couple().y());
-    // std::cout << "----\n\n";
+    printf("couple pitch: %3.3f\n", distribWrench_.couple().y());
+    std::cout << "----\n\n";
 
     sva::ForceVec w_lc_l = X_lc_0.dualMul(w_0_l);
     sva::ForceVec w_rc_r = X_rc_0.dualMul(w_0_r);
