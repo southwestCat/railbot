@@ -46,14 +46,17 @@ void NetWrenchObserver::updateNetWrench()
     const Vector2f &Prbl = theRobotDimensions->rightFsrPositions[FsrSensors::bl];
     const Vector2f &Prbr = theRobotDimensions->rightFsrPositions[FsrSensors::br];
 
-    const sva::PTransform &WTO = theFloatingBaseEstimation->WTO;
+    sva::PTransform WTO_mm = theFloatingBaseEstimation->WTO;
+    const sva::PTransform WTO = WTO_mm.toMeter();
 
     //! Sole left in BH robot frame.
     const Pose3f &soleLeft = theRobotModel->soleLeft;
-    sva::PTransform OTSL = {soleLeft.rotation, soleLeft.translation};
+    sva::PTransform OTSL_mm = {soleLeft.rotation, soleLeft.translation};
+    sva::PTransform OTSL = OTSL_mm.toMeter();
     //! Sole right in BH robot frame.
     const Pose3f &soleRight = theRobotModel->soleRight;
-    sva::PTransform OTSR = {soleRight.rotation, soleRight.translation};
+    sva::PTransform OTSR_mm = {soleRight.rotation, soleRight.translation};
+    sva::PTransform OTSR = OTSR_mm.toMeter();
 
     //! Wrench in left sole frame.
     sva::ForceVec w_sole_lfl = calcWrench(Flfl, Plfl);
@@ -61,15 +64,13 @@ void NetWrenchObserver::updateNetWrench()
     sva::ForceVec w_sole_lbl = calcWrench(Flbl, Plbl);
     sva::ForceVec w_sole_lbr = calcWrench(Flbr, Plbr);
     sva::ForceVec w_sole_lsum = w_sole_lfl + w_sole_lfr + w_sole_lbl + w_sole_lbr;
-    // Vector3f force_left = w_sole_lsum.force();
-    
+
     //! Wrench in right sole frame
     sva::ForceVec w_sole_rfl = calcWrench(Frfl, Prfl);
     sva::ForceVec w_sole_rfr = calcWrench(Frfr, Prfr);
     sva::ForceVec w_sole_rbl = calcWrench(Frbl, Prbl);
     sva::ForceVec w_sole_rbr = calcWrench(Frbr, Prbr);
     sva::ForceVec w_sole_rsum = w_sole_rfl + w_sole_rfr + w_sole_rbl + w_sole_rbr;
-    // Vector3f force_right = w_sole_rsum.force();
 
     //! lsum wrench in BH robot frame.
     sva::ForceVec w_O_lsum = OTSL.dualMul(w_sole_lsum);
@@ -80,7 +81,7 @@ void NetWrenchObserver::updateNetWrench()
     sva::ForceVec w_O_rsum = OTSR.dualMul(w_sole_rsum);
     //! rsum wrench in world frame.
     sva::ForceVec w_W_rsum = WTO.dualMul(w_O_rsum);
-    
+
     //! wrench in world frame.
     netWrench_ = w_W_lsum + w_W_rsum;
 

@@ -301,13 +301,11 @@ sva::ForceVec Stabilizer::computeLIPDesiredWrench()
     dcmVelError_ = dcmDerivator_.eval();
 
     Vector3f desiredCoMAccel = pendulum_.comdd();
-    // desiredCoMAccel += omega * (dcmPropGain_ * dcmError_ + comdError);
-    // desiredCoMAccel += omega * dcmIntegralGain_ * dcmAverageError_;
-    // desiredCoMAccel += omega * dcmDerivGain_ * dcmVelError_;
+    desiredCoMAccel += omega * (dcmPropGain_ * dcmError_ + comdError);
+    desiredCoMAccel += omega * dcmIntegralGain_ * dcmAverageError_;
+    desiredCoMAccel += omega * dcmDerivGain_ * dcmVelError_;
 
     Vector3f desiredForce = mass_ / 1000.f * (desiredCoMAccel - Constants::gravity) / 1000.f;
-
-    std::cout << mass_ / 1000.f * Constants::g_1000 << std::endl;
 
     return {measuredCoM_.cross(desiredForce) / 1000.f, desiredForce};
 }

@@ -5,6 +5,7 @@ void Contact::calcPose(const RobotModel &robotModel, float halfLength, float hal
 {
     halfLength_ = halfLength;
     halfWidth_ = halfWidth;
+    surfaceType_ = surface;
     if (surface == SurfaceType::LeftFootContact)
     {
         const Pose3f p = robotModel.soleLeft;

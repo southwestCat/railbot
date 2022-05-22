@@ -172,8 +172,8 @@ void LIPMController::applyAnkleControl(StabilizerJointRequest &s)
     rightRollD = right_roll_d;
     rightPitchD = right_pitch_d;
 
-    // s.angles[Joints::lAnklePitch] += leftPitchD * dt_;
-    // s.angles[Joints::rAnklePitch] += rightPitchD * dt_;
+    s.angles[Joints::lAnklePitch] += leftPitchD * dt_;
+    s.angles[Joints::rAnklePitch] += rightPitchD * dt_;
 
     // static float timeNow = 0.f;
     // float angleOffset = cos(pi/2.f * timeNow) * 3_deg;
