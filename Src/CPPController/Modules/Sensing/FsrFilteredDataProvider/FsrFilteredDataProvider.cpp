@@ -20,9 +20,11 @@ void FsrFilteredDataProvider::update(FsrFilteredData &fsr)
         float rate = theMassCalibration->totalMass / 1000.f * Constants::g_1000 / sum;
         for (int leg = 0; leg < Legs::numOfLegs; leg++)
         {
+            fsr.totals[leg] = 0.f;
             for (int sensor = 0; sensor < FsrSensors::numOfFsrSensors; sensor++)
             {
                 fsr.pressures[leg][sensor] = theFsrSensorData->pressures[leg][sensor] * rate;
+                fsr.totals[leg] += fsr.pressures[leg][sensor];
             }
         }
     }

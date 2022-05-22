@@ -176,6 +176,13 @@ void Stabilizer::updateZMPFrame()
     }
     // measuredZMP_ = computeZMP();
     measuredZMP_ = theNetWrenchEstimation->netZMP;
+    
+    // float zmpx = measuredZMP_.x();
+    // float zmpy = measuredZMP_.y();
+    // float zmpz = measuredZMP_.z();
+    // printf(">\n");
+    // printf("zmp: %3.3f %3.3f %3.3f\n", zmpx, zmpy, zmpz);
+    // printf("----\n\n");
 }
 
 Vector3f Stabilizer::computeZMP() const
