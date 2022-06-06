@@ -35,3 +35,15 @@ class ArmJointRequest : public JointRequest
 class StabilizerJointRequest : public JointRequest
 {
 };
+
+class DCMJointRequest : public JointRequest
+{
+};
+
+class ComplianceJointRequest : public JointRequest
+{
+};
+
+class FootstepJointRequest : public JointRequest
+{
+};

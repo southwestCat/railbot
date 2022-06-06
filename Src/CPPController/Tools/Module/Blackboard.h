@@ -65,6 +65,11 @@ public:
     void *theIMUCalibration = nullptr;
     void *theSystemSensorData = nullptr;
     void *theFsrFilteredData = nullptr;
+    void *theFootstepJointRequest = nullptr;
+    void *theMPCControllerState = nullptr;
+    void *theBalanceActionSelection = nullptr;
+    void *theCoMProjectionEstimation = nullptr;
+    void *theComplianceJointRequest = nullptr;
     
     //! LOG
     std::vector<float> logLeftPitchd;

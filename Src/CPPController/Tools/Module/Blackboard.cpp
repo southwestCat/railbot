@@ -38,6 +38,9 @@
 #include "Representations/Configuration/IMUCalibration.h"
 #include "Representations/Infrastructure/SensorData/SystemSensorData.h"
 #include "Representations/MotionControl/SpecialActionRequest.h"
+#include "Representations/Motion/MPCControllerState.h"
+#include "Representations/MotionControl/BalanceActionSelection.h"
+#include "Representations/Motion/CoMProjectionEstimation.h"
 
 static thread_local Blackboard *theInstance = nullptr;
 
@@ -135,6 +138,21 @@ Blackboard::Blackboard()
     theFsrFilteredData = new FsrFilteredData;
     insert(CLASS2STRING(FsrFilteredData));
 
+    theFootstepJointRequest = new FootstepJointRequest;
+    insert(CLASS2STRING(FootstepJointRequest));
+
+    theMPCControllerState = new MPCControllerState;
+    insert(CLASS2STRING(MPCControllerState));
+
+    theBalanceActionSelection = new BalanceActionSelection;
+    insert(CLASS2STRING(BalanceActionSelection));
+
+    theCoMProjectionEstimation = new CoMProjectionEstimation;
+    insert(CLASS2STRING(CoMProjectionEstimation));
+
+    theComplianceJointRequest = new ComplianceJointRequest;
+    insert(CLASS2STRING(ComplianceJointRequest));
+
     theStiffnessSettings = new StiffnessSettings;
     insert(CLASS2STRING(StiffnessSettings), configMap);
 
@@ -226,6 +244,16 @@ Blackboard::~Blackboard()
         delete (SystemSensorData *)theSystemSensorData;
     if (theFsrFilteredData != nullptr)
         delete (FsrFilteredData *)theFsrFilteredData;
+    if (theFootstepJointRequest != nullptr)
+        delete (FootstepJointRequest *)theFootstepJointRequest;
+    if (theMPCControllerState != nullptr)
+        delete (MPCControllerState *)theMPCControllerState;
+    if (theBalanceActionSelection != nullptr)
+        delete (BalanceActionSelection *)theBalanceActionSelection;
+    if (theCoMProjectionEstimation != nullptr)
+        delete (CoMProjectionEstimation *)theCoMProjectionEstimation;
+    if (theComplianceJointRequest != nullptr)
+        delete (ComplianceJointRequest *)theComplianceJointRequest;
 }
 
 Blackboard &Blackboard::getInstance()

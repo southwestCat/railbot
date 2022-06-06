@@ -16,6 +16,10 @@
 #include "Modules/BehaviorControl/LEDHandler/LEDHandler.h"
 #include "Modules/Configurations/ConfigurationsProvider.h"
 #include "Modules/Sensing/FsrFilteredDataProvider/FsrFilteredDataProvider.h"
+#include "Modules/Motion/MPC/FootstepsController.h"
+#include "Modules/MotionControl/BalanceActionSelector/BalanceActionSelector.h"
+#include "Modules/Motion/CoMProjectionObserver/CoMProjectionObserver.h"
+#include "Modules/Motion/CoMCompliance/ComplianceController.h"
 
 #define UPDATE_REPRESENTATION_WITH_PROVIDER(representation, provider)                                           \
     if (!Blackboard::getInstance().updatedRepresentation[CLASS2STRING(representation)])                         \
@@ -61,6 +65,10 @@ ModuleManager::ModuleManager()
     theLEDHandler = new LEDHandler;
     theConfigurationsProvider = new ConfigurationsProvider;
     theFsrFilteredDataProvider = new FsrFilteredDataProvider;
+    theFootstepsController = new FootstepsController;
+    theBalanceActionSelector = new BalanceActionSelector;
+    theCoMProjectionObserver = new CoMProjectionObserver;
+    theComplianceController = new ComplianceController;
 }
 
 ModuleManager::~ModuleManager()
@@ -97,6 +105,14 @@ ModuleManager::~ModuleManager()
         delete (ConfigurationsProvider *)theConfigurationsProvider;
     if (theFsrFilteredDataProvider != nullptr)
         delete (FsrFilteredDataProvider *)theFsrFilteredDataProvider;
+    if (theFootstepsController != nullptr)
+        delete (FootstepsController *)theFootstepsController;
+    if (theBalanceActionSelector != nullptr)
+        delete (BalanceActionSelector *)theBalanceActionSelector;
+    if (theCoMProjectionObserver != nullptr)
+        delete (CoMProjectionObserver *)theCoMProjectionObserver;
+    if (theComplianceController != nullptr)
+        delete (ComplianceController *)theComplianceController;
 }
 
 void ModuleManager::setInstance(ModuleManager *instance)
@@ -227,9 +243,25 @@ void ModuleManager::updateRepresentation(std::string representation)
     {
         UPDATE_REPRESENTATION_WITH_PROVIDER(LEDRequest, LEDHandler);
     }
-        else if (representation == CLASS2STRING(FsrFilteredData))
+    else if (representation == CLASS2STRING(FsrFilteredData))
     {
         UPDATE_REPRESENTATION_WITH_PROVIDER(FsrFilteredData, FsrFilteredDataProvider);
+    }
+    else if (representation == CLASS2STRING(FootstepJointRequest))
+    {
+        UPDATE_REPRESENTATION_WITH_PROVIDER(FootstepJointRequest, FootstepsController);
+    }
+    else if (representation == CLASS2STRING(BalanceActionSelection))
+    {
+        UPDATE_REPRESENTATION_WITH_PROVIDER(BalanceActionSelection, BalanceActionSelector);
+    }
+    else if (representation == CLASS2STRING(CoMProjectionEstimation))
+    {
+        UPDATE_REPRESENTATION_WITH_PROVIDER(CoMProjectionEstimation, CoMProjectionObserver);
+    }
+    else if (representation == CLASS2STRING(ComplianceJointRequest))
+    {
+        UPDATE_REPRESENTATION_WITH_PROVIDER(ComplianceJointRequest, ComplianceController);
     }
     else if (representation == CLASS2STRING(IMUCalibration))
     {

@@ -18,21 +18,26 @@ void LIPMController::update(StabilizerJointRequest &s)
 {
     update();
 
-    if (theLegMotionSelection->targetMotion != MotionRequest::balance)
+    if (theBalanceActionSelection->targetAction != BalanceActionSelection::dcm)
     {
-        startTime = theFrameInfo->time;
-        float soleL = theRobotModel->soleLeft.translation.z();
-        float soleR = theRobotModel->soleRight.translation.z();
-        initHeight = abs((soleL + soleR) / 2.f);
-
         startJoints_ = *theJointAngles;
-
-        return;
     }
 
-    //! stand high to stand posture.
-    if (!readyPosture(s))
-        return;
+    // if (theLegMotionSelection->targetMotion != MotionRequest::balance)
+    // {
+    //     startTime = theFrameInfo->time;
+    //     float soleL = theRobotModel->soleLeft.translation.z();
+    //     float soleR = theRobotModel->soleRight.translation.z();
+    //     initHeight = abs((soleL + soleR) / 2.f);
+
+    //     startJoints_ = *theJointAngles;
+
+    //     return;
+    // }
+
+    // //! stand high to stand posture.
+    // if (!readyPosture(s))
+    //     return;
 
     run(s);
 }
@@ -89,10 +94,14 @@ void LIPMController::run(StabilizerJointRequest &s)
     updateRealFromKinematics();
 
     //! contact frame presented in BH robot frame.
-    sva::PTransform X_0_a = floatingBaseObs_.getAnchorFrame();
-    pelvisOrientation_ = X_0_a.rotation();
+    // sva::PTransform X_0_a = floatingBaseObs_.getAnchorFrame();
+    // pelvisOrientation_ = X_0_a.rotation();
     //! set pelvis orientation
     //! set torso orientation
+
+    //! Only run at BalanceActionSelection::dcm
+    if (theBalanceActionSelection->targetAction != BalanceActionSelection::dcm)
+        return;
 
     //! Stabilizer
     netWrenchObs_.update(supportContact());
@@ -100,8 +109,13 @@ void LIPMController::run(StabilizerJointRequest &s)
     stabilizer_.run();
 
     //! Apply control
-    applyAnkleControl(s);
+    // applyAnkleControl(s);
     // applyCoMControl(s);
+    for (int i = Joints::firstLegJoint; i < Joints::rAnkleRoll; i++)
+    {
+        s.angles[i] = startJoints_.angles[i];
+    }
+
 }
 
 void LIPMController::updateRealFromKinematics()
@@ -110,6 +124,7 @@ void LIPMController::updateRealFromKinematics()
     realCom_ = theFloatingBaseEstimation->WTB.translation();
     comVelFilter_.update(realCom_);
     realComd_ = comVelFilter_.vel();
+    theFloatingBaseEstimation->comVelocity = realComd_;
 
     // std::cout << realCom_.transpose() << std::endl;
     // printf("vel: %3.3f, %3.3f\n", realCom_.x(), realCom_.y());

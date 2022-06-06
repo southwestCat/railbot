@@ -34,4 +34,8 @@ private:
     void *theLEDHandler = nullptr;
     void *theConfigurationsProvider = nullptr;
     void *theFsrFilteredDataProvider = nullptr;
+    void *theFootstepsController = nullptr;
+    void *theBalanceActionSelector = nullptr;
+    void *theCoMProjectionObserver = nullptr;
+    void *theComplianceController = nullptr;
 };

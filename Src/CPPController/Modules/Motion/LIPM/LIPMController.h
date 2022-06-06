@@ -8,6 +8,7 @@
 #include "Representations/Sensing/RobotModel.h"
 #include "Representations/Infrastructure/Stiffness.h"
 #include "Representations/Infrastructure/JointAngles.h"
+#include "Representations/MotionControl/BalanceActionSelection.h"
 
 #include "Modules/Motion/Utils/FloatingBaseObserver.h"
 #include "Modules/Motion/Utils/NetWrenchObserver.h"
@@ -31,6 +32,7 @@ public:
     USES_REPRESENTATION(NetWrenchEstimation);
     USES_REPRESENTATION(LegMotionSelection);
     USES_REPRESENTATION(StiffnessSettings);
+    USES_REPRESENTATION(BalanceActionSelection);
 
     MODIFIES_REPRESENTATION(FloatingBaseEstimation);
 };

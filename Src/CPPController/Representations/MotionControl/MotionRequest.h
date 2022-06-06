@@ -17,4 +17,5 @@ public:
 
     Motion motion = specialAction;
     SpecialActionRequest specialActionRequest;
+
 };
