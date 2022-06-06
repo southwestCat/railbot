@@ -23,5 +23,6 @@ void BalanceActionSelector::update(BalanceActionSelection &o)
     {
         o.targetAction = BalanceActionSelection::footstep;
     }
-    std::cout << o.targetAction << std::endl;
+    // std::cout << o.targetAction << std::endl;
+    // std::cout << theRobotModel->centerOfMass.transpose() << std::endl;
 }
