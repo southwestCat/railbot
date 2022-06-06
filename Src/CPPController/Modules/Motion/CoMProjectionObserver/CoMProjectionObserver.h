@@ -10,7 +10,6 @@
 class CoMProjectionObserverBase
 {
 public:
-    REQUIRES_REPRESENTATION(FsrSensorData);
     REQUIRES_REPRESENTATION(RobotModel);
 
     USES_REPRESENTATION(FloatingBaseEstimation);
