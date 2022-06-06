@@ -99,14 +99,14 @@ void LIPMController::run(StabilizerJointRequest &s)
     //! set pelvis orientation
     //! set torso orientation
 
-    //! Only run at BalanceActionSelection::dcm
-    if (theBalanceActionSelection->targetAction != BalanceActionSelection::dcm)
-        return;
-
     //! Stabilizer
     netWrenchObs_.update(supportContact());
     stabilizer_.updateState(realCom_, realComd_, netWrenchObs_.wrench(), leftFootRatio_);
     stabilizer_.run();
+
+    //! Only run at BalanceActionSelection::dcm
+    if (theBalanceActionSelection->targetAction != BalanceActionSelection::dcm)
+        return;
 
     //! Apply control
     // applyAnkleControl(s);
@@ -115,7 +115,6 @@ void LIPMController::run(StabilizerJointRequest &s)
     {
         s.angles[i] = startJoints_.angles[i];
     }
-
 }
 
 void LIPMController::updateRealFromKinematics()
