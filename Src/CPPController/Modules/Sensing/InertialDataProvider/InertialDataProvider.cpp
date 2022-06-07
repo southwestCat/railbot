@@ -148,5 +148,8 @@ void InertialDataProvider::update(InertialData &inertialData)
 
     inertialData.angle << roll, pitch, 0.f;
 
+    inertialData.acc = theInertialSensorData->acc;
+    inertialData.gyro = theInertialSensorData->gyro;
+
     // printf("[INFO] roll %3.3f, pitch %3.3f\n", toDegrees(roll), toDegrees(pitch));
 }

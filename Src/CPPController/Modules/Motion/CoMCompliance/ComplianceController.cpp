@@ -1,26 +1,45 @@
 #include "ComplianceController.h"
 #include "Tools/Module/ModuleManager.h"
 
+ComplianceController::ComplianceController()
+{
+    gyroThreshold = 0.1f;
+    keepJoints = false;
+}
+
 void ComplianceController::update()
 {
     UPDATE_REPRESENTATION(CoMProjectionEstimation);
+    UPDATE_REPRESENTATION(InertialData);
+    UPDATE_REPRESENTATION(BalanceActionSelection);
+    UPDATE_REPRESENTATION(JointAngles);
 }
 
 void ComplianceController::update(ComplianceJointRequest &o)
 {
     update();
 
-    printf(">\n");
+    if (theBalanceActionSelection->targetAction != BalanceActionSelection::compliance)
+    {
+        return;
+    }
 
-    float zmpx = theNetWrenchEstimation->netZMP.x() * 1000.f;
-    float zmpy = theNetWrenchEstimation->netZMP.y() * 1000.f;
-    printf("%3.3f %3.3f\n", zmpx, zmpy);
-
-    // float ecopx = theCoMProjectionEstimation->estimatedCoP.x();
-    // float ecopy = theCoMProjectionEstimation->estimatedCoP.y();
-    // float mcopx = theCoMProjectionEstimation->measuredCoP.x();
-    // float mcopy = theCoMProjectionEstimation->measuredCoP.y();
-    // printf("estimate: %3.3f %3.3f\n", ecopx, ecopy);
-    // printf("measured: %3.3f %3.3f\n", mcopx, mcopy);
-    printf("----\n\n");
+    float gyroY = theInertialData->gyro.y();
+    if (abs(gyroY) > gyroThreshold)
+    {
+        if (!keepJoints)
+        {
+            for (int i = Joints::firstLegJoint; i < Joints::rAnkleRoll; i++)
+            {
+                o.angles[i] = theJointAngles->angles[i];
+            }
+        }
+        keepJoints = true;
+        return;
+    }
+    else
+    {
+        keepJoints = false;
+    }
+    float errX = theCoMProjectionEstimation->measuredCoPNormalized.x() - theCoMProjectionEstimation->estimatedCoPNormalized.x();
 }

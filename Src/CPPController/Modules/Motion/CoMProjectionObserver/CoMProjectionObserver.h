@@ -6,6 +6,7 @@
 #include "Representations/Sensing/NetWrenchEstimation.h"
 #include "Representations/Sensing/FloatingBaseEstimation.h"
 #include "Tools/Module/Blackboard.h"
+#include "Modules/Motion/Utils/ExponentialMovingAverage.h"
 
 class CoMProjectionObserverBase
 {
@@ -19,8 +20,13 @@ public:
 class CoMProjectionObserver : public CoMProjectionObserverBase
 {
 public:
+    CoMProjectionObserver();
     void update(CoMProjectionEstimation &o);
 
 private:
     void update();
+
+private:
+    ExponentialMovingAverage copFilter;
+    Vector2f baseBias; //< normalized bias between estimated and measured.
 };

@@ -3,12 +3,14 @@
 #include "Representations/MotionControl/BalanceActionSelection.h"
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Infrastructure/SensorData/KeyStates.h"
+#include "Representations/Motion/CoMProjectionEstimation.h"
 #include "Tools/Module/Blackboard.h"
 
 class BalanceActionSelectorBase
 {
 public:
     REQUIRES_REPRESENTATION(FrameInfo);
+    REQUIRES_REPRESENTATION(CoMProjectionEstimation);
 
     USES_REPRESENTATION(KeyStates);
 };

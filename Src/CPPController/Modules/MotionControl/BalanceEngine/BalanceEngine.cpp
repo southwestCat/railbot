@@ -50,7 +50,7 @@ void BalanceEngine::update(BalanceEngineOutput &o)
         // theMPCControllerState->comPosition = theFloatingBaseEstimation.
     }
 
-    MotionUtilities::copy(*jointRequest[target], o, *theStiffnessSettings, Joints::firstLegJoint, Joints::rAnkleRoll);
+    // MotionUtilities::copy(*jointRequest[target], o, *theStiffnessSettings, Joints::firstLegJoint, Joints::rAnkleRoll);
 }
 
 bool BalanceEngine::readyPosture(BalanceEngineOutput &o)

@@ -3,6 +3,11 @@
 #include "Tools/Math/Pose3f.h"
 #include "Tools/Module/ModuleManager.h"
 
+CoMProjectionObserver::CoMProjectionObserver() : copFilter(0.2)
+{
+    baseBias = {0.f, 0.f};
+}
+
 void CoMProjectionObserver::update()
 {
     UPDATE_REPRESENTATION(RobotModel);
@@ -36,7 +41,14 @@ void CoMProjectionObserver::update(CoMProjectionEstimation &o)
     Vector3f comEstimated = X_surface_com.translation();
 
     //! estimated com projection
-    o.estimatedCoP = {comEstimated.x() * 1000.f, comEstimated.y() * 1000.f}; //< convert to mm
+    float ecopx = comEstimated.x() * 1000.f;
+    float ecopy = comEstimated.y() * 1000.f;
+    o.estimatedCoP = {ecopx, ecopy}; //< convert to mm
+    //! normalized estimated com projection
+    float ecopxN = ecopx / 80.f;
+    float ecopyN = ecopy / 100.f;
+    o.estimatedCoPNormalized.x() = (abs(ecopxN) > 1.f) ? 1.f : ecopxN;
+    o.estimatedCoPNormalized.y() = (abs(ecopyN) > 1.f) ? 1.f : ecopyN;
 
     //! BH-Robot frame in world frame.
     sva::PTransform WTO_mm = theFloatingBaseEstimation->WTO;
@@ -49,6 +61,15 @@ void CoMProjectionObserver::update(CoMProjectionEstimation &o)
     sva::PTransform X_W_cop = {Matrix3f::Identity(), cop};
 
     Vector3f copMeasured = (STW * X_W_cop).translation();
+    copFilter.append(copMeasured * 1000.f);
 
-    o.measuredCoP = {copMeasured.x() * 1000.f, copMeasured.y() * 1000.f};
+    //! measured com projection
+    float mcopx = copFilter.eval().x();
+    float mcopy = copFilter.eval().y();
+    o.measuredCoP = {mcopx, mcopy};
+    //! normalized measured com projection
+    float mcopxN = mcopx / 80.f;
+    float mcopyN = mcopy / 100.f;
+    o.measuredCoPNormalized.x() = (abs(mcopxN) > 1.f) ? 1.f : mcopxN;
+    o.measuredCoPNormalized.y() = (abs(mcopyN) > 1.f) ? 1.f : mcopyN;
 }

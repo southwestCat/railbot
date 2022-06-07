@@ -5,23 +5,24 @@
 void BalanceActionSelector::update()
 {
     UPDATE_REPRESENTATION(FrameInfo);
+    UPDATE_REPRESENTATION(CoMProjectionEstimation);
 }
 
 void BalanceActionSelector::update(BalanceActionSelection &o)
 {
     update();
 
-    if (theKeyStates->pressed[KeyStates::headFront])
+    if (theCoMProjectionEstimation->measuredCoPNormalized.x() > 0.8)
     {
-        o.targetAction = BalanceActionSelection::compliance;
+        std::cout << "Footsteps front.\n";
     }
-    if (theKeyStates->pressed[KeyStates::headMiddle])
+    else if (theCoMProjectionEstimation->measuredCoPNormalized.x() < -0.8)
     {
-        o.targetAction = BalanceActionSelection::dcm;
+        std::cout << "Footsteps back.\n";
     }
-    if (theKeyStates->pressed[KeyStates::headRear])
+    else
     {
-        o.targetAction = BalanceActionSelection::footstep;
+        std::cout << "Compliance.\n";
     }
     // std::cout << o.targetAction << std::endl;
     // std::cout << theRobotModel->centerOfMass.transpose() << std::endl;
