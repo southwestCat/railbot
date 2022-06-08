@@ -31,10 +31,13 @@ public:
 
 private:
     void update();
+    bool inEstimatedEllipseArea(float estimated, float measured, float cov);
 
 private:
     float covRateThreshold; //! base threshold
     float errCOV; //! base covariance of estimated cop 
     float T; //! cutoff time.
     bool keepJoints;
+    float Acopx;
+    float Acopy;
 };

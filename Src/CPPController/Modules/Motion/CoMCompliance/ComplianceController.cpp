@@ -7,6 +7,9 @@ ComplianceController::ComplianceController()
     errCOV = 0.1f;
     keepJoints = false;
     T = Constants::motionCycleTime;
+
+    Acopx = 1.f;
+    Acopy = 1.f;
 }
 
 void ComplianceController::update()
@@ -58,7 +61,7 @@ void ComplianceController::update(ComplianceJointRequest &o)
     float errCOV_X = errCOV * covRateX;
 
     //! stop action when large cov
-    if (covRateX > covRateThreshold)
+    if (covRateX > covRateThreshold) 
     {
         if (!keepJoints)
         {
@@ -76,4 +79,12 @@ void ComplianceController::update(ComplianceJointRequest &o)
     }
 
     float errX = theCoMProjectionEstimation->measuredCoPNormalized.x() - theCoMProjectionEstimation->estimatedCoPNormalized.x();
+}
+
+bool ComplianceController::inEstimatedEllipseArea(float estimated, float measured, float cov)
+{
+    if ((measured < estimated + cov) || (measured > estimated - cov))
+        return true;
+    else
+        return false;
 }
