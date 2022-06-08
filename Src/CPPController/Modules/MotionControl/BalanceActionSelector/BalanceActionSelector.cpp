@@ -14,15 +14,15 @@ void BalanceActionSelector::update(BalanceActionSelection &o)
 
     if (theCoMProjectionEstimation->measuredCoPNormalized.x() > 0.8)
     {
-        std::cout << "Footsteps front.\n";
+        // std::cout << "Footsteps front.\n";
     }
     else if (theCoMProjectionEstimation->measuredCoPNormalized.x() < -0.8)
     {
-        std::cout << "Footsteps back.\n";
+        // std::cout << "Footsteps back.\n";
     }
     else
     {
-        std::cout << "Compliance.\n";
+        // std::cout << "Compliance.\n";
     }
     // std::cout << o.targetAction << std::endl;
     // std::cout << theRobotModel->centerOfMass.transpose() << std::endl;

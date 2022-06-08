@@ -70,9 +70,6 @@ public:
     void *theBalanceActionSelection = nullptr;
     void *theCoMProjectionEstimation = nullptr;
     void *theComplianceJointRequest = nullptr;
-    
-    //! LOG
-    std::vector<float> logLeftPitchd;
 
 public:
     std::map<std::string, bool> updatedRepresentation;

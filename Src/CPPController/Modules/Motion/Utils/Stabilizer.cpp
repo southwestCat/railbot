@@ -6,11 +6,11 @@
 Stabilizer::Stabilizer()
     : dcmIntegrator_(5.f), dcmDerivator_(1.f)
 {
-    log.open("log.txt");
+    // log.open("log.txt");
 }
 Stabilizer::~Stabilizer()
 {
-    log.close();
+    // log.close();
 }
 
 void Stabilizer::update()
@@ -404,17 +404,17 @@ void Stabilizer::distributeWrench(const sva::ForceVec &desiredWrench)
     if (!solutionFound)
     {
         std::cout << "DS Force distribution QP: solver found no solution." << std::endl;
-        log << "[INFO]: > \n";
-        log << "timestamp: " << theFrameInfo->time << std::endl;
-        log << "desired force:" << std::endl;
-        log << desiredWrench.force().transpose() << std::endl;
-        log << "desired couple:" << std::endl;
-        log << desiredWrench.couple().transpose() << std::endl;
-        log << "A: \n";
-        log << A << std::endl;
-        log << "b: \n";
-        log << b << std::endl;
-        log << "----\n\n";
+        // log << "[INFO]: > \n";
+        // log << "timestamp: " << theFrameInfo->time << std::endl;
+        // log << "desired force:" << std::endl;
+        // log << desiredWrench.force().transpose() << std::endl;
+        // log << "desired couple:" << std::endl;
+        // log << desiredWrench.couple().transpose() << std::endl;
+        // log << "A: \n";
+        // log << A << std::endl;
+        // log << "b: \n";
+        // log << b << std::endl;
+        // log << "----\n\n";
         return;
     }
 

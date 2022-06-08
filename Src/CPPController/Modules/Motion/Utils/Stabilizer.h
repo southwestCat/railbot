@@ -254,5 +254,5 @@ private:
     sva::MotionVec contactStiffness_;
     sva::PTransform zmpFrame_;
 
-    std::ofstream log;
+    // std::ofstream log;
 };

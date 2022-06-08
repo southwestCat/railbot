@@ -101,6 +101,8 @@ void LIPMController::run(StabilizerJointRequest &s)
 
     //! Stabilizer
     netWrenchObs_.update(supportContact());
+
+    //! QP stabilizer
     stabilizer_.updateState(realCom_, realComd_, netWrenchObs_.wrench(), leftFootRatio_);
     stabilizer_.run();
 
