@@ -70,6 +70,7 @@ public:
     void *theBalanceActionSelection = nullptr;
     void *theCoMProjectionEstimation = nullptr;
     void *theComplianceJointRequest = nullptr;
+    void *theBalanceTarget = nullptr;
 
 public:
     std::map<std::string, bool> updatedRepresentation;

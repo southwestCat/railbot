@@ -11,6 +11,7 @@
 #include "Representations/Sensing/RobotModel.h"
 #include "Representations/Motion/MPCControllerState.h"
 #include "Representations/Sensing/FloatingBaseEstimation.h"
+#include "Representations/Motion/BalanceTarget.h"
 #include "Modules/Motion/MotionConfigure.h"
 #include "Tools/Module/Blackboard.h"
 
@@ -34,6 +35,7 @@ public:
     USES_REPRESENTATION(FloatingBaseEstimation);
 
     MODIFIES_REPRESENTATION(MPCControllerState);
+    MODIFIES_REPRESENTATION(BalanceTarget);
 };
 
 class BalanceEngine : public BalanceEngineBase
@@ -47,6 +49,7 @@ private:
 
 private:
     const unsigned readyPostureTime = 1000;
+    const unsigned readyWaitTime = 500;
     const int hipHeight = MotionConfig::hipHeight;
 
     float initHeight = 0.f;

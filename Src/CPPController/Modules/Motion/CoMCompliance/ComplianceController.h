@@ -7,7 +7,9 @@
 #include "Representations/MotionControl/BalanceActionSelection.h"
 #include "Representations/Infrastructure/JointAngles.h"
 #include "Representations/Sensing/FloatingBaseEstimation.h"
+#include "Representations/Sensing/RobotModel.h"
 #include "Representations/Configuration/RobotDimensions.h"
+#include "Representations/Motion/BalanceTarget.h"
 #include "Tools/Module/Blackboard.h"
 
 class ComplianceControllerBase
@@ -17,10 +19,13 @@ public:
     REQUIRES_REPRESENTATION(InertialData);
     REQUIRES_REPRESENTATION(BalanceActionSelection);
     REQUIRES_REPRESENTATION(JointAngles);
+    REQUIRES_REPRESENTATION(RobotModel);
     
     USES_REPRESENTATION(RobotDimensions);
     USES_REPRESENTATION(NetWrenchEstimation);
     USES_REPRESENTATION(FloatingBaseEstimation);
+
+    MODIFIES_REPRESENTATION(BalanceTarget);
 };
 
 class ComplianceController : public ComplianceControllerBase
@@ -40,4 +45,6 @@ private:
     bool keepJoints;
     float Acopx;
     float Acopy;
+
+    const float dt = Constants::motionCycleTime;
 };

@@ -45,8 +45,8 @@ void CoMProjectionObserver::update(CoMProjectionEstimation &o)
     float ecopy = comEstimated.y() * 1000.f;
     o.estimatedCoP = {ecopx, ecopy}; //< convert to mm
     //! normalized estimated com projection
-    float ecopxN = ecopx / 80.f;
-    float ecopyN = ecopy / 100.f;
+    float ecopxN = ecopx / o.normalizedX;
+    float ecopyN = ecopy / o.normalizedY;
     o.estimatedCoPNormalized.x() = (abs(ecopxN) > 1.f) ? 1.f : ecopxN;
     o.estimatedCoPNormalized.y() = (abs(ecopyN) > 1.f) ? 1.f : ecopyN;
 
@@ -68,8 +68,8 @@ void CoMProjectionObserver::update(CoMProjectionEstimation &o)
     float mcopy = copFilter.eval().y();
     o.measuredCoP = {mcopx, mcopy};
     //! normalized measured com projection
-    float mcopxN = mcopx / 80.f;
-    float mcopyN = mcopy / 100.f;
+    float mcopxN = mcopx / o.normalizedX;
+    float mcopyN = mcopy / o.normalizedY;
     o.measuredCoPNormalized.x() = (abs(mcopxN) > 1.f) ? 1.f : mcopxN;
     o.measuredCoPNormalized.y() = (abs(mcopyN) > 1.f) ? 1.f : mcopyN;
 }

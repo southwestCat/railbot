@@ -12,6 +12,19 @@ void BalanceActionSelector::update(BalanceActionSelection &o)
 {
     update();
 
+    if (theKeyStates->pressed[KeyStates::headFront])
+    {
+        o.targetAction = BalanceActionSelection::compliance;
+    }
+    if (theKeyStates->pressed[KeyStates::headMiddle])
+    {
+        o.targetAction = BalanceActionSelection::footstep;
+    }
+    if (theKeyStates->pressed[KeyStates::headRear])
+    {
+        o.targetAction = BalanceActionSelection::dcm;
+    }
+
     if (theCoMProjectionEstimation->measuredCoPNormalized.x() > 0.8)
     {
         // std::cout << "Footsteps front.\n";

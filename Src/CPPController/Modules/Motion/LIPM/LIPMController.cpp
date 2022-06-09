@@ -113,7 +113,7 @@ void LIPMController::run(StabilizerJointRequest &s)
     //! Apply control
     // applyAnkleControl(s);
     // applyCoMControl(s);
-    for (int i = Joints::firstLegJoint; i < Joints::rAnkleRoll; i++)
+    for (int i = Joints::firstLegJoint; i <= Joints::rAnkleRoll; i++)
     {
         s.angles[i] = startJoints_.angles[i];
     }

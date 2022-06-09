@@ -41,6 +41,7 @@
 #include "Representations/Motion/MPCControllerState.h"
 #include "Representations/MotionControl/BalanceActionSelection.h"
 #include "Representations/Motion/CoMProjectionEstimation.h"
+#include "Representations/Motion/BalanceTarget.h"
 
 static thread_local Blackboard *theInstance = nullptr;
 
@@ -153,6 +154,9 @@ Blackboard::Blackboard()
     theComplianceJointRequest = new ComplianceJointRequest;
     insert(CLASS2STRING(ComplianceJointRequest));
 
+    theBalanceTarget = new BalanceTarget;
+    insert(CLASS2STRING(BalanceTarget));
+
     theStiffnessSettings = new StiffnessSettings;
     insert(CLASS2STRING(StiffnessSettings), configMap);
 
@@ -254,6 +258,8 @@ Blackboard::~Blackboard()
         delete (CoMProjectionEstimation *)theCoMProjectionEstimation;
     if (theComplianceJointRequest != nullptr)
         delete (ComplianceJointRequest *)theComplianceJointRequest;
+    if (theBalanceTarget != nullptr)
+        delete (BalanceTarget *)theBalanceTarget;
 }
 
 Blackboard &Blackboard::getInstance()

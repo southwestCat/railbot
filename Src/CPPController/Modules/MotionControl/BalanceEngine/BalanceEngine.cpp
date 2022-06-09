@@ -50,21 +50,30 @@ void BalanceEngine::update(BalanceEngineOutput &o)
         // theMPCControllerState->comPosition = theFloatingBaseEstimation.
     }
 
-    // MotionUtilities::copy(*jointRequest[target], o, *theStiffnessSettings, Joints::firstLegJoint, Joints::rAnkleRoll);
+    MotionUtilities::copy(*jointRequest[target], o, *theStiffnessSettings, Joints::firstLegJoint, Joints::rAnkleRoll);
 }
 
 bool BalanceEngine::readyPosture(BalanceEngineOutput &o)
 {
     unsigned nowTime = theFrameInfo->time - startTime;
-    if (nowTime > readyPostureTime)
+    if (nowTime > readyPostureTime + readyWaitTime)
     {
         return true;
     }
+    else if (nowTime > readyPostureTime)
+    {
+        return false;
+    }
+
     float t = (float)nowTime / 1000.f;
     const float duringT = (readyPostureTime) / 1000.f;
     float target = hipHeight;
     Pose3f targetL = Pose3f(Vector3f(0.f, theRobotDimensions->yHipOffset, -target));
     Pose3f targetR = Pose3f(Vector3f(0.f, -theRobotDimensions->yHipOffset, -target));
+    //! update request soleL and soleR to BalanceTarget.
+    theBalanceTarget->soleLeftRequest = targetL;
+    theBalanceTarget->soleRightRequest = targetR;
+    
     JointRequest targetJointRequest_;
     JointRequest jointRequest_;
     bool isPossible = InverseKinematic::calcLegJoints(targetL, targetR, Vector2f::Zero(), targetJointRequest_, *theRobotDimensions);
@@ -72,6 +81,8 @@ bool BalanceEngine::readyPosture(BalanceEngineOutput &o)
     {
         jointRequest_.angles[i] = startJoints_.angles[i] + t / duringT * (targetJointRequest_.angles[i] - startJoints_.angles[i]);
     }
+    //! update lastJointRequest to BalanceTarget.
+    theBalanceTarget->lastJointRequest = jointRequest_;
     if (isPossible)
     {
         MotionUtilities::copy(jointRequest_, o, *theStiffnessSettings, Joints::firstLegJoint, Joints::rAnkleRoll);
