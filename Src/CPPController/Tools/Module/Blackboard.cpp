@@ -118,8 +118,8 @@ Blackboard::Blackboard()
     theNetWrenchEstimation = new NetWrenchEstimation;
     insert(CLASS2STRING(NetWrenchEstimation));
 
-    theStabilizerJointRequest = new StabilizerJointRequest;
-    insert(CLASS2STRING(StabilizerJointRequest));
+    theDCMJointRequest = new DCMJointRequest;
+    insert(CLASS2STRING(DCMJointRequest));
 
     theLeftFootTask = new LeftFootTask;
     insert(CLASS2STRING(LeftFootTask));
@@ -230,8 +230,8 @@ Blackboard::~Blackboard()
         delete (FloatingBaseEstimation *)theFloatingBaseEstimation;
     if (theNetWrenchEstimation != nullptr)
         delete (NetWrenchEstimation *)theNetWrenchEstimation;
-    if (theStabilizerJointRequest != nullptr)
-        delete (StabilizerJointRequest *)theStabilizerJointRequest;
+    if (theDCMJointRequest != nullptr)
+        delete (DCMJointRequest *)theDCMJointRequest;
     if (theMassCalibration != nullptr)
         delete (MassCalibration *)theMassCalibration;
     if (theLeftFootTask != nullptr)

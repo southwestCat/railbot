@@ -14,7 +14,7 @@ void LIPMController::update()
     // printf("%3.3f\n", (float)toDegrees(theJointAngles->angles[Joints::lHipPitch]));
 }
 
-void LIPMController::update(StabilizerJointRequest &s)
+void LIPMController::update(DCMJointRequest &s)
 {
     update();
 
@@ -42,7 +42,7 @@ void LIPMController::update(StabilizerJointRequest &s)
     run(s);
 }
 
-bool LIPMController::readyPosture(StabilizerJointRequest &s)
+bool LIPMController::readyPosture(DCMJointRequest &s)
 {
     unsigned nowTime = theFrameInfo->time - startTime;
     if (nowTime > readyPostureTime)
@@ -81,7 +81,7 @@ void LIPMController::configureOnce()
     }
 }
 
-void LIPMController::run(StabilizerJointRequest &s)
+void LIPMController::run(DCMJointRequest &s)
 {
     //! Configure once.
     configureOnce();
@@ -138,7 +138,7 @@ Contact LIPMController::supportContact()
     return Contact(0.f, 0.f, pose, Contact::SurfaceType::defaultContact);
 }
 
-void LIPMController::applyAnkleControl(StabilizerJointRequest &s)
+void LIPMController::applyAnkleControl(DCMJointRequest &s)
 {
     float left_roll_d;
     float left_pitch_d;
@@ -226,7 +226,7 @@ void LIPMController::applyAnkleControl(StabilizerJointRequest &s)
     // printf("----\n\n");
 }
 
-void LIPMController::applyCoMControl(StabilizerJointRequest &s)
+void LIPMController::applyCoMControl(DCMJointRequest &s)
 {
     const sva::PTransform &WTB = theFloatingBaseEstimation->WTB;
     const sva::PTransform &OTA = theFloatingBaseEstimation->OTA;

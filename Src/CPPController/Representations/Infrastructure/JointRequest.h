@@ -32,10 +32,6 @@ class ArmJointRequest : public JointRequest
 {
 };
 
-class StabilizerJointRequest : public JointRequest
-{
-};
-
 class DCMJointRequest : public JointRequest
 {
 };

@@ -22,7 +22,7 @@ public:
     REQUIRES_REPRESENTATION(FrameInfo);
     REQUIRES_REPRESENTATION(JointAngles);
     REQUIRES_REPRESENTATION(InertialData);
-    REQUIRES_REPRESENTATION(StabilizerJointRequest);
+    REQUIRES_REPRESENTATION(DCMJointRequest);
     REQUIRES_REPRESENTATION(FootstepJointRequest);
     REQUIRES_REPRESENTATION(ComplianceJointRequest);
     REQUIRES_REPRESENTATION(BalanceActionSelection);

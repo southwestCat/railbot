@@ -40,17 +40,17 @@ public:
 class LIPMController : public LIPMControllerBase
 {
 public:
-    void update(StabilizerJointRequest &s);
+    void update(DCMJointRequest &s);
 
 private:
     void update();
-    void run(StabilizerJointRequest &s);
+    void run(DCMJointRequest &s);
     void configureOnce();
     void updateRealFromKinematics();
     Contact supportContact();
-    void applyAnkleControl(StabilizerJointRequest &s);
-    void applyCoMControl(StabilizerJointRequest &s);
-    bool readyPosture(StabilizerJointRequest &s);
+    void applyAnkleControl(DCMJointRequest &s);
+    void applyCoMControl(DCMJointRequest &s);
+    bool readyPosture(DCMJointRequest &s);
 
 private:
     const float dt_ = Constants::motionCycleTime;

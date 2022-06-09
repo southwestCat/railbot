@@ -55,7 +55,7 @@ public:
     void *theSitDownEngineOutput = nullptr;
     void *theBalanceEngineOutput = nullptr;
     void *theFloatingBaseEstimation = nullptr;
-    void *theStabilizerJointRequest = nullptr;
+    void *theDCMJointRequest = nullptr;
     void *theNetWrenchEstimation = nullptr;
     void *theMassCalibration = nullptr;
     void *theLeftFootTask = nullptr;

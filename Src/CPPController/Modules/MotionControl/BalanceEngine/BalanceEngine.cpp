@@ -8,7 +8,7 @@ void BalanceEngine::update()
     UPDATE_REPRESENTATION(FrameInfo);
     UPDATE_REPRESENTATION(JointAngles);
     UPDATE_REPRESENTATION(InertialData);
-    UPDATE_REPRESENTATION(StabilizerJointRequest);
+    UPDATE_REPRESENTATION(DCMJointRequest);
     UPDATE_REPRESENTATION(ComplianceJointRequest);
     UPDATE_REPRESENTATION(FootstepJointRequest);
     UPDATE_REPRESENTATION(BalanceActionSelection);
@@ -39,7 +39,7 @@ void BalanceEngine::update(BalanceEngineOutput &o)
 
     const JointRequest *jointRequest[BalanceActionSelection::numOfBalanceAction];
     jointRequest[BalanceActionSelection::compliance] = theComplianceJointRequest;
-    jointRequest[BalanceActionSelection::dcm] = theStabilizerJointRequest;
+    jointRequest[BalanceActionSelection::dcm] = theDCMJointRequest;
     jointRequest[BalanceActionSelection::footstep] = theFootstepJointRequest;
 
     // //! Balance action selection;

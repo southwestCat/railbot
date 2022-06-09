@@ -231,9 +231,9 @@ void ModuleManager::updateRepresentation(std::string representation)
     {
         UPDATE_REPRESENTATION_WITH_PROVIDER(BalanceEngineOutput, BalanceEngine);
     }
-    else if (representation == CLASS2STRING(StabilizerJointRequest))
+    else if (representation == CLASS2STRING(DCMJointRequest))
     {
-        UPDATE_REPRESENTATION_WITH_PROVIDER(StabilizerJointRequest, LIPMController);
+        UPDATE_REPRESENTATION_WITH_PROVIDER(DCMJointRequest, LIPMController);
     }
     else if (representation == CLASS2STRING(RobotModel))
     {
