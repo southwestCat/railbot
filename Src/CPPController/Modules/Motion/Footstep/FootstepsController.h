@@ -4,6 +4,8 @@
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Infrastructure/JointRequest.h"
 #include "Representations/Motion/MPCControllerState.h"
+#include "Representations/Motion/BalanceTarget.h"
+#include "Representations/MotionControl/BalanceActionSelection.h"
 #include "Tools/Module/Blackboard.h"
 #include "Tools/Math/Constants.h"
 #include "Tools/Math/Eigen.h"
@@ -14,6 +16,9 @@ public:
     REQUIRES_REPRESENTATION(FrameInfo);
 
     USES_REPRESENTATION(MPCControllerState);
+    USES_REPRESENTATION(BalanceActionSelection);
+
+    MODIFIES_REPRESENTATION(BalanceTarget);
 };
 
 class FootstepsController : public FootstepsControllerBase

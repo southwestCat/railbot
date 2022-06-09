@@ -110,13 +110,15 @@ void DCMController::run(DCMJointRequest &s)
     if (theBalanceActionSelection->targetAction != BalanceActionSelection::dcm)
         return;
 
+    //! Initial JointRequest
+    for (int i = 0; i <= Joints::rAnkleRoll; i++)
+    {
+        s.angles[i] = theBalanceTarget->lastJointRequest.angles[i];
+    }
+
     //! Apply control
     // applyAnkleControl(s);
-    // applyCoMControl(s);
-    for (int i = Joints::firstLegJoint; i <= Joints::rAnkleRoll; i++)
-    {
-        s.angles[i] = startJoints_.angles[i];
-    }
+    applyCoMControl(s);
 }
 
 void DCMController::updateRealFromKinematics()

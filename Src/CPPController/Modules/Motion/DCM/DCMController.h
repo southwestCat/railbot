@@ -9,6 +9,7 @@
 #include "Representations/Infrastructure/Stiffness.h"
 #include "Representations/Infrastructure/JointAngles.h"
 #include "Representations/MotionControl/BalanceActionSelection.h"
+#include "Representations/Motion/BalanceTarget.h"
 
 #include "Modules/Motion/Utils/FloatingBaseObserver.h"
 #include "Modules/Motion/Utils/NetWrenchObserver.h"
@@ -35,6 +36,7 @@ public:
     USES_REPRESENTATION(BalanceActionSelection);
 
     MODIFIES_REPRESENTATION(FloatingBaseEstimation);
+    MODIFIES_REPRESENTATION(BalanceTarget);
 };
 
 class DCMController : public DCMControllerBase

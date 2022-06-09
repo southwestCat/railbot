@@ -49,6 +49,18 @@ void FootstepsController::update(FootstepJointRequest &j)
 {
     update();
 
+    //! return when not in footstep action.
+    if (theBalanceActionSelection->targetAction != BalanceActionSelection::footstep)
+    {
+        return;
+    }
+
+    //! Initial JointRequest
+    for (int i = 0; i <= Joints::rAnkleRoll; i++)
+    {
+        j.angles[i] = theBalanceTarget->lastJointRequest.angles[i];
+    }
+
     exec();
 }
 
