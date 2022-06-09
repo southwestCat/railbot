@@ -16,7 +16,7 @@
 #include "Modules/BehaviorControl/LEDHandler/LEDHandler.h"
 #include "Modules/Configurations/ConfigurationsProvider.h"
 #include "Modules/Sensing/FsrFilteredDataProvider/FsrFilteredDataProvider.h"
-#include "Modules/Motion/MPC/FootstepsController.h"
+#include "Modules/Motion/Footstep/FootstepsController.h"
 #include "Modules/MotionControl/BalanceActionSelector/BalanceActionSelector.h"
 #include "Modules/Motion/CoMProjectionObserver/CoMProjectionObserver.h"
 #include "Modules/Motion/CoMCompliance/ComplianceController.h"
