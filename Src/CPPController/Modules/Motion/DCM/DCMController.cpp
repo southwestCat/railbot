@@ -1,10 +1,10 @@
-#include "LIPMController.h"
+#include "DCMController.h"
 #include "Modules/Motion/MotionConfigure.h"
 #include "Tools/Module/ModuleManager.h"
 #include "Tools/Motion/InverseKinematic.h"
 #include "Tools/Motion/MotionUtilities.h"
 
-void LIPMController::update()
+void DCMController::update()
 {
     UPDATE_REPRESENTATION(InertialData);
     UPDATE_REPRESENTATION(FrameInfo);
@@ -14,7 +14,7 @@ void LIPMController::update()
     // printf("%3.3f\n", (float)toDegrees(theJointAngles->angles[Joints::lHipPitch]));
 }
 
-void LIPMController::update(DCMJointRequest &s)
+void DCMController::update(DCMJointRequest &s)
 {
     update();
 
@@ -42,7 +42,7 @@ void LIPMController::update(DCMJointRequest &s)
     run(s);
 }
 
-bool LIPMController::readyPosture(DCMJointRequest &s)
+bool DCMController::readyPosture(DCMJointRequest &s)
 {
     unsigned nowTime = theFrameInfo->time - startTime;
     if (nowTime > readyPostureTime)
@@ -67,7 +67,7 @@ bool LIPMController::readyPosture(DCMJointRequest &s)
     return false;
 }
 
-void LIPMController::configureOnce()
+void DCMController::configureOnce()
 {
     static bool once = true;
     if (once)
@@ -81,7 +81,7 @@ void LIPMController::configureOnce()
     }
 }
 
-void LIPMController::run(DCMJointRequest &s)
+void DCMController::run(DCMJointRequest &s)
 {
     //! Configure once.
     configureOnce();
@@ -119,7 +119,7 @@ void LIPMController::run(DCMJointRequest &s)
     }
 }
 
-void LIPMController::updateRealFromKinematics()
+void DCMController::updateRealFromKinematics()
 {
     floatingBaseObs_.updateRobot(*theFloatingBaseEstimation);
     realCom_ = theFloatingBaseEstimation->WTB.translation();
@@ -132,13 +132,13 @@ void LIPMController::updateRealFromKinematics()
     // std::cout << theRobotModel->centerOfMass.transpose() << std::endl;
 }
 
-Contact LIPMController::supportContact()
+Contact DCMController::supportContact()
 {
     sva::PTransform pose = {Matrix3f::Identity(), {0.f, 0.f, 0.f}};
     return Contact(0.f, 0.f, pose, Contact::SurfaceType::defaultContact);
 }
 
-void LIPMController::applyAnkleControl(DCMJointRequest &s)
+void DCMController::applyAnkleControl(DCMJointRequest &s)
 {
     float left_roll_d;
     float left_pitch_d;
@@ -226,7 +226,7 @@ void LIPMController::applyAnkleControl(DCMJointRequest &s)
     // printf("----\n\n");
 }
 
-void LIPMController::applyCoMControl(DCMJointRequest &s)
+void DCMController::applyCoMControl(DCMJointRequest &s)
 {
     const sva::PTransform &WTB = theFloatingBaseEstimation->WTB;
     const sva::PTransform &OTA = theFloatingBaseEstimation->OTA;

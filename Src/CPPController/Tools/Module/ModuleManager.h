@@ -29,7 +29,7 @@ private:
     void *theSpecialActionEngine = nullptr;
     void *theSitDownEngine = nullptr;
     void *theBalanceEngine = nullptr;
-    void *theLIPMController = nullptr;
+    void *theDCMController = nullptr;
     void *theRobotModelProvider = nullptr;
     void *theLEDHandler = nullptr;
     void *theConfigurationsProvider = nullptr;

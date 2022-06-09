@@ -11,7 +11,7 @@
 #include "Modules/MotionControl/SpecialActionEngine/SpecialActionEngine.h"
 #include "Modules/MotionControl/SitDownEngine/SitDownEngine.h"
 #include "Modules/MotionControl/BalanceEngine/BalanceEngine.h"
-#include "Modules/Motion/LIPM/LIPMController.h"
+#include "Modules/Motion/DCM/DCMController.h"
 #include "Modules/Sensing/RobotModelProvider/RobotModelProvider.h"
 #include "Modules/BehaviorControl/LEDHandler/LEDHandler.h"
 #include "Modules/Configurations/ConfigurationsProvider.h"
@@ -60,7 +60,7 @@ ModuleManager::ModuleManager()
     theSpecialActionEngine = new SpecialActionEngine;
     theSitDownEngine = new SitDownEngine;
     theBalanceEngine = new BalanceEngine;
-    theLIPMController = new LIPMController;
+    theDCMController = new DCMController;
     theRobotModelProvider = new RobotModelProvider;
     theLEDHandler = new LEDHandler;
     theConfigurationsProvider = new ConfigurationsProvider;
@@ -95,8 +95,8 @@ ModuleManager::~ModuleManager()
         delete (SitDownEngine *)theSitDownEngine;
     if (theBalanceEngine != nullptr)
         delete (BalanceEngine *)theBalanceEngine;
-    if (theLIPMController != nullptr)
-        delete (LIPMController *)theLIPMController;
+    if (theDCMController != nullptr)
+        delete (DCMController *)theDCMController;
     if (theRobotModelProvider != nullptr)
         delete (RobotModelProvider *)theRobotModelProvider;
     if (theLEDHandler != nullptr)
@@ -233,7 +233,7 @@ void ModuleManager::updateRepresentation(std::string representation)
     }
     else if (representation == CLASS2STRING(DCMJointRequest))
     {
-        UPDATE_REPRESENTATION_WITH_PROVIDER(DCMJointRequest, LIPMController);
+        UPDATE_REPRESENTATION_WITH_PROVIDER(DCMJointRequest, DCMController);
     }
     else if (representation == CLASS2STRING(RobotModel))
     {

@@ -18,7 +18,7 @@
 #include "Modules/Motion/MotionConfigure.h"
 #include "Tools/Module/Blackboard.h"
 
-class LIPMControllerBase
+class DCMControllerBase
 {
 public:
     REQUIRES_REPRESENTATION(InertialData);
@@ -37,7 +37,7 @@ public:
     MODIFIES_REPRESENTATION(FloatingBaseEstimation);
 };
 
-class LIPMController : public LIPMControllerBase
+class DCMController : public DCMControllerBase
 {
 public:
     void update(DCMJointRequest &s);
