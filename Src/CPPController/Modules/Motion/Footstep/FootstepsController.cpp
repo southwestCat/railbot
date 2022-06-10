@@ -7,6 +7,7 @@ FootstepsController::FootstepsController()
     dsp_duration = round(0.1 / dt) * dt; //< 0.096s
     ssp_duration = round(0.7 / dt) * dt; //< 0.696s
     fsm = WalkingFSM(ssp_duration, dsp_duration, dt);
+    startStanding();
 }
 
 void FootstepsController::updateInitialState()
@@ -56,6 +57,9 @@ void FootstepsController::update(FootstepJointRequest &j)
         return;
     }
 
+    //! Initial State
+    setInitialState();
+
     //! Initial JointRequest
     for (int i = 0; i <= Joints::rAnkleRoll; i++)
     {
@@ -89,8 +93,8 @@ void FootstepsController::setInitialState()
     bool left = theFootstepControllerState->leftSwingFirst;
     footsteps = generateFootsteps(stepLength, footSpread, nSteps, left);
 
-    //! start walking
-    start_walking = true;
+    //! start walking.
+    startWalking();
 
     initialState = true;
 }
@@ -127,18 +131,21 @@ void FootstepsController::exec()
     if (fsm.state == WalkingFSM::Standing)
     {
         runStanding();
+        printf("[INFO] In Standing.\n");
     }
     else if (fsm.state == WalkingFSM::DoubleSupport)
     {
         runDoubleSupport();
+        printf("[INFO] In DoubleSupport.\n");
     }
     else if (fsm.state == WalkingFSM::SingleSupport)
     {
         runSingleSupport();
+        printf("[INFO] In SingleSupport.\n");
     }
     else
     {
-        // printf("Unknown state.\n");
+        printf("[INFO] Unknown state.\n");
     }
 }
 
