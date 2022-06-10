@@ -61,6 +61,20 @@ void FootstepsController::update(FootstepJointRequest &j)
         j.angles[i] = theBalanceTarget->lastJointRequest.angles[i];
     }
 
+    //!
+    Vector3f comPosition = theFootstepControllerState->comPosition;
+    Vector3f comVelocity = theFootstepControllerState->comVelocity;
+    float stepLength = theFootstepControllerState->stepLength;
+    unsigned nSteps = theFootstepControllerState->nSteps;
+    bool left = theFootstepControllerState->leftSwingFirst;
+    printf(">\n");
+    printf(" com: %3.3f %3.3f %3.3f\n", comPosition.x(), comPosition.y(), comPosition.z());
+    printf("comd: %3.3f %3.3f %3.3f\n", comVelocity.x(), comVelocity.y(), comVelocity.z());
+    printf("   l: %3.3f\n", stepLength);
+    printf("   n: %d\n", nSteps);
+    printf("left: %d\n", left);
+    printf("----\n\n");
+
     exec();
 }
 

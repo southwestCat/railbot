@@ -66,11 +66,11 @@ public:
     void *theSystemSensorData = nullptr;
     void *theFsrFilteredData = nullptr;
     void *theFootstepJointRequest = nullptr;
-    void *theMPCControllerState = nullptr;
     void *theBalanceActionSelection = nullptr;
     void *theCoMProjectionEstimation = nullptr;
     void *theComplianceJointRequest = nullptr;
     void *theBalanceTarget = nullptr;
+    void *theFootstepControllerState = nullptr;
 
 public:
     std::map<std::string, bool> updatedRepresentation;

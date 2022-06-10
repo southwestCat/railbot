@@ -38,7 +38,7 @@
 #include "Representations/Configuration/IMUCalibration.h"
 #include "Representations/Infrastructure/SensorData/SystemSensorData.h"
 #include "Representations/MotionControl/SpecialActionRequest.h"
-#include "Representations/Motion/MPCControllerState.h"
+#include "Representations/Motion/FootstepControllerState.h"
 #include "Representations/MotionControl/BalanceActionSelection.h"
 #include "Representations/Motion/CoMProjectionEstimation.h"
 #include "Representations/Motion/BalanceTarget.h"
@@ -142,8 +142,8 @@ Blackboard::Blackboard()
     theFootstepJointRequest = new FootstepJointRequest;
     insert(CLASS2STRING(FootstepJointRequest));
 
-    theMPCControllerState = new MPCControllerState;
-    insert(CLASS2STRING(MPCControllerState));
+    theFootstepControllerState = new FootstepControllerState;
+    insert(CLASS2STRING(FootstepControllerState));
 
     theBalanceActionSelection = new BalanceActionSelection;
     insert(CLASS2STRING(BalanceActionSelection));
@@ -250,8 +250,8 @@ Blackboard::~Blackboard()
         delete (FsrFilteredData *)theFsrFilteredData;
     if (theFootstepJointRequest != nullptr)
         delete (FootstepJointRequest *)theFootstepJointRequest;
-    if (theMPCControllerState != nullptr)
-        delete (MPCControllerState *)theMPCControllerState;
+    if (theFootstepControllerState != nullptr)
+        delete (FootstepControllerState *)theFootstepControllerState;
     if (theBalanceActionSelection != nullptr)
         delete (BalanceActionSelection *)theBalanceActionSelection;
     if (theCoMProjectionEstimation != nullptr)

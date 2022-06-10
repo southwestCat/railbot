@@ -2,12 +2,12 @@
 
 #include "Tools/Math/Eigen.h"
 
-class MPCControllerState
+class FootstepControllerState
 {
 public:
     float stepLength;
     float footSpread;
-    float nSteps;
+    unsigned nSteps;
     bool leftSwingFirst;
     
     Vector3f comPosition;

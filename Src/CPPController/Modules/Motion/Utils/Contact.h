@@ -5,6 +5,22 @@
 #include "Tools/Math/Pose3f.h"
 #include "Representations/Sensing/RobotModel.h"
 
+/**
+ * @note
+ * -----------------------
+ * |                     |
+ * |                     |
+ * |                     |
+ * |           110       |
+ * |                     |   Left foot view
+ * |         x           |   x: center of sole
+ * |   50.02    o  38.78 |   o: ankle position in sole frame
+ * |                     |
+ * |                     |
+ * |            50       |
+ * |                     |
+ * ----------------------=
+ */
 class Contact
 {
 public:
@@ -47,7 +63,7 @@ public:
 
     void calcPose(const RobotModel &robotModel, float halfLength, float halfWidth, SurfaceType surface, const sva::PTransform &WTO);
     sva::PTransform anklePose(const RobotModel &model, const sva::PTransform &WTO);
-    
+
     /** Corner vertex of the contact area.
      *
      */

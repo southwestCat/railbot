@@ -6,7 +6,7 @@
 ComplianceController::ComplianceController()
 {
     covRateThreshold = 10.f * 0.8f;
-    errCOV = 0.1f;
+    errCOV = 0.2f;
     keepJoints = false;
     T = Constants::motionCycleTime;
 

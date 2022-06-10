@@ -106,15 +106,15 @@ void DCMController::run(DCMJointRequest &s)
     stabilizer_.updateState(realCom_, realComd_, netWrenchObs_.wrench(), leftFootRatio_);
     stabilizer_.run();
 
-    //! Only run at BalanceActionSelection::dcm
-    if (theBalanceActionSelection->targetAction != BalanceActionSelection::dcm)
-        return;
-
     //! Initial JointRequest
     for (int i = 0; i <= Joints::rAnkleRoll; i++)
     {
         s.angles[i] = theBalanceTarget->lastJointRequest.angles[i];
     }
+
+    //! Only run at BalanceActionSelection::dcm
+    if (theBalanceActionSelection->targetAction != BalanceActionSelection::dcm)
+        return;
 
     //! Apply control
     // applyAnkleControl(s);

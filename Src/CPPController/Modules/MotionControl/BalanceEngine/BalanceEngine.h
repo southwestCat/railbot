@@ -9,12 +9,10 @@
 #include "Representations/MotionControl/BalanceActionSelection.h"
 #include "Representations/Motion/CoMProjectionEstimation.h"
 #include "Representations/Sensing/RobotModel.h"
-#include "Representations/Motion/MPCControllerState.h"
 #include "Representations/Sensing/FloatingBaseEstimation.h"
 #include "Representations/Motion/BalanceTarget.h"
 #include "Modules/Motion/MotionConfigure.h"
 #include "Tools/Module/Blackboard.h"
-
 
 class BalanceEngineBase
 {
@@ -34,7 +32,6 @@ public:
     USES_REPRESENTATION(StiffnessSettings);
     USES_REPRESENTATION(FloatingBaseEstimation);
 
-    MODIFIES_REPRESENTATION(MPCControllerState);
     MODIFIES_REPRESENTATION(BalanceTarget);
 };
 

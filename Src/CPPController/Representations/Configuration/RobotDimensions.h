@@ -21,11 +21,10 @@ public:
     }
 
     float getXOffsetNeckToCamera(bool lowerCamera) const { return lowerCamera ? xOffsetNeckToLowerCamera : xOffsetNeckToUpperCamera; }
-    
-    float getZOffsetNeckToCamera(bool lowerCamera) const { return lowerCamera ? zOffsetNeckToLowerCamera : zOffsetNeckToUpperCamera; }
-    
-    Angle getTiltNeckToCamera(bool lowerCamera) const { return lowerCamera ? tiltNeckToLowerCamera : tiltNeckToUpperCamera; }
 
+    float getZOffsetNeckToCamera(bool lowerCamera) const { return lowerCamera ? zOffsetNeckToLowerCamera : zOffsetNeckToUpperCamera; }
+
+    Angle getTiltNeckToCamera(bool lowerCamera) const { return lowerCamera ? tiltNeckToLowerCamera : tiltNeckToUpperCamera; }
 
     float yHipOffset = 50.f;
     float upperLegLength = 100.f;
@@ -40,6 +39,8 @@ public:
     float halfSoleLength = 80.f;
     float halfSoleWidth = 44.4f;
     float soleFriction = 0.7f;
+    Vector2f leftAnkleToSoleCenter = {30.f, 5.62f};
+    Vector2f rightAnkleToSoleCenter = {30.f, -5.62f};
 
     float xOffsetNeckToLowerCamera = 50.71f;
     float zOffsetNeckToLowerCamera = 17.74f;
