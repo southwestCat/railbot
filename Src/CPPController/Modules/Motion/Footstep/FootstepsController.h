@@ -79,9 +79,10 @@ private:
     Point com;
     std::vector<Vector2f> footsteps;
     bool finished = false;
+    bool initialState = false;
 
 private:
-    std::vector<Eigen::Vector2f> generateFootsteps(float stepLength, float footSpread, int nStepsm, bool leftSwingFirst = true);
+    std::vector<Eigen::Vector2f> generateFootsteps(float stepLength, float footSpread, unsigned nSteps, bool leftSwingFirst = true);
     void startWalking()
     {
         start_walking = true;
@@ -101,4 +102,6 @@ private:
     void runCOMMPC();
     void updateMPC(float dsp_duration, float ssp_duration);
     void updateInitialState();
+
+    void setInitialState();
 };

@@ -39,12 +39,14 @@ BalanceActionSelection::BalanceAction BalanceActionSelector::handleState()
     {
         //! update FootstepControllerState info
         Vector3f comPosition = theFloatingBaseEstimation->WTB.translation();
-        comPosition.x() -= theRobotDimensions->leftAnkleToSoleCenter.x();
+        comPosition.x() -= theRobotDimensions->leftAnkleToSoleCenter.x(); //< Convert coordinates to Contact surface frame.
         theFootstepControllerState->comPosition = comPosition;
-        Vector3f comVelocity = {0.f, 0.f, 0.f};
-        comVelocity.x() = theFloatingBaseEstimation->comVelocity.x();
+        Vector3f comVelocity = theFloatingBaseEstimation->comVelocity;
         theFootstepControllerState->comVelocity = comVelocity;
         theFootstepControllerState->comAcceleration = {0.f, 0.f, 0.f};
+        theFootstepControllerState->footSpread = theRobotDimensions->yHipOffset;
+
+        //! Caculate Capture Point
 
         //! Fuzzy PID
         theFootstepControllerState->stepLength = 200.f;

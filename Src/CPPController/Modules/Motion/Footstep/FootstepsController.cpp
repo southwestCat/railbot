@@ -52,6 +52,7 @@ void FootstepsController::update(FootstepJointRequest &j)
     //! return when not in footstep action.
     if (theBalanceActionSelection->targetAction != BalanceActionSelection::footstep)
     {
+        initialState = false;
         return;
     }
 
@@ -61,31 +62,47 @@ void FootstepsController::update(FootstepJointRequest &j)
         j.angles[i] = theBalanceTarget->lastJointRequest.angles[i];
     }
 
-    //!
-    Vector3f comPosition = theFootstepControllerState->comPosition;
-    Vector3f comVelocity = theFootstepControllerState->comVelocity;
-    float stepLength = theFootstepControllerState->stepLength;
-    unsigned nSteps = theFootstepControllerState->nSteps;
-    bool left = theFootstepControllerState->leftSwingFirst;
-    printf(">\n");
-    printf(" com: %3.3f %3.3f %3.3f\n", comPosition.x(), comPosition.y(), comPosition.z());
-    printf("comd: %3.3f %3.3f %3.3f\n", comVelocity.x(), comVelocity.y(), comVelocity.z());
-    printf("   l: %3.3f\n", stepLength);
-    printf("   n: %d\n", nSteps);
-    printf("left: %d\n", left);
-    printf("----\n\n");
-
     exec();
 }
 
-std::vector<Eigen::Vector2f> FootstepsController::generateFootsteps(float stepLength, float footSpread, int nSteps, bool leftSwingFirst)
+void FootstepsController::setInitialState()
+{
+    if (initialState)
+    {
+        return;
+    }
+
+    //! Initial com
+    Vector3f comPosition = theFootstepControllerState->comPosition;
+    Vector3f comVelocity = theFootstepControllerState->comVelocity;
+    comVelocity.y() = 0.f;
+    comVelocity.z() = 0.f;
+    com = {comPosition, comVelocity};
+
+    //! Set comHeight
+    comHeight = comPosition.z();
+
+    //! Generate footsteps
+    float stepLength = theFootstepControllerState->stepLength;
+    float footSpread = theFootstepControllerState->footSpread;
+    unsigned nSteps = theFootstepControllerState->nSteps;
+    bool left = theFootstepControllerState->leftSwingFirst;
+    footsteps = generateFootsteps(stepLength, footSpread, nSteps, left);
+
+    //! start walking
+    start_walking = true;
+
+    initialState = true;
+}
+
+std::vector<Eigen::Vector2f> FootstepsController::generateFootsteps(float stepLength, float footSpread, unsigned nSteps, bool leftSwingFirst)
 {
     std::vector<Vector2f> foots;
     foots.push_back({0.f, +footSpread});
     foots.push_back({0.f, -footSpread});
     if (leftSwingFirst)
     {
-        for (int i = 0; i < nSteps; i++)
+        for (unsigned i = 0; i < nSteps; i++)
         {
             foots.push_back({(i + 1) * stepLength, pow(-1, i) * footSpread});
         }
@@ -94,7 +111,7 @@ std::vector<Eigen::Vector2f> FootstepsController::generateFootsteps(float stepLe
     }
     else
     {
-        for (int i = 0; i < nSteps; i++)
+        for (unsigned i = 0; i < nSteps; i++)
         {
             foots.push_back({(i + 1) * stepLength, pow(-1, i + 1) * footSpread});
         }

@@ -7,6 +7,7 @@
 #include "Representations/Motion/FootstepControllerState.h"
 #include "Representations/Sensing/FloatingBaseEstimation.h"
 #include "Representations/Configuration/RobotDimensions.h"
+#include "Modules/Motion/Footstep/FuzzyPID.h"
 #include "Tools/Module/Blackboard.h"
 
 class BalanceActionSelectorBase
@@ -33,4 +34,5 @@ private:
 
 private:
     BalanceActionSelection::BalanceAction action = BalanceActionSelection::compliance;
+    FuzzyPID fuzzyPID;
 };

@@ -9,7 +9,7 @@ class Point
 {
 public:
     Point() = default;
-    Point(Eigen::Vector3f pos, Eigen::Vector3f vel, Eigen::Vector3f accel)
+    Point(Eigen::Vector3f pos, Eigen::Vector3f vel, Eigen::Vector3f accel = Eigen::Vector3f::Zero())
     {
         this->p_ = pos;
         this->pd_ = vel;
