@@ -10,6 +10,7 @@ public:
     unsigned nSteps;
     bool leftSwingFirst;
     
+    Vector3f hipPosition;
     Vector3f comPosition;
     Vector3f comVelocity;
     Vector3f comAcceleration;

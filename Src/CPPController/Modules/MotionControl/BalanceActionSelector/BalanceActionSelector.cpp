@@ -41,6 +41,9 @@ BalanceActionSelection::BalanceAction BalanceActionSelector::handleState()
         Vector3f comPosition = theFloatingBaseEstimation->WTB.translation();
         comPosition.x() -= theRobotDimensions->leftAnkleToSoleCenter.x(); //< Convert coordinates to Contact surface frame.
         theFootstepControllerState->comPosition = comPosition;
+        Vector3f hipPosition = theFloatingBaseEstimation->WTO.translation();
+        hipPosition.x() -= theRobotDimensions->leftAnkleToSoleCenter.x(); //< Convert coordinates to Contact surface frame.
+        theFootstepControllerState->hipPosition = hipPosition;
         Vector3f comVelocity = theFloatingBaseEstimation->comVelocity;
         theFootstepControllerState->comVelocity = comVelocity;
         theFootstepControllerState->comAcceleration = {0.f, 0.f, 0.f};

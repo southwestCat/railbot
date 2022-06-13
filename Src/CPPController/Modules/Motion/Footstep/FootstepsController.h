@@ -6,6 +6,8 @@
 #include "Representations/Motion/FootstepControllerState.h"
 #include "Representations/Motion/BalanceTarget.h"
 #include "Representations/MotionControl/BalanceActionSelection.h"
+#include "Representations/Configuration/RobotDimensions.h"
+#include "Modules/Motion/MotionConfigure.h"
 #include "Tools/Module/Blackboard.h"
 #include "Tools/Math/Constants.h"
 #include "Tools/Math/Eigen.h"
@@ -17,6 +19,7 @@ public:
 
     USES_REPRESENTATION(FootstepControllerState);
     USES_REPRESENTATION(BalanceActionSelection);
+    USES_REPRESENTATION(RobotDimensions);
 
     MODIFIES_REPRESENTATION(BalanceTarget);
 };
@@ -80,6 +83,13 @@ private:
     std::vector<Vector2f> footsteps;
     bool finished = false;
     bool initialState = false;
+    JointRequest jointRequest_;
+    bool updatedJointRequest = false;
+
+    Vector2f hip;            //< hip position in world frame.
+    Vector2f hipInitialPos_; //< hip initial position in world frame.
+    Vector2f comInitialPos_; //< com initial position in world frame.
+    const float hipHeight_ = MotionConfig::hipHeight;
 
 private:
     std::vector<Eigen::Vector2f> generateFootsteps(float stepLength, float footSpread, unsigned nSteps, bool leftSwingFirst = true);
@@ -95,13 +105,15 @@ private:
     void startCoMMPCdsp();
     void runDoubleSupport();
     void startSingleSupport();
-    void startSwingFoot();
     void startCoMMPCssp();
     void runSingleSupport();
     void runSwingFoot();
     void runCOMMPC();
     void updateMPC(float dsp_duration, float ssp_duration);
-    void updateInitialState();
+    void recoveryToStand();
+    void calcJointInDoubleSupport();
+    void calcJointInSingleSupport();
 
     void setInitialState();
+    void test();
 };

@@ -1,4 +1,6 @@
 #include "FootstepsController.h"
+#include "SpaceVecAlg/PTransform.h"
+#include "Tools/Motion/InverseKinematic.h"
 #include "Tools/Module/ModuleManager.h"
 
 FootstepsController::FootstepsController()
@@ -8,37 +10,6 @@ FootstepsController::FootstepsController()
     ssp_duration = round(0.7 / dt) * dt; //< 0.696s
     fsm = WalkingFSM(ssp_duration, dsp_duration, dt);
     startStanding();
-}
-
-void FootstepsController::updateInitialState()
-{
-    static bool once = false;
-    if (once)
-        return;
-
-    // Vector3f pos = theMPCControllerState->comPosition;
-    // Vector3f vel = theMPCControllerState->comVelocity;
-    // Vector3f acc = theMPCControllerState->comAcceleration;
-    // float stepLength = theMPCControllerState->stepLength;
-    // float footSpread = theMPCControllerState->footSpread;
-    // float nSteps = theMPCControllerState->nSteps;
-    // bool leftSwingFirst = theMPCControllerState->leftSwingFirst;
-
-    Vector3f pos = Vector3f(0.f, 0.f, 260.f);
-    Vector3f vel = Vector3f(0.f, 0.f, 0.f);
-    Vector3f acc = Vector3f(0.f, 0.f, 0.f);
-    float stepLength = 100.f;
-    float footSpread = 50.f;
-    float nSteps = 1;
-    bool leftSwingFirst = true;
-
-    comHeight = pos.z();
-    com = Point(pos, vel, acc);
-    footsteps = generateFootsteps(stepLength, footSpread, nSteps, leftSwingFirst);
-
-    startStanding();
-
-    once = true;
 }
 
 void FootstepsController::update()
@@ -61,12 +32,22 @@ void FootstepsController::update(FootstepJointRequest &j)
     setInitialState();
 
     //! Initial JointRequest
-    for (int i = 0; i <= Joints::rAnkleRoll; i++)
+    for (int i = Joints::firstLegJoint; i <= Joints::rAnkleRoll; i++)
     {
         j.angles[i] = theBalanceTarget->lastJointRequest.angles[i];
     }
 
     exec();
+    // test();
+
+    //! update request
+    if (!updatedJointRequest)
+        return;
+    for (int i = Joints::firstLegJoint; i <= Joints::rAnkleRoll; i++)
+    {
+        j.angles[i] = jointRequest_.angles[i];
+    }
+    updatedJointRequest = false;
 }
 
 void FootstepsController::setInitialState()
@@ -82,9 +63,15 @@ void FootstepsController::setInitialState()
     comVelocity.y() = 0.f;
     comVelocity.z() = 0.f;
     com = {comPosition, comVelocity};
+    comInitialPos_ = {comPosition.x(), comPosition.y()};
 
     //! Set comHeight
     comHeight = comPosition.z();
+
+    //! Calculate initial hip position
+    float hipInitialX = theFootstepControllerState->hipPosition.x();
+    float hipInitialY = theFootstepControllerState->hipPosition.y();
+    hipInitialPos_ = {hipInitialX, hipInitialY};
 
     //! Generate footsteps
     float stepLength = theFootstepControllerState->stepLength;
@@ -102,10 +89,11 @@ void FootstepsController::setInitialState()
 std::vector<Eigen::Vector2f> FootstepsController::generateFootsteps(float stepLength, float footSpread, unsigned nSteps, bool leftSwingFirst)
 {
     std::vector<Vector2f> foots;
-    foots.push_back({0.f, +footSpread});
-    foots.push_back({0.f, -footSpread});
+
     if (leftSwingFirst)
     {
+        foots.push_back({0.f, +footSpread});
+        foots.push_back({0.f, -footSpread});
         for (unsigned i = 0; i < nSteps; i++)
         {
             foots.push_back({(i + 1) * stepLength, pow(-1, i) * footSpread});
@@ -115,6 +103,8 @@ std::vector<Eigen::Vector2f> FootstepsController::generateFootsteps(float stepLe
     }
     else
     {
+        foots.push_back({0.f, -footSpread});
+        foots.push_back({0.f, +footSpread});
         for (unsigned i = 0; i < nSteps; i++)
         {
             foots.push_back({(i + 1) * stepLength, pow(-1, i + 1) * footSpread});
@@ -176,7 +166,7 @@ void FootstepsController::startDoubleSupport()
     fsm.next_footstep += 1;
     if (fsm.next_footstep == footsteps.size())
     {
-        return startStanding();
+        return recoveryToStand();
     }
     // cout << "cur: " << fsm.cur_footstep << " next: " << fsm.next_footstep << endl;
     float dspDuration = fsm.dsp_duration;
@@ -205,20 +195,154 @@ void FootstepsController::runDoubleSupport()
         return startSingleSupport();
     }
     runCOMMPC();
+    calcJointInDoubleSupport();
     fsm.rem_time -= dt;
+}
+
+void FootstepsController::calcJointInDoubleSupport()
+{
+    bool left = theFootstepControllerState->leftSwingFirst;
+
+    Pose3f targetL;
+    Pose3f targetR;
+    sva::PTransform OTL;
+    sva::PTransform OTR;
+    //! WTO
+    hip = hipInitialPos_ + Vector2f(com.x(), com.y()) - comInitialPos_;
+    Vector3f WPO = {hip.x(), hip.y(), hipHeight_};
+    Matrix3f WRO = Matrix3f::Identity();
+    sva::PTransform WTO = {WRO, WPO};
+
+    if (left) //< Left swing first
+    {
+        if (fsm.cur_footstep % 2 == 1) //< Right stance cur_footsteps
+        {
+            //! WTR
+            Vector3f WPR = {footsteps.at(fsm.cur_footstep).x(), footsteps.at(fsm.cur_footstep).y(), 0.f};
+            Matrix3f WRR = Matrix3f::Identity();
+            sva::PTransform WTR = {WRR, WPR};
+            //! RTSR
+            Vector3f RPSR = {-theRobotDimensions->rightAnkleToSoleCenter.x(), -theRobotDimensions->rightAnkleToSoleCenter.y(), 0.f};
+            Matrix3f RRSR = Matrix3f::Identity();
+            sva::PTransform RTSR = {RRSR, RPSR};
+            //! OTR
+            sva::PTransform OTR = WTO.inv() * WTR * RTSR;
+            //! target R
+            targetR = {OTR.rotation(), OTR.translation()};
+
+            //! WTL
+            Vector3f WPL = {footsteps.at(fsm.cur_footstep - 1).x(), footsteps.at(fsm.cur_footstep - 1).y(), 0.f};
+            Matrix3f WRL = Matrix3f::Identity();
+            sva::PTransform WTL = {WRL, WPL};
+            //! LTSL
+            Vector3f LPSL = {-theRobotDimensions->leftAnkleToSoleCenter.x(), -theRobotDimensions->leftAnkleToSoleCenter.y(), 0.f};
+            Matrix3f LRSL = Matrix3f::Identity();
+            sva::PTransform LTSL = {LRSL, LPSL};
+            //! OTL
+            sva::PTransform OTL = WTO.inv() * WTL * LTSL;
+            //! target L
+            targetL = {OTL.rotation(), OTL.translation()};
+        }
+        else //< left stance cur_footsteps
+        {
+            //! WTL
+            Vector3f WPL = {footsteps.at(fsm.cur_footstep).x(), footsteps.at(fsm.cur_footstep).y(), 0.f};
+            Matrix3f WRL = Matrix3f::Identity();
+            sva::PTransform WTL = {WRL, WPL};
+            //! LTSL
+            Vector3f LPSL = {-theRobotDimensions->leftAnkleToSoleCenter.x(), -theRobotDimensions->leftAnkleToSoleCenter.y(), 0.f};
+            Matrix3f LRSL = Matrix3f::Identity();
+            sva::PTransform LTSL = {LRSL, LPSL};
+            //! OTL
+            sva::PTransform OTL = WTO.inv() * WTL * LTSL;
+            //! targer L
+            targetL = {OTL.rotation(), OTL.translation()};
+
+            //! WTR
+            Vector3f WPR = {footsteps.at(fsm.cur_footstep - 1).x(), footsteps.at(fsm.cur_footstep - 1).y(), 0.f};
+            Matrix3f WRR = Matrix3f::Identity();
+            sva::PTransform WTR = {WRR, WPR};
+            //! RTSR
+            Vector3f RPSR = {-theRobotDimensions->rightAnkleToSoleCenter.x(), -theRobotDimensions->rightAnkleToSoleCenter.y(), 0.f};
+            Matrix3f RRSR = Matrix3f::Identity();
+            sva::PTransform RTSR = {RRSR, RPSR};
+            //! OTR
+            sva::PTransform OTR = WTO.inv() * WTR * RTSR;
+            //! target R
+            targetR = {OTR.rotation(), OTR.translation()};
+        }
+    }
+    else //< Right swing first
+    {
+        if (fsm.cur_footstep % 2 == 1) //< Left stance cur_footsteps
+        {
+            //! WTL
+            Vector3f WPL = {footsteps.at(fsm.cur_footstep).x(), footsteps.at(fsm.cur_footstep).y(), 0.f};
+            Matrix3f WRL = Matrix3f::Identity();
+            sva::PTransform WTL = {WRL, WPL};
+            //! LTSL
+            Vector3f LPSL = {-theRobotDimensions->leftAnkleToSoleCenter.x(), -theRobotDimensions->leftAnkleToSoleCenter.y(), 0.f};
+            Matrix3f LRSL = Matrix3f::Identity();
+            sva::PTransform LTSL = {LRSL, LPSL};
+            //! OTL
+            sva::PTransform OTL = WTO.inv() * WTL * LTSL;
+            //! target L
+            targetL = {OTL.rotation(), OTL.translation()};
+
+            //! WTR
+            Vector3f WPR = {footsteps.at(fsm.cur_footstep - 1).x(), footsteps.at(fsm.cur_footstep - 1).y(), 0.f};
+            Matrix3f WRR = Matrix3f::Identity();
+            sva::PTransform WTR = {WRR, WPR};
+            //! RTSR
+            Vector3f RPSR = {-theRobotDimensions->rightAnkleToSoleCenter.x(), -theRobotDimensions->rightAnkleToSoleCenter.y(), 0.f};
+            Matrix3f RRSR = Matrix3f::Identity();
+            sva::PTransform RTSR = {RRSR, RPSR};
+            //! OTR
+            sva::PTransform OTR = WTO.inv() * WTR * RTSR;
+            //! target R
+            targetR = {OTR.rotation(), OTR.translation()};
+        }
+        else //< Right stance cur_footsteps
+        {
+            //! WTR
+            Vector3f WPR = {footsteps.at(fsm.cur_footstep).x(), footsteps.at(fsm.cur_footstep).y(), 0.f};
+            Matrix3f WRR = Matrix3f::Identity();
+            sva::PTransform WTR = {WRR, WPR};
+            //! RTSR
+            Vector3f RPSR = {-theRobotDimensions->rightAnkleToSoleCenter.x(), -theRobotDimensions->rightAnkleToSoleCenter.y(), 0.f};
+            Matrix3f RRSR = Matrix3f::Identity();
+            sva::PTransform RTSR = {RRSR, RPSR};
+            //! OTR
+            sva::PTransform OTR = WTO.inv() * WTR * RTSR;
+            //! target R
+            targetR = {OTR.rotation(), OTR.translation()};
+
+            //! WTL
+            Vector3f WPL = {footsteps.at(fsm.cur_footstep - 1).x(), footsteps.at(fsm.cur_footstep - 1).y(), 0.f};
+            Matrix3f WRL = Matrix3f::Identity();
+            sva::PTransform WTL = {WRL, WPL};
+            //! LTSL
+            Vector3f LPSL = {-theRobotDimensions->leftAnkleToSoleCenter.x(), -theRobotDimensions->leftAnkleToSoleCenter.y(), 0.f};
+            Matrix3f LRSL = Matrix3f::Identity();
+            sva::PTransform LTSL = {LRSL, LPSL};
+            //! OTL
+            sva::PTransform OTL = WTO.inv() * WTL * LTSL;
+            //! target L
+            targetL = {OTL.rotation(), OTL.translation()};
+        }
+    }
+
+    //! Calculate jointRequest.
+    bool isPossible = InverseKinematic::calcLegJoints(targetL, targetR, Vector2f::Zero(), jointRequest_, *theRobotDimensions);
+    updatedJointRequest = isPossible;
 }
 
 void FootstepsController::startSingleSupport()
 {
     fsm.rem_time = fsm.ssp_duration;
     fsm.state = WalkingFSM::SingleSupport;
-    startSwingFoot();
     startCoMMPCssp();
     return runSingleSupport();
-}
-
-void FootstepsController::startSwingFoot()
-{
 }
 
 void FootstepsController::startCoMMPCssp()
@@ -234,7 +358,17 @@ void FootstepsController::runSingleSupport()
     }
     runSwingFoot();
     runCOMMPC();
+    calcJointInSingleSupport();
     fsm.rem_time -= dt;
+}
+
+void FootstepsController::calcJointInSingleSupport()
+{
+    float ratio = (fsm.ssp_duration - fsm.rem_time) / fsm.ssp_duration;
+    float theta = ratio * 2 * pi;
+    float a = theFootstepControllerState->stepLength / 2 / pi;
+    float x = a * (theta - sin(theta)); //< footsteps.x() += x
+    float z = a * (1 - cos(theta));     //< footsteps.z() += z
 }
 
 void FootstepsController::runSwingFoot()
@@ -351,4 +485,55 @@ void FootstepsController::updateMPC(float dsp_duration, float ssp_duration)
     x_mpc.solve();
     y_mpc.solve();
     fsm.preview_time = 0.f;
+}
+
+void FootstepsController::recoveryToStand()
+{
+    //! TODO
+
+    //! return to initial standing.
+    startStanding();
+}
+
+void FootstepsController::test()
+{
+    const float x = hipInitialPos_.x();
+    const float y = hipInitialPos_.y();
+    static float t = 0.f;
+    float yOffset = 10.f * sin(2 * pi * t / 4.f);
+
+    //! WTO: bhuman frame in world frame.
+    Vector3f WPO = {x, y + yOffset, hipHeight_};
+    Matrix3f WRO = Matrix3f::Identity();
+    sva::PTransform WTO = {WRO, WPO};
+
+    //! WTL: left contact surface frame in world frame.
+    Vector3f WPL = {0.f, 50.f, 0.f};
+    Matrix3f WRL = Matrix3f::Identity();
+    sva::PTransform WTL = {WRL, WPL};
+    //! LTSL: sole left frame in left contact surface frame.
+    Vector3f LPSL = {-theRobotDimensions->leftAnkleToSoleCenter.x(), -theRobotDimensions->leftAnkleToSoleCenter.y(), 0.f};
+    Matrix3f LRSL = Matrix3f::Identity();
+    sva::PTransform LTSL = {LRSL, LPSL};
+    //! OTSL: sole left frame in bhuman frame.
+    sva::PTransform OTSL = WTO.inv() * WTL * LTSL;
+    Pose3f targetL = {OTSL.rotation(), OTSL.translation()};
+
+    //! WTR: right contact surface frame in world frame.
+    Vector3f WPR = {0.f, -50.f, 0.f};
+    Matrix3f WRR = Matrix3f::Identity();
+    sva::PTransform WTR = {WRR, WPR};
+    //! RTSR: sole right frame in right contact surface frame.
+    Vector3f RPSR = {-theRobotDimensions->rightAnkleToSoleCenter.x(), -theRobotDimensions->rightAnkleToSoleCenter.y(), 0.f};
+    Matrix3f RRSR = Matrix3f::Identity();
+    sva::PTransform RTSR = {RRSR, RPSR};
+    //! OTSR: sole right frame in bhuman frame.
+    sva::PTransform OTSR = WTO.inv() * WTR * RTSR;
+    Pose3f targetR = {OTSR.rotation(), OTSR.translation()};
+
+    //! Calculate jointRequest.
+    bool isPossible = InverseKinematic::calcLegJoints(targetL, targetR, Vector2f::Zero(), jointRequest_, *theRobotDimensions);
+
+    //! update time.
+    t += dt;
 }
