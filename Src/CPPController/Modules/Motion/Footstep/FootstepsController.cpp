@@ -364,11 +364,87 @@ void FootstepsController::runSingleSupport()
 
 void FootstepsController::calcJointInSingleSupport()
 {
-    float ratio = (fsm.ssp_duration - fsm.rem_time) / fsm.ssp_duration;
+    bool left = theFootstepControllerState->leftSwingFirst;
+
+    Pose3f targetL;
+    Pose3f targetR;
+    sva::PTransform OTL;
+    sva::PTransform OTR;
+    //! WTO
+    hip = hipInitialPos_ + Vector2f(com.x(), com.y()) - comInitialPos_;
+    Vector3f WPO = {hip.x(), hip.y(), hipHeight_};
+    Matrix3f WRO = Matrix3f::Identity();
+    sva::PTransform WTO = {WRO, WPO};
+
+    //! Cycloid swing foot path
+    float ratio = fsm.rem_time / fsm.ssp_duration;
     float theta = ratio * 2 * pi;
     float a = theFootstepControllerState->stepLength / 2 / pi;
     float x = a * (theta - sin(theta)); //< footsteps.x() += x
-    float z = a * (1 - cos(theta));     //< footsteps.z() += z
+    float z = a * (1.f - cos(theta));   //< footsteps.z() += z
+
+    if (left) //< Left swing first
+    {
+        if (fsm.cur_footstep % 2 == 1) //< left swing
+        {
+            //! WTL
+            Vector3f WPL = {footsteps.at(fsm.next_footstep).x() - x, footsteps.at(fsm.next_footstep).y(), z};
+            Matrix3f WRL = Matrix3f::Identity();
+            sva::PTransform WTL = {WRL, WPL};
+            //! LTSL
+            Vector3f LPSL = {-theRobotDimensions->leftAnkleToSoleCenter.x(), -theRobotDimensions->leftAnkleToSoleCenter.y(), 0.f};
+            Matrix3f LRSL = Matrix3f::Identity();
+            sva::PTransform LTSL = {LRSL, LPSL};
+            //! OTL
+            sva::PTransform OTL = WTO.inv() * WTL * LTSL;
+            //! target L
+            targetL = {OTL.rotation(), OTL.translation()};
+
+            //! WTR
+            Vector3f WPR = {footsteps.at(fsm.cur_footstep).x(), footsteps.at(fsm.cur_footstep).y(), 0.f};
+            Matrix3f WRR = Matrix3f::Identity();
+            sva::PTransform WTR = {WRR, WPR};
+            //! RTSR
+            Vector3f RPSR = {-theRobotDimensions->rightAnkleToSoleCenter.x(), -theRobotDimensions->rightAnkleToSoleCenter.y(), 0.f};
+            Matrix3f RRSR = Matrix3f::Identity();
+            sva::PTransform RTSR = {RRSR, RPSR};
+            //! OTR
+            sva::PTransform OTR = WTO.inv() * WTR * RTSR;
+            //! target R
+            targetR = {OTR.rotation(), OTR.translation()};
+        }
+        else //< right swing
+        {
+            //! WTR
+            Vector3f WPR = {footsteps.at(fsm.next_footstep).x() - x, footsteps.at(fsm.next_footstep).y(), z};
+            Matrix3f WRR = Matrix3f::Identity();
+            sva::PTransform WTR = {WRR, WPR};
+            //! RTSR
+            Vector3f RPSR = {-theRobotDimensions->rightAnkleToSoleCenter.x(), -theRobotDimensions->rightAnkleToSoleCenter.y(), 0.f};
+            Matrix3f RRSR = Matrix3f::Identity();
+            sva::PTransform RTSR = {RRSR, RPSR};
+            //! OTR
+            sva::PTransform OTR = WTO.inv() * WTR * RTSR;
+            //! target R
+            targetR = {OTR.rotation(), OTR.translation()};
+
+            //! WTL
+            Vector3f WPL = {footsteps.at(fsm.cur_footstep).x(), footsteps.at(fsm.cur_footstep).y(), 0.f};
+            Matrix3f WRL = Matrix3f::Identity();
+            sva::PTransform WTL = {WRL, WPL};
+            //! LTSL
+            Vector3f LPSL = {-theRobotDimensions->leftAnkleToSoleCenter.x(), -theRobotDimensions->leftAnkleToSoleCenter.y(), 0.f};
+            Matrix3f LRSL = Matrix3f::Identity();
+            sva::PTransform LTSL = {LRSL, LPSL};
+            //! OTL
+            sva::PTransform OTL = WTO.inv() * WTL * LTSL;
+            //! target L
+            targetL = {OTL.rotation(), OTL.translation()};
+        }
+    }
+    else //< Right swing first
+    {
+    }
 }
 
 void FootstepsController::runSwingFoot()
