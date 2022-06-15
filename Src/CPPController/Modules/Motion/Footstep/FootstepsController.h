@@ -43,6 +43,7 @@ private:
             Standing,
             DoubleSupport,
             SingleSupport,
+            recovery,
             Unknown
         } state;
 
@@ -90,6 +91,9 @@ private:
     Vector2f hipInitialPos_; //< hip initial position in world frame.
     Vector2f comInitialPos_; //< com initial position in world frame.
     const float hipHeight_ = MotionConfig::hipHeight;
+    float STEPHEIGHT_;
+
+    unsigned recoveryStartTime_;
 
 private:
     std::vector<Eigen::Vector2f> generateFootsteps(float stepLength, float footSpread, unsigned nSteps, bool leftSwingFirst = true);
@@ -107,7 +111,6 @@ private:
     void startSingleSupport();
     void startCoMMPCssp();
     void runSingleSupport();
-    void runSwingFoot();
     void runCOMMPC();
     void updateMPC(float dsp_duration, float ssp_duration);
     void recoveryToStand();
