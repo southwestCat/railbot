@@ -5,16 +5,26 @@
 
 FootstepsController::FootstepsController()
 {
+    //! Configuration
     rem_time = 0.f;
     dsp_duration = round(0.1 / dt) * dt; //< 0.096s
-    ssp_duration = round(0.7 / dt) * dt; //< 0.696s
+    ssp_duration = round(0.4 / dt) * dt; //< 0.696s
     fsm = WalkingFSM(ssp_duration, dsp_duration, dt);
+    ANKLEBALANCEOFFSET_ = 5_deg;
     startStanding();
+
+    f.open("com.txt");
+}
+
+FootstepsController::~FootstepsController()
+{
+    f.close();
 }
 
 void FootstepsController::update()
 {
     UPDATE_REPRESENTATION(FrameInfo);
+    UPDATE_REPRESENTATION(InertialData);
 }
 
 void FootstepsController::update(FootstepJointRequest &j)
@@ -38,6 +48,7 @@ void FootstepsController::update(FootstepJointRequest &j)
     }
 
     exec();
+    // balance();
     // test();
 
     //! update request
@@ -63,6 +74,7 @@ void FootstepsController::setInitialState()
     Vector3f comVelocity = theFootstepControllerState->comVelocity;
     comVelocity.y() = 0.f;
     comVelocity.z() = 0.f;
+    comPosition.y() = 0.f;
     com = {comPosition, comVelocity};
     comInitialPos_ = {comPosition.x(), comPosition.y()};
 
@@ -70,12 +82,22 @@ void FootstepsController::setInitialState()
     comHeight = comPosition.z();
 
     //! Set step height
-    STEPHEIGHT_ = 15.f;
+    STEPHEIGHT_ = 20.f;
 
     //! Calculate initial hip position
     float hipInitialX = theFootstepControllerState->hipPosition.x();
     float hipInitialY = theFootstepControllerState->hipPosition.y();
     hipInitialPos_ = {hipInitialX, hipInitialY};
+
+    //! Initial fsm
+    fsm.cur_footstep = 0;
+    fsm.next_footstep = 1;
+
+    //! Clear footsteps
+    if (!footsteps.empty())
+    {
+        f.clear();
+    }
 
     //! Generate footsteps
     float stepLength = theFootstepControllerState->stepLength;
@@ -175,6 +197,7 @@ void FootstepsController::startDoubleSupport()
     {
         fsm.state = WalkingFSM::recovery;
         recoveryStartTime_ = theFrameInfo->time;
+        recoveryStartJointRequest_ = jointRequest_;
         return recoveryToStand();
     }
     // cout << "cur: " << fsm.cur_footstep << " next: " << fsm.next_footstep << endl;
@@ -182,14 +205,13 @@ void FootstepsController::startDoubleSupport()
     //! The last double support time is increased to ensure robot can stop stably
     if (fsm.next_footstep == footsteps.size() - 1)
     {
-        dspDuration = 10 * fsm.dsp_duration;
+        dspDuration = 3 * fsm.dsp_duration;
     }
     stance_target = footsteps[fsm.cur_footstep];
     swing_target = footsteps[fsm.next_footstep];
     fsm.rem_time = dspDuration;
     fsm.state = WalkingFSM::DoubleSupport;
     startCoMMPCdsp();
-    printf("DoubleSupport.\n");
     runDoubleSupport();
 }
 
@@ -223,6 +245,10 @@ void FootstepsController::calcJointInDoubleSupport()
     Vector3f WPO = {hip.x(), hip.y(), hipHeight_};
     Matrix3f WRO = Matrix3f::Identity();
     sva::PTransform WTO = {WRO, WPO};
+
+    //! Printf info
+    // printf("%3.3f %3.3f %d\n", WPO.x(), WPO.y(), 0);
+    f << com.x() << " " << com.y() << " " << 0 << std::endl;
 
     if (left) //< Left swing first
     {
@@ -358,7 +384,6 @@ void FootstepsController::startSingleSupport()
     fsm.rem_time = fsm.ssp_duration;
     fsm.state = WalkingFSM::SingleSupport;
     startCoMMPCssp();
-    printf("SingleSupport.\n");
     return runSingleSupport();
 }
 
@@ -392,12 +417,36 @@ void FootstepsController::calcJointInSingleSupport()
     Matrix3f WRO = Matrix3f::Identity();
     sva::PTransform WTO = {WRO, WPO};
 
-    //! Cycloid swing foot path
-    float ratio = fsm.rem_time / fsm.ssp_duration;
-    float theta = ratio * 2 * pi;
-    float a = theFootstepControllerState->stepLength / 2 / pi;
-    float x = a * (theta - sin(theta));                       //< footsteps.x() += x
-    float z = a * (1.f - cos(theta)) / 2.f / a * STEPHEIGHT_; //< footsteps.z() += z
+    //! Print info
+    // printf("%3.3f %3.3f %d\n", WPO.x(), WPO.y(), 1);
+    f << com.x() << " " << com.y() << " " << 1 << std::endl;
+
+    const float KICKDOWN_TIME = 0.1f;
+    const float KICKDOWN_DEPTH = 1.f;
+    float remTime = fsm.ssp_duration - fsm.rem_time;
+    float x, z;
+    if (remTime < KICKDOWN_TIME)
+    {
+        x = 2 * theFootstepControllerState->stepLength;
+        if (fsm.cur_footstep == 1 || fsm.next_footstep == footsteps.size() - 1)
+        {
+            x = theFootstepControllerState->stepLength;
+        }
+        z = -KICKDOWN_DEPTH * sin(pi * remTime / KICKDOWN_TIME);
+    }
+    else
+    {
+        //! Cycloid swing foot path
+        float ratio = fsm.rem_time / (fsm.ssp_duration - KICKDOWN_TIME);
+        float theta = ratio * 2 * pi;
+        float a = 2 * theFootstepControllerState->stepLength / 2 / pi;
+        if (fsm.cur_footstep == 1 || fsm.next_footstep == footsteps.size() - 1)
+        {
+            a = a / 2.f;
+        }
+        x = a * (theta - sin(theta));                       //< footsteps.x() += x
+        z = a * (1.f - cos(theta)) / 2.f / a * STEPHEIGHT_; //< footsteps.z() += z
+    }
 
     if (left) //< Left swing first
     {
@@ -642,12 +691,102 @@ void FootstepsController::updateMPC(float dsp_duration, float ssp_duration)
 
 void FootstepsController::recoveryToStand()
 {
+    const float T = 0.5f;
     float t = (float)(theFrameInfo->time - recoveryStartTime_) / 1000.f;
+    Pose3f targetL = Pose3f(Vector3f(0.f, theRobotDimensions->yHipOffset, -hipHeight_));
+    Pose3f targetR = Pose3f(Vector3f(0.f, -theRobotDimensions->yHipOffset, -hipHeight_));
+    JointRequest j;
+    bool isPossible = InverseKinematic::calcLegJoints(targetL, targetR, Vector2f::Zero(), j, *theRobotDimensions);
+    updatedJointRequest = isPossible;
+
+    for (int i = 0; i <= Joints::rAnkleRoll; i++)
+    {
+        jointRequest_.angles[i] = recoveryStartJointRequest_.angles[i] + t / T * (j.angles[i] - recoveryStartJointRequest_.angles[i]);
+    }
+
+    //! Update BalanceTarget
+    theBalanceTarget->lastJointRequest = jointRequest_;
+    theBalanceTarget->soleLeftRequest = targetL;
+    theBalanceTarget->soleRightRequest = targetR;
+
     //! return to initial standing.
-    if (t > 1.f)
+    if (t > T)
     {
         return startStanding();
     }
+}
+
+void FootstepsController::balance()
+{
+    ankleBalance();
+
+    //! Update BalanceTarget
+    theBalanceTarget->lastJointRequest = jointRequest_;
+}
+
+void FootstepsController::ankleBalance()
+{
+    StanceFoot stance = getStanceFoot();
+
+    switch (stance)
+    {
+    case StanceFoot::left:
+        leftAnkleBalance();
+        break;
+    case StanceFoot::right:
+        rightAnkleBalance();
+    default:
+        break;
+    }
+}
+
+void FootstepsController::leftAnkleBalance()
+{
+    // const Vector3a &gyro = theInertialData->gyro;
+    // float gX = gyro.x();
+    // const float Kx = 1.f;
+    // float lAnkle = Kx * gX;
+    // jointRequest_.angles[Joints::lAnkleRoll] += lAnkle;
+}
+
+void FootstepsController::rightAnkleBalance()
+{
+    // const Vector3a &gyro = theInertialData->gyro;
+    // float gX = gyro.x();
+    // const float Kx = 1.f;
+    // float rAnkle = Kx * gX;
+    // jointRequest_.angles[Joints::rAnkleRoll] += rAnkle;
+}
+
+FootstepsController::StanceFoot FootstepsController::getStanceFoot()
+{
+    StanceFoot stance = StanceFoot::left;
+    bool left = theFootstepControllerState->leftSwingFirst;
+
+    if (left)
+    {
+        if (fsm.cur_footstep % 2 == 1)
+        {
+            stance = StanceFoot::right;
+        }
+        else
+        {
+            stance = StanceFoot::left;
+        }
+    }
+    else
+    {
+        if (fsm.cur_footstep % 2 == 1)
+        {
+            stance = StanceFoot::left;
+        }
+        else
+        {
+            stance = StanceFoot::right;
+        }
+    }
+
+    return stance;
 }
 
 void FootstepsController::test()
@@ -657,19 +796,28 @@ void FootstepsController::test()
     static float t = 0.f;
     float yOffset = com.y() - comInitialPos_.y();
 
+    float a = 80.f / 2.f / pi;
+    const float T = 1.f;
+    float theta = t < T ? t / T : 1.f;
+    float WTL_x = 0.f;
+    float WTL_y = 55.62f;
+    float WTL_z = 0.f;
+
+    // yOffset = 15.8f * theta;
+
     //! WTO: bhuman frame in world frame.
-    // Vector3f WPO = {x, y + yOffset, hipHeight_};
-    Vector3f WPO = {x, y, hipHeight_};
+    Vector3f WPO = {x, y + yOffset * 3.f, hipHeight_};
+    // Vector3f WPO = {x, y, hipHeight_};
     Matrix3f WRO = Matrix3f::Identity();
     sva::PTransform WTO = {WRO, WPO};
 
     //! WTL: left contact surface frame in world frame.
-    float a = 80.f / 2.f / pi;
-    const float T = 1.f;
-    float theta = t < T ? t / T * 2 * pi : 2 * pi;
-    float WTL_x = a * (theta - sin(theta));
-    float WTL_y = 55.62f;
-    float WTL_z = (1 - cos(theta)) * 5.f;
+
+    // float theta = t < T ? t / T * 2 * pi : 2 * pi;
+    // float WTL_x = a * (theta - sin(theta));
+    // float WTL_y = 55.62f;
+    // float WTL_z = (1 - cos(theta)) * 5.f;
+
     Vector3f WPL = {WTL_x, WTL_y, WTL_z};
     Matrix3f WRL = Matrix3f::Identity();
     sva::PTransform WTL = {WRL, WPL};

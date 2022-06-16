@@ -7,15 +7,19 @@
 #include "Representations/Motion/BalanceTarget.h"
 #include "Representations/MotionControl/BalanceActionSelection.h"
 #include "Representations/Configuration/RobotDimensions.h"
+#include "Representations/Sensing/InertialData.h"
 #include "Modules/Motion/MotionConfigure.h"
 #include "Tools/Module/Blackboard.h"
 #include "Tools/Math/Constants.h"
 #include "Tools/Math/Eigen.h"
 
+#include <fstream>
+
 class FootstepsControllerBase
 {
 public:
     REQUIRES_REPRESENTATION(FrameInfo);
+    REQUIRES_REPRESENTATION(InertialData);
 
     USES_REPRESENTATION(FootstepControllerState);
     USES_REPRESENTATION(BalanceActionSelection);
@@ -28,6 +32,7 @@ class FootstepsController : public FootstepsControllerBase
 {
 public:
     FootstepsController();
+    ~FootstepsController();
 
     void update(FootstepJointRequest &j);
 
@@ -69,6 +74,12 @@ private:
         float dt;
     };
 
+    enum class StanceFoot
+    {
+        left,
+        right
+    };
+
     const float dt = Constants::motionCycleTime;
     float comHeight;
     bool start_walking = false;
@@ -83,8 +94,9 @@ private:
     Point com;
     std::vector<Vector2f> footsteps;
     bool finished = false;
-    bool initialState = false;
+    volatile bool initialState = false;
     JointRequest jointRequest_;
+    JointRequest recoveryStartJointRequest_;
     bool updatedJointRequest = false;
 
     Vector2f hip;            //< hip position in world frame.
@@ -92,8 +104,11 @@ private:
     Vector2f comInitialPos_; //< com initial position in world frame.
     const float hipHeight_ = MotionConfig::hipHeight;
     float STEPHEIGHT_;
+    float ANKLEBALANCEOFFSET_;
 
     unsigned recoveryStartTime_;
+
+    std::ofstream f;
 
 private:
     std::vector<Eigen::Vector2f> generateFootsteps(float stepLength, float footSpread, unsigned nSteps, bool leftSwingFirst = true);
@@ -116,6 +131,11 @@ private:
     void recoveryToStand();
     void calcJointInDoubleSupport();
     void calcJointInSingleSupport();
+    void balance();
+    void ankleBalance();
+    void leftAnkleBalance();
+    void rightAnkleBalance();
+    StanceFoot getStanceFoot();
 
     void setInitialState();
     void test();

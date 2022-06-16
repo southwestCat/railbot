@@ -52,7 +52,7 @@ BalanceActionSelection::BalanceAction BalanceActionSelector::handleState()
         //! Caculate Capture Point
 
         //! Fuzzy PID
-        theFootstepControllerState->stepLength = 100.f;
+        theFootstepControllerState->stepLength = 60.f;
         theFootstepControllerState->nSteps = 1;
         theFootstepControllerState->leftSwingFirst = true;
 
