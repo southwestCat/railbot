@@ -31,6 +31,14 @@ void BalanceActionSelector::update(BalanceActionSelection &o)
 
 BalanceActionSelection::BalanceAction BalanceActionSelector::handleState()
 {
+    fuzzyPID.calculate();
+    static bool once = true;
+    if (once)
+    {
+        fuzzyPID.printFuzzyTable();
+        once = false;
+    }
+
     if (theKeyStates->pressed[KeyStates::headFront])
     {
         action = BalanceActionSelection::compliance;
@@ -49,9 +57,9 @@ BalanceActionSelection::BalanceAction BalanceActionSelector::handleState()
         theFootstepControllerState->comAcceleration = {0.f, 0.f, 0.f};
         theFootstepControllerState->footSpread = theRobotDimensions->yHipOffset;
 
-        //! Caculate Capture Point
-
         //! Fuzzy PID
+
+        //! Set Footstep params
         theFootstepControllerState->stepLength = 60.f;
         theFootstepControllerState->nSteps = 1;
         theFootstepControllerState->leftSwingFirst = true;
