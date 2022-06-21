@@ -38,5 +38,5 @@ private:
 private:
     sva::ForceVec netWrench_;
     Vector3f netZMP_;
-    const FsrSensorData *fsr;
+    // const FsrSensorData *fsr;
 };

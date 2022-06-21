@@ -18,53 +18,8 @@ void DCMController::update(DCMJointRequest &s)
 {
     update();
 
-    if (theBalanceActionSelection->targetAction != BalanceActionSelection::dcm)
-    {
-        startJoints_ = *theJointAngles;
-    }
-
-    // if (theLegMotionSelection->targetMotion != MotionRequest::balance)
-    // {
-    //     startTime = theFrameInfo->time;
-    //     float soleL = theRobotModel->soleLeft.translation.z();
-    //     float soleR = theRobotModel->soleRight.translation.z();
-    //     initHeight = abs((soleL + soleR) / 2.f);
-
-    //     startJoints_ = *theJointAngles;
-
-    //     return;
-    // }
-
-    // //! stand high to stand posture.
-    // if (!readyPosture(s))
-    //     return;
-
+    //! Update FloatingBaseEstimation and NetWrenchEstimation
     run(s);
-}
-
-bool DCMController::readyPosture(DCMJointRequest &s)
-{
-    unsigned nowTime = theFrameInfo->time - startTime;
-    if (nowTime > readyPostureTime)
-    {
-        return true;
-    }
-
-    float t = (float)nowTime / 1000.f;
-    const float duringT = (readyPostureTime) / 1000.f;
-    float target = hipHeight;
-    Pose3f targetL = Pose3f(Vector3f(0.f, theRobotDimensions->yHipOffset, -target));
-    Pose3f targetR = Pose3f(Vector3f(0.f, -theRobotDimensions->yHipOffset, -target));
-    bool isPossible = InverseKinematic::calcLegJoints(targetL, targetR, Vector2f::Zero(), targetJointRequest_, *theRobotDimensions);
-    for (int i = Joints::firstLegJoint; i <= Joints::rAnkleRoll; i++)
-    {
-        jointRequest_.angles[i] = startJoints_.angles[i] + t / duringT * (targetJointRequest_.angles[i] - startJoints_.angles[i]);
-    }
-    if (isPossible)
-    {
-        MotionUtilities::copy(jointRequest_, s, *theStiffnessSettings, Joints::firstLegJoint, Joints::rAnkleRoll);
-    }
-    return false;
 }
 
 void DCMController::configureOnce()
@@ -106,19 +61,27 @@ void DCMController::run(DCMJointRequest &s)
     stabilizer_.updateState(realCom_, realComd_, netWrenchObs_.wrench(), leftFootRatio_);
     stabilizer_.run();
 
+    //! Only run at BalanceActionSelection::dcm
+    if (theBalanceActionSelection->targetAction != BalanceActionSelection::dcm)
+        return;
+
     //! Initial JointRequest
     for (int i = 0; i <= Joints::rAnkleRoll; i++)
     {
         s.angles[i] = theBalanceTarget->lastJointRequest.angles[i];
     }
 
-    //! Only run at BalanceActionSelection::dcm
-    if (theBalanceActionSelection->targetAction != BalanceActionSelection::dcm)
-        return;
-
     //! Apply control
-    // applyAnkleControl(s);
-    applyCoMControl(s);
+    applyCoMControl();
+
+    //! Apply JointRequest
+    if (updateJointRequest)
+    {
+        for (unsigned i = Joints::firstLegJoint; i <= Joints::rAnkleRoll; i++)
+        {
+            s.angles[i] = jointRequest_.angles[i];
+        }
+    }
 }
 
 void DCMController::updateRealFromKinematics()
@@ -140,7 +103,8 @@ Contact DCMController::supportContact()
     return Contact(0.f, 0.f, pose, Contact::SurfaceType::defaultContact);
 }
 
-void DCMController::applyAnkleControl(DCMJointRequest &s)
+//! Not Recommand
+void DCMController::applyAnkleControl()
 {
     float left_roll_d;
     float left_pitch_d;
@@ -195,8 +159,11 @@ void DCMController::applyAnkleControl(DCMJointRequest &s)
     rightRollD = right_roll_d;
     rightPitchD = right_pitch_d;
 
-    s.angles[Joints::lAnklePitch] += leftPitchD * dt_;
-    s.angles[Joints::rAnklePitch] += rightPitchD * dt_;
+    jointRequest_.angles[Joints::lAnklePitch] += leftPitchD * dt_;
+    jointRequest_.angles[Joints::rAnklePitch] += rightPitchD * dt_;
+
+    //! Update BalanceTareger
+    theBalanceTarget->lastJointRequest = jointRequest_;
 
     // static float timeNow = 0.f;
     // float angleOffset = cos(pi/2.f * timeNow) * 3_deg;
@@ -228,45 +195,74 @@ void DCMController::applyAnkleControl(DCMJointRequest &s)
     // printf("----\n\n");
 }
 
-void DCMController::applyCoMControl(DCMJointRequest &s)
+void DCMController::applyCoMControl()
 {
-    const sva::PTransform &WTB = theFloatingBaseEstimation->WTB;
-    const sva::PTransform &OTA = theFloatingBaseEstimation->OTA;
+    const Vector2f leftCoP = theLeftFootTask->targetCoP;
+    const Vector2f rightCoP = theRightFootTask->targetCoP;
 
-    const Vector3f &com = WTB.translation();
-    Vector3f origin = OTA.inv().translation();
-    float comx = com.x();
+    Vector3f left_cop_target = Vector3f(leftCoP.x(), leftCoP.y(), 0.f) + Vector3f(30.f, 5.62f, 0.f);
+    Vector3f right_cop_target = Vector3f(rightCoP.x(), rightCoP.y(), 0.f) + Vector3f(30.f, -5.62f, 0.f);
 
-    float comK = 0.5f;
-    static float timeNow = 0.f;
-    // float comx_desire = 5.f * sin(pi / 4.f * timeNow - pi / 2.f) + 5.f;
-    float comx_desire = 0.f;
-    timeNow += dt_;
-    float comx_err = comx_desire - comx;
+    // mm to meter
+    left_cop_target.x() /= 1000.f;
+    left_cop_target.y() /= 1000.f;
+    right_cop_target.x() /= 1000.f;
+    right_cop_target.y() /= 1000.f;
 
-    if (abs(comx_err) < 2.f)
-    {
-        comK = 0.5f;
-    }
-    else if (abs(comx_err) < 5.f)
-    {
-        comK = 1.f;
-    }
-    else
-    {
-        comK = 2.f;
-    }
-    float comxd = comx_err * comK;
-    origin.x() += comxd * dt_;
-    // origin.x() = 10.f;
-    origin.z() = MotionConfig::hipHeight;
+    const Vector3f &left_f_measure = theNetWrenchEstimation->wrenchLeft.force();
+    const Vector3f &left_tau_measure = theNetWrenchEstimation->wrenchLeft.couple();
+    const Vector3f &right_f_measure = theNetWrenchEstimation->wrenchRight.force();
+    const Vector3f &right_tau_measure = theNetWrenchEstimation->wrenchRight.couple();
 
-    sva::PTransform modified_ATO = {Matrix3f::Identity(), origin};
-    Vector3f p_soleLeft = modified_ATO.inv().translation() + Vector3f(0.f, 50.f, 0.f);
-    Vector3f p_soleRight = modified_ATO.inv().translation() + Vector3f(0.f, -50.f, 0.f);
+    const float A_copy = 1000.f;
+    const float A_copx = 1000.f;
 
-    Pose3f targetL(p_soleLeft);
-    Pose3f targetR(p_soleRight);
+    Matrix2x3f A_cop;
+    A_cop << A_copy, 0, 0, 0, A_copx, 0;
 
-    bool isPossible = InverseKinematic::calcLegJoints(targetL, targetR, Vector2f::Zero(), jointRequest_, *theRobotDimensions);
+    Vector2f left_rollpitch_d = A_cop * (left_cop_target.cross(left_f_measure) - left_tau_measure);
+    Vector2f right_rollpitch_d = A_cop * (right_cop_target.cross(right_f_measure) - right_tau_measure);
+
+    leftAnkleVelFilter_.update(left_rollpitch_d);
+    rightAnkleVelFilter_.update(right_rollpitch_d);
+
+    const float left_pitch_d = leftAnkleVelFilter_.vel().y();
+    const float right_pitch_d = rightAnkleVelFilter_.vel().y();
+
+    const float pitchD = (left_pitch_d + right_pitch_d) / 2.f;
+
+    // printf(">\n");
+    // printf("left: %3.3f right: %3.3f\n", left_pitch_d, right_pitch_d);
+    // printf("----\n\n");
+
+    // const sva::PTransform &WTB = theFloatingBaseEstimation->WTB;
+    // const sva::PTransform &OTA = theFloatingBaseEstimation->OTA;
+
+    // const Vector3f &com = WTB.translation();
+    // Vector3f origin = OTA.inv().translation();
+    // float comx = com.x();
+
+    // float comK = 0.3f;
+    // float comx_desire = 0.f;
+    // float comx_err = comx_desire - comx;
+
+    // float comxd = comx_err * comK;
+    // origin.x() += comxd * dt_;
+    // // origin.x() = 10.f;
+    // origin.z() = MotionConfig::hipHeight;
+
+    // sva::PTransform modified_ATO = {Matrix3f::Identity(), origin};
+    // Vector3f p_soleLeft = modified_ATO.inv().translation() + Vector3f(0.f, 50.f, 0.f);
+    // Vector3f p_soleRight = modified_ATO.inv().translation() + Vector3f(0.f, -50.f, 0.f);
+
+    // Pose3f targetL(p_soleLeft);
+    // Pose3f targetR(p_soleRight);
+
+    // bool isPossible = InverseKinematic::calcLegJoints(targetL, targetR, Vector2f::Zero(), jointRequest_, *theRobotDimensions);
+    // updateJointRequest = isPossible;
+
+    // //! Update BalanceTarget
+    // theBalanceTarget->lastJointRequest = jointRequest_;
+    // theBalanceTarget->soleLeftRequest = targetL;
+    // theBalanceTarget->soleRightRequest = targetR;
 }

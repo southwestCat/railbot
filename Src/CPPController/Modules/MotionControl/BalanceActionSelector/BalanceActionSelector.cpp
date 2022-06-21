@@ -31,11 +31,13 @@ void BalanceActionSelector::update(BalanceActionSelection &o)
 
 BalanceActionSelection::BalanceAction BalanceActionSelector::handleState()
 {
-    fuzzyPID.calculate();
+    //! Configure FuzzyPID
     static bool once = true;
     if (once)
     {
-        fuzzyPID.printFuzzyTable();
+        fuzzyPID.setERange(-80.f, 80.f);
+        fuzzyPID.setECRange(-10.f, 10.f);
+        fuzzyPID.calculate();
         once = false;
     }
 
@@ -58,6 +60,9 @@ BalanceActionSelection::BalanceAction BalanceActionSelector::handleState()
         theFootstepControllerState->footSpread = theRobotDimensions->yHipOffset;
 
         //! Fuzzy PID
+        float x = comPosition.x();
+        float xd = comVelocity.x();
+        float stepLength = fuzzyPID.getU(x, xd);
 
         //! Set Footstep params
         theFootstepControllerState->stepLength = 60.f;

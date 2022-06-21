@@ -39,26 +39,26 @@ void FsrFilteredDataProvider::update(FsrFilteredData &fsr)
         }
     }
 
-    // float lfl = fsr.pressures[Legs::left][FsrSensors::fl];
-    // float lfr = fsr.pressures[Legs::left][FsrSensors::fr];
-    // float lbl = fsr.pressures[Legs::left][FsrSensors::bl];
-    // float lbr = fsr.pressures[Legs::left][FsrSensors::br];
+    float lfl = fsr.pressures[Legs::left][FsrSensors::fl];
+    float lfr = fsr.pressures[Legs::left][FsrSensors::fr];
+    float lbl = fsr.pressures[Legs::left][FsrSensors::bl];
+    float lbr = fsr.pressures[Legs::left][FsrSensors::br];
 
-    // float rfl = fsr.pressures[Legs::right][FsrSensors::fl];
-    // float rfr = fsr.pressures[Legs::right][FsrSensors::fr];
-    // float rbl = fsr.pressures[Legs::right][FsrSensors::bl];
-    // float rbr = fsr.pressures[Legs::right][FsrSensors::br];
+    float rfl = fsr.pressures[Legs::right][FsrSensors::fl];
+    float rfr = fsr.pressures[Legs::right][FsrSensors::fr];
+    float rbl = fsr.pressures[Legs::right][FsrSensors::bl];
+    float rbr = fsr.pressures[Legs::right][FsrSensors::br];
 
-    // float l_sum = lfl + lfr + lbl + lbr;
-    // float r_sum = rfl + rfr + rbl + rbr;
+    float l_sum = lfl + lfr + lbl + lbr;
+    float r_sum = rfl + rfr + rbl + rbr;
 
-    // printf("----------foot sensors----------\n");
-    // printf("   left       right\n");
-    // printf("+--------+ +--------+\n");
-    // printf("|%3.3f  %3.3f| |%3.3f  %3.3f|  front\n", lfl, lfr, rfl, rfr);
-    // printf("|        | |        |\n");
-    // printf("|%3.3f  %3.3f| |%3.3f  %3.3f|  back\n", lbl, lbr, rbl, rbr);
-    // printf("left: %3.3f, right: %3.3f\n", l_sum, r_sum);
-    // printf("total: %3.3f \n", l_sum + r_sum);
-    // printf("+--------+ +--------+\n");
+    printf("----------foot sensors----------\n");
+    printf("   left       right\n");
+    printf("+--------+ +--------+\n");
+    printf("|%3.3f  %3.3f| |%3.3f  %3.3f|  front\n", lfl, lfr, rfl, rfr);
+    printf("|        | |        |\n");
+    printf("|%3.3f  %3.3f| |%3.3f  %3.3f|  back\n", lbl, lbr, rbl, rbr);
+    printf("left: %3.3f, right: %3.3f\n", l_sum, r_sum);
+    printf("total: %3.3f \n", l_sum + r_sum);
+    printf("+--------+ +--------+\n");
 }

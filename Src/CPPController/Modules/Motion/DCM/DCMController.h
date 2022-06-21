@@ -50,9 +50,8 @@ private:
     void configureOnce();
     void updateRealFromKinematics();
     Contact supportContact();
-    void applyAnkleControl(DCMJointRequest &s);
-    void applyCoMControl(DCMJointRequest &s);
-    bool readyPosture(DCMJointRequest &s);
+    void applyAnkleControl();
+    void applyCoMControl();
 
 private:
     const float dt_ = Constants::motionCycleTime;
@@ -74,15 +73,12 @@ private:
     float rightRollD = 0.f;
     float rightPitchD = 0.f;
 
-private:
-    static constexpr float FOOT_DAMPING_ADMITTANCE_K_TauX = 0.001f;
-    static constexpr float FOOT_DAMPING_ADMITTANCE_K_TauY = 0.f;
+    bool updateJointRequest = false;
 
-    unsigned startTime;
-    const unsigned readyPostureTime = 1000;
-    float initHeight = 0.f;
+private:
+    static constexpr float FOOT_DAMPING_ADMITTANCE_K_TauX = 0.1f;
+    static constexpr float FOOT_DAMPING_ADMITTANCE_K_TauY = 0.1f;
+
     const int hipHeight = MotionConfig::hipHeight;
-    JointAngles startJoints_;
     JointRequest jointRequest_;
-    JointRequest targetJointRequest_;
 };

@@ -10,7 +10,6 @@ FootstepsController::FootstepsController()
     dsp_duration = round(0.1 / dt) * dt; //< 0.096s
     ssp_duration = round(0.4 / dt) * dt; //< 0.696s
     fsm = WalkingFSM(ssp_duration, dsp_duration, dt);
-    ANKLEBALANCEOFFSET_ = 5_deg;
     startStanding();
 
     f.open("com.txt");
@@ -205,7 +204,7 @@ void FootstepsController::startDoubleSupport()
     //! The last double support time is increased to ensure robot can stop stably
     if (fsm.next_footstep == footsteps.size() - 1)
     {
-        dspDuration = 3 * fsm.dsp_duration;
+        dspDuration = 10 * fsm.dsp_duration;
     }
     stance_target = footsteps[fsm.cur_footstep];
     swing_target = footsteps[fsm.next_footstep];
@@ -248,7 +247,7 @@ void FootstepsController::calcJointInDoubleSupport()
 
     //! Printf info
     // printf("%3.3f %3.3f %d\n", WPO.x(), WPO.y(), 0);
-    f << com.x() << " " << com.y() << " " << 0 << std::endl;
+    // f << com.x() << " " << com.y() << " " << 0 << std::endl;
 
     if (left) //< Left swing first
     {
@@ -419,10 +418,10 @@ void FootstepsController::calcJointInSingleSupport()
 
     //! Print info
     // printf("%3.3f %3.3f %d\n", WPO.x(), WPO.y(), 1);
-    f << com.x() << " " << com.y() << " " << 1 << std::endl;
+    // f << com.x() << " " << com.y() << " " << 1 << std::endl;
 
     const float KICKDOWN_TIME = 0.1f;
-    const float KICKDOWN_DEPTH = 1.f;
+    const float KICKDOWN_DEPTH = 0.2f;
     float remTime = fsm.ssp_duration - fsm.rem_time;
     float x, z;
     if (remTime < KICKDOWN_TIME)
@@ -432,7 +431,7 @@ void FootstepsController::calcJointInSingleSupport()
         {
             x = theFootstepControllerState->stepLength;
         }
-        z = -KICKDOWN_DEPTH * sin(pi * remTime / KICKDOWN_TIME);
+        z = -KICKDOWN_DEPTH * sin(2.f * pi * remTime / KICKDOWN_TIME);
     }
     else
     {

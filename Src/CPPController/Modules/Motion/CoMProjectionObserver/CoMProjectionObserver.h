@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Representations/Infrastructure/SensorData/FsrSensorData.h"
 #include "Representations/Motion/CoMProjectionEstimation.h"
 #include "Representations/Sensing/RobotModel.h"
 #include "Representations/Sensing/NetWrenchEstimation.h"

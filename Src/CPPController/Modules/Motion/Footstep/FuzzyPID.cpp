@@ -1,8 +1,31 @@
 #include "FuzzyPID.h"
 #include <iostream>
 #include <cmath>
+#include <cassert>
 
 using namespace std;
+
+float FuzzyPID::getU(float x, float xd)
+{
+    //! assert not configuration
+    assert(calculated);
+    assert(eMin != MinNoSet);
+    assert(eMax != MaxNoSet);
+    assert(ecMin != MinNoSet);
+    assert(ecMax != MaxNoSet);
+
+    //! Get fuzzification inputs
+    int e = fuzzificationE(x);
+    int ec = fuzzificationEC(xd);
+
+    //! assert e and ec out of range.
+    assert(e <= 6);
+    assert(e >= -6);
+    assert(ec <= 6);
+    assert(ec >= -6);
+
+    return Fuzzy_Table[e + 6][ec + 6];
+}
 
 void FuzzyPID::printFuzzyTable()
 {
@@ -172,7 +195,7 @@ int FuzzyPID::fuzzificationEC(float ec)
     const float a = ecMin;
     const float b = ecMax;
     int f = round((ec - (a + b) / 2.f) * 2.f * 6.f / (b - a));
-    
+
     if (f > 6)
         f = 6;
     if (f < -6)

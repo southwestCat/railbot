@@ -19,7 +19,7 @@ void NetWrenchObserver::update(const Contact &contact)
 void NetWrenchObserver::updateNetWrench()
 {
     // const FsrSensorData &fsr = *theFsrSensorData;
-    const FsrSensorData &fsr = *theFsrFilteredData;
+    const FsrFilteredData &fsr = *theFsrFilteredData;
 
     //! Force
     const float &Flfl = fsr.pressures[Legs::left][FsrSensors::fl];
