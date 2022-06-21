@@ -293,6 +293,10 @@ sva::ForceVec Stabilizer::computeLIPDesiredWrench()
 
     zmpError_ = pendulum_.zmp() - measuredZMP_;
 
+    printf(">\n");
+    
+    printf("----\n\n");
+
     zmpError_.z() = 0.f;
     dcmDerivator_.update(omega * (dcmError_ - zmpError_));
     dcmIntegrator_.append(dcmError_);

@@ -52,13 +52,13 @@ void FsrFilteredDataProvider::update(FsrFilteredData &fsr)
     float l_sum = lfl + lfr + lbl + lbr;
     float r_sum = rfl + rfr + rbl + rbr;
 
-    printf("----------foot sensors----------\n");
-    printf("   left       right\n");
-    printf("+--------+ +--------+\n");
-    printf("|%3.3f  %3.3f| |%3.3f  %3.3f|  front\n", lfl, lfr, rfl, rfr);
-    printf("|        | |        |\n");
-    printf("|%3.3f  %3.3f| |%3.3f  %3.3f|  back\n", lbl, lbr, rbl, rbr);
-    printf("left: %3.3f, right: %3.3f\n", l_sum, r_sum);
-    printf("total: %3.3f \n", l_sum + r_sum);
-    printf("+--------+ +--------+\n");
+    // printf("----------foot sensors----------\n");
+    // printf("   left       right\n");
+    // printf("+--------+ +--------+\n");
+    // printf("|%3.3f  %3.3f| |%3.3f  %3.3f|  front\n", lfl, lfr, rfl, rfr);
+    // printf("|        | |        |\n");
+    // printf("|%3.3f  %3.3f| |%3.3f  %3.3f|  back\n", lbl, lbr, rbl, rbr);
+    // printf("left: %3.3f, right: %3.3f\n", l_sum, r_sum);
+    // printf("total: %3.3f \n", l_sum + r_sum);
+    // printf("+--------+ +--------+\n");
 }

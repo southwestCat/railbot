@@ -200,6 +200,8 @@ void DCMController::applyCoMControl()
     const Vector2f leftCoP = theLeftFootTask->targetCoP;
     const Vector2f rightCoP = theRightFootTask->targetCoP;
 
+    // printf("left: %3.3f right: %3.3f\n", leftCoP.x(), rightCoP.x());
+
     Vector3f left_cop_target = Vector3f(leftCoP.x(), leftCoP.y(), 0.f) + Vector3f(30.f, 5.62f, 0.f);
     Vector3f right_cop_target = Vector3f(rightCoP.x(), rightCoP.y(), 0.f) + Vector3f(30.f, -5.62f, 0.f);
 
