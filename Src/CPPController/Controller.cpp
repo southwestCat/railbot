@@ -8,7 +8,8 @@
 #include "Processes/Cognition.h"
 #include "Tools/Module/BlackboardThread.h"
 
-using namespace std;
+using std::cout;
+using std::endl;
 
 static bool run = true;
 bool attemptingShutdown = false;

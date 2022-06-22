@@ -7,7 +7,11 @@
 class BalanceTarget
 {
 public:
+    //! Update information of Request
     Pose3f soleLeftRequest;
     Pose3f soleRightRequest;
     JointRequest lastJointRequest;
+
+    //! Update information of DCMController
+    bool updatePendulum = false;
 };

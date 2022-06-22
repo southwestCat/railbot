@@ -58,10 +58,12 @@ bool BalanceEngine::readyPosture(BalanceEngineOutput &o)
     unsigned nowTime = theFrameInfo->time - startTime;
     if (nowTime > readyPostureTime + readyWaitTime)
     {
+        theBalanceTarget->updatePendulum = false;
         return true;
     }
     else if (nowTime > readyPostureTime)
     {
+        theBalanceTarget->updatePendulum = true;
         return false;
     }
 

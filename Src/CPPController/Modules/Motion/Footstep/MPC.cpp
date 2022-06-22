@@ -3,7 +3,8 @@
 #include <iostream>
 
 using namespace Eigen;
-using namespace std;
+using std::cout;
+using std::endl;
 
 void Point::integrateConstantAcceleration(Vector3f pdd, float dt)
 {

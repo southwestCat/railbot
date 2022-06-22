@@ -174,9 +174,10 @@ void Stabilizer::updateZMPFrame()
         zmpPolygon_.push_back(rightFootContact.vertex2());
         zmpPolygon_.push_back(rightFootContact.vertex3());
     }
-    // measuredZMP_ = computeZMP();
-    measuredZMP_ = theNetWrenchEstimation->netZMP;
-    
+
+    //! convert to mm
+    measuredZMP_ = theNetWrenchEstimation->netZMP * 1000.f;
+
     // float zmpx = measuredZMP_.x();
     // float zmpy = measuredZMP_.y();
     // float zmpz = measuredZMP_.z();
@@ -189,7 +190,6 @@ Vector3f Stabilizer::computeZMP() const
 {
     const Pose3f &soleL = theRobotModel->soleLeft;
     const Pose3f &soleR = theRobotModel->soleRight;
-    // const FsrSensorData &fsr = *theFsrSensorData;
     const FsrFilteredData &fsr = *theFsrFilteredData;
 
     //! Force
@@ -261,6 +261,9 @@ void Stabilizer::run()
     updateSupportFootGains();
     updateZMPFrame();
 
+    //! Calculate wrenchFaceMatrix
+    wrenchFaceMatrix(theRobotDimensions->halfSoleLength / 1000.f, theRobotDimensions->halfSoleWidth / 1000.f, 0.3f);
+
     sva::ForceVec desiredWrench = computeDesiredWrench();
 
     distributeWrench(desiredWrench);
@@ -282,6 +285,7 @@ sva::ForceVec Stabilizer::computeDesiredWrench()
     return desiredWrench;
 }
 
+//! Unit: mm, mm/s^2, but return N.M and N
 sva::ForceVec Stabilizer::computeLIPDesiredWrench()
 {
     float omega = pendulum_.omega();
@@ -292,10 +296,6 @@ sva::ForceVec Stabilizer::computeLIPDesiredWrench()
     dcmError_.z() = 0.f;
 
     zmpError_ = pendulum_.zmp() - measuredZMP_;
-
-    printf(">\n");
-    
-    printf("----\n\n");
 
     zmpError_.z() = 0.f;
     dcmDerivator_.update(omega * (dcmError_ - zmpError_));
@@ -466,7 +466,7 @@ void Stabilizer::clampCoP(Vector2f &cop)
         cop.x() = copXMax;
     else if (cop.x() < -copXMax)
         cop.x() = -copXMax;
-    
+
     if (cop.y() > copYMax)
         cop.y() = copYMax;
     else if (cop.y() < -copYMax)
@@ -578,10 +578,19 @@ void Stabilizer::resetPendulum()
         // pendulum_.comHeight() = comHeight;
 
         //! reset pendulum
-        Vector3f com = theFloatingBaseEstimation->WTB.translation();
+        // Vector3f com = theFloatingBaseEstimation->WTB.translation();
+        Vector3f com = theFloatingBaseEstimation->WTO.translation();
         pendulum_.reset(com, {0.f, 0.f, 0.f}, {0.f, 0.f, 0.f});
         //! run once
         pendulum_.needReset() = false;
+    }
+
+    if (theBalanceTarget->updatePendulum)
+    {
+        // Vector3f com = theFloatingBaseEstimation->WTB.translation();
+        Vector3f com = theFloatingBaseEstimation->WTO.translation();
+        pendulum_.reset(com, {0.f, 0.f, 0.f}, {0.f, 0.f, 0.f});
+        theBalanceTarget->updatePendulum = false;
     }
 }
 

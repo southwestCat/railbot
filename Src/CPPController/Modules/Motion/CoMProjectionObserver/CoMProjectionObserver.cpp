@@ -44,6 +44,7 @@ void CoMProjectionObserver::update(CoMProjectionEstimation &o)
     float ecopx = comEstimated.x() * 1000.f;
     float ecopy = comEstimated.y() * 1000.f;
     o.estimatedCoP = {ecopx, ecopy}; //< convert to mm
+
     //! normalized estimated com projection
     float ecopxN = ecopx / o.normalizedX;
     float ecopyN = ecopy / o.normalizedY;

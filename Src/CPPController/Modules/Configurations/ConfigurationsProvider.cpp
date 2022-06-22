@@ -4,7 +4,7 @@
 #include "json.hpp"
 
 using nlohmann::json;
-using namespace std;
+using std::ifstream;
 
 void ConfigurationsProvider::update(IMUCalibration &imu)
 {

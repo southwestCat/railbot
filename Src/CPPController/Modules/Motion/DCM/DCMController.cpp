@@ -87,7 +87,8 @@ void DCMController::run(DCMJointRequest &s)
 void DCMController::updateRealFromKinematics()
 {
     floatingBaseObs_.updateRobot(*theFloatingBaseEstimation);
-    realCom_ = theFloatingBaseEstimation->WTB.translation();
+    // realCom_ = theFloatingBaseEstimation->WTB.translation();
+    realCom_ = theFloatingBaseEstimation->WTO.translation();
     comVelFilter_.update(realCom_);
     realComd_ = comVelFilter_.vel();
     theFloatingBaseEstimation->comVelocity = realComd_;
@@ -200,42 +201,31 @@ void DCMController::applyCoMControl()
     const Vector2f leftCoP = theLeftFootTask->targetCoP;
     const Vector2f rightCoP = theRightFootTask->targetCoP;
 
-    // printf("left: %3.3f right: %3.3f\n", leftCoP.x(), rightCoP.x());
+    const float copX = (leftCoP.x() + rightCoP.x()) / 2.f;
+    const float desiredX = 15.f;
+    const float Kx = 0.3f;
 
-    Vector3f left_cop_target = Vector3f(leftCoP.x(), leftCoP.y(), 0.f) + Vector3f(30.f, 5.62f, 0.f);
-    Vector3f right_cop_target = Vector3f(rightCoP.x(), rightCoP.y(), 0.f) + Vector3f(30.f, -5.62f, 0.f);
+    float errX = desiredX - copX;
+    float comxd = errX * Kx;
 
-    // mm to meter
-    left_cop_target.x() /= 1000.f;
-    left_cop_target.y() /= 1000.f;
-    right_cop_target.x() /= 1000.f;
-    right_cop_target.y() /= 1000.f;
+    //! Get soleLeft target and soleRight target from BalanceTarget.
+    Pose3f targetSoleLeft = theBalanceTarget->soleLeftRequest;
+    Pose3f targetSoleRight = theBalanceTarget->soleRightRequest;
 
-    const Vector3f &left_f_measure = theNetWrenchEstimation->wrenchLeft.force();
-    const Vector3f &left_tau_measure = theNetWrenchEstimation->wrenchLeft.couple();
-    const Vector3f &right_f_measure = theNetWrenchEstimation->wrenchRight.force();
-    const Vector3f &right_tau_measure = theNetWrenchEstimation->wrenchRight.couple();
+    //! Calculate new sole left and right targets
+    targetSoleLeft.translation.x() -= comxd * dt_;
+    targetSoleRight.translation.x() -= comxd * dt_;
 
-    const float A_copy = 1000.f;
-    const float A_copx = 1000.f;
+    //! Update jointRequest_
+    bool isPossible = InverseKinematic::calcLegJoints(targetSoleLeft, targetSoleRight, Vector2f::Zero(), jointRequest_, *theRobotDimensions);
 
-    Matrix2x3f A_cop;
-    A_cop << A_copy, 0, 0, 0, A_copx, 0;
+    updateJointRequest = isPossible;
 
-    Vector2f left_rollpitch_d = A_cop * (left_cop_target.cross(left_f_measure) - left_tau_measure);
-    Vector2f right_rollpitch_d = A_cop * (right_cop_target.cross(right_f_measure) - right_tau_measure);
+    //! Update BalanceTarget
+    theBalanceTarget->lastJointRequest = jointRequest_;
+    theBalanceTarget->soleLeftRequest = targetSoleLeft;
+    theBalanceTarget->soleRightRequest = targetSoleRight;
 
-    leftAnkleVelFilter_.update(left_rollpitch_d);
-    rightAnkleVelFilter_.update(right_rollpitch_d);
-
-    const float left_pitch_d = leftAnkleVelFilter_.vel().y();
-    const float right_pitch_d = rightAnkleVelFilter_.vel().y();
-
-    const float pitchD = (left_pitch_d + right_pitch_d) / 2.f;
-
-    // printf(">\n");
-    // printf("left: %3.3f right: %3.3f\n", left_pitch_d, right_pitch_d);
-    // printf("----\n\n");
 
     // const sva::PTransform &WTB = theFloatingBaseEstimation->WTB;
     // const sva::PTransform &OTA = theFloatingBaseEstimation->OTA;

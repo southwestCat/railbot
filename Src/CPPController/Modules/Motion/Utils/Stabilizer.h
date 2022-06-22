@@ -13,6 +13,7 @@
 #include "Representations/Sensing/NetWrenchEstimation.h"
 #include "Representations/Infrastructure/SensorData/FsrSensorData.h"
 #include "Representations/Infrastructure/FrameInfo.h"
+#include "Representations/Motion/BalanceTarget.h"
 
 #include <vector>
 #include <fstream>
@@ -30,7 +31,8 @@ public:
     USES_REPRESENTATION(MassCalibration);
     USES_REPRESENTATION(FloatingBaseEstimation);
     USES_REPRESENTATION(NetWrenchEstimation);
-
+    
+    MODIFIES_REPRESENTATION(BalanceTarget);
     MODIFIES_REPRESENTATION(LeftFootTask);
     MODIFIES_REPRESENTATION(RightFootTask);
 };

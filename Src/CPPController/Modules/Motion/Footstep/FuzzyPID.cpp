@@ -3,7 +3,8 @@
 #include <cmath>
 #include <cassert>
 
-using namespace std;
+using std::cout;
+using std::endl;
 
 float FuzzyPID::getU(float x, float xd)
 {
