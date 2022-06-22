@@ -157,6 +157,9 @@ void FootstepsController::exec()
     {
         runSingleSupport();
     }
+    else if (fsm.state == WalkingFSM::standRebalance)
+    {
+    }
     else if (fsm.state == WalkingFSM::recovery)
     {
         recoveryToStand();
@@ -194,10 +197,8 @@ void FootstepsController::startDoubleSupport()
     fsm.next_footstep += 1;
     if (fsm.next_footstep == footsteps.size())
     {
-        fsm.state = WalkingFSM::recovery;
-        recoveryStartTime_ = theFrameInfo->time;
-        recoveryStartJointRequest_ = jointRequest_;
-        return recoveryToStand();
+        fsm.state = WalkingFSM::standRebalance;
+        return standRebalance();
     }
     // cout << "cur: " << fsm.cur_footstep << " next: " << fsm.next_footstep << endl;
     float dspDuration = fsm.dsp_duration;
@@ -686,6 +687,24 @@ void FootstepsController::updateMPC(float dsp_duration, float ssp_duration)
     x_mpc.solve();
     y_mpc.solve();
     fsm.preview_time = 0.f;
+}
+
+void FootstepsController::standRebalance()
+{
+    const float gyroX = theInertialData->gyro.y();
+    const float angleX = theInertialData->angle.x();
+
+    printf(">\n");
+    printf("angle: %3.3f gyro: %3.3f \n", angleX, gyroX);
+    printf("----\n\n");
+
+    // if (abs(angleX) < 1_deg)
+    // {
+    //     fsm.state = WalkingFSM::recovery;
+    //     recoveryStartTime_ = theFrameInfo->time;
+    //     recoveryStartJointRequest_ = jointRequest_;
+    //     return recoveryToStand();
+    // }
 }
 
 void FootstepsController::recoveryToStand()

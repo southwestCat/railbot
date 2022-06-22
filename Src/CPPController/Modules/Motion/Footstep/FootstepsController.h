@@ -48,6 +48,7 @@ private:
             Standing,
             DoubleSupport,
             SingleSupport,
+            standRebalance,
             recovery,
             Unknown
         } state;
@@ -129,6 +130,7 @@ private:
     void runCOMMPC();
     void updateMPC(float dsp_duration, float ssp_duration);
     void recoveryToStand();
+    void standRebalance();
     void calcJointInDoubleSupport();
     void calcJointInSingleSupport();
     void balance();
