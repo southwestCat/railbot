@@ -159,6 +159,7 @@ void FootstepsController::exec()
     }
     else if (fsm.state == WalkingFSM::standRebalance)
     {
+        standRebalance();
     }
     else if (fsm.state == WalkingFSM::recovery)
     {
@@ -198,6 +199,7 @@ void FootstepsController::startDoubleSupport()
     if (fsm.next_footstep == footsteps.size())
     {
         fsm.state = WalkingFSM::standRebalance;
+        standRebalanceZ = 0.f;
         return standRebalance();
     }
     // cout << "cur: " << fsm.cur_footstep << " next: " << fsm.next_footstep << endl;
@@ -691,20 +693,71 @@ void FootstepsController::updateMPC(float dsp_duration, float ssp_duration)
 
 void FootstepsController::standRebalance()
 {
+    //! Check balance state.
     const float gyroX = theInertialData->gyro.y();
     const float angleX = theInertialData->angle.x();
 
-    printf(">\n");
-    printf("angle: %3.3f gyro: %3.3f \n", angleX, gyroX);
-    printf("----\n\n");
+    const float MAX_ANGLE_ROTATE = 3_deg;
+    const float MAX_GYRO_ROTATE = 3_deg;
 
-    // if (abs(angleX) < 1_deg)
-    // {
-    //     fsm.state = WalkingFSM::recovery;
-    //     recoveryStartTime_ = theFrameInfo->time;
-    //     recoveryStartJointRequest_ = jointRequest_;
-    //     return recoveryToStand();
-    // }
+    if (abs(gyroX) < MAX_GYRO_ROTATE && abs(angleX < MAX_ANGLE_ROTATE))
+        standRebalanceCounter++;
+    else
+        standRebalanceCounter = 0;
+
+    if (standRebalanceCounter > 5)
+    {
+        fsm.state = WalkingFSM::recovery;
+        recoveryStartTime_ = theFrameInfo->time;
+        recoveryStartJointRequest_ = jointRequest_;
+        return recoveryToStand();
+    }
+
+    //! Run stand balance.
+    const float MAX_GYRO_Y = 0.1f;
+    const float MAX_ANGLE_X = MAX_ANGLE_ROTATE;
+    const float STEP_DEPTH = 1.f;
+
+    //! Update by cycle.
+    if (standRebalanceCycle-- == 0)
+    {
+        standRebalanceCycle = STAND_REBALANCE_CYCLE;
+        //! Normalized gyroX to (-1, 1)
+        // float normalizedGyroX = gyroX / MAX_GYRO_Y;
+        // if (normalizedGyroX > 1.f)
+        //     normalizedGyroX = 1.f;
+        // else if (normalizedGyroX < -1.f)
+        //     normalizedGyroX = -1.f;
+
+        // standRebalanceZ = normalizedGyroX * STEP_DEPTH;
+
+        //! Normalized angleX to (-1, 1).
+        float normalizedAngleX = angleX / MAX_ANGLE_ROTATE;
+        if (normalizedAngleX > 1.f)
+            normalizedAngleX = 1.f;
+        else if (normalizedAngleX < -1.f)
+            normalizedAngleX = -1.f;
+
+        standRebalanceZ = normalizedAngleX * STEP_DEPTH;
+        return;
+    }
+
+    //! Last sole left and right targets.
+    Pose3f targetL = theBalanceTarget->soleLeftRequest;
+    Pose3f targetR = theBalanceTarget->soleRightRequest;
+
+    float ratio = (float)(STAND_REBALANCE_CYCLE - standRebalanceCycle) / STAND_REBALANCE_CYCLE;
+    float z = standRebalanceZ * sin(pi * ratio);
+    targetL.translation.z() = -(hipHeight_ + z);
+    targetR.translation.z() = -(hipHeight_ - z);
+
+    bool isPossible = InverseKinematic::calcLegJoints(targetL, targetR, Vector2f::Zero(), jointRequest_, *theRobotDimensions);
+    updatedJointRequest = isPossible;
+
+    //! Update BalanceTarget
+    theBalanceTarget->lastJointRequest = jointRequest_;
+    theBalanceTarget->soleLeftRequest = targetL;
+    theBalanceTarget->soleRightRequest = targetR;
 }
 
 void FootstepsController::recoveryToStand()

@@ -107,7 +107,11 @@ private:
     float STEPHEIGHT_;
     float ANKLEBALANCEOFFSET_;
 
+    const unsigned STAND_REBALANCE_CYCLE = 10;
     unsigned recoveryStartTime_;
+    unsigned standRebalanceCounter;
+    unsigned standRebalanceCycle = STAND_REBALANCE_CYCLE;
+    float standRebalanceZ = 0.f;
 
     std::ofstream f;
 
