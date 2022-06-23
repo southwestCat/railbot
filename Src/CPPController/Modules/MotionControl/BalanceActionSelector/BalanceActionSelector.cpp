@@ -30,6 +30,16 @@ void BalanceActionSelector::update(BalanceActionSelection &o)
 
 BalanceActionSelection::BalanceAction BalanceActionSelector::handleState()
 {
+    return mannualHandle();
+}
+
+BalanceActionSelection::BalanceAction BalanceActionSelector::autoHandle()
+{
+    //! Default state: Compliance.
+}
+
+BalanceActionSelection::BalanceAction BalanceActionSelector::mannualHandle()
+{
     //! Configure FuzzyPID
     static bool once = true;
     if (once)
@@ -63,11 +73,14 @@ BalanceActionSelection::BalanceAction BalanceActionSelector::handleState()
         float xd = comVelocity.x();
         float yd = comVelocity.y();
         float stepLength = fuzzyPID.getU(x, xd);
-        
-        printf(">\n");
-        printf(" com: %3.3f %3.3f %3.3f\n", comPosition.x(), comPosition.y(), comPosition.z());
-        printf("comd: %3.3f %3.3f %3.3f\n", comVelocity.x(), comVelocity.y(), comVelocity.z());
-        printf("----\n\n");
+
+        if (lastAction != BalanceActionSelection::footstep)
+        {
+            printf(">\n");
+            printf(" com: %3.3f %3.3f %3.3f\n", comPosition.x(), comPosition.y(), comPosition.z());
+            printf("comd: %3.3f %3.3f %3.3f\n", comVelocity.x(), comVelocity.y(), comVelocity.z());
+            printf("----\n\n");
+        }
 
         //! Set Footstep params
         theFootstepControllerState->stepLength = stepLength;
@@ -80,5 +93,23 @@ BalanceActionSelection::BalanceAction BalanceActionSelector::handleState()
     {
         action = BalanceActionSelection::dcm;
     }
+
+    //! Update last action.
+    lastAction = action;
     return action;
+}
+
+bool BalanceActionSelector::comInInitialPosition()
+{
+    //! (-25.5 +- 1)
+    const float ecopxInitial = -25.5f;
+    const float bias = 1.f;
+    const float min = ecopxInitial - bias;
+    const float max = ecopxInitial + bias;
+    float ecopx = theCoMProjectionEstimation->estimatedCoP.x();
+    if (ecopx > min && ecopx < max)
+    {
+        return true;
+    }
+    return false;
 }

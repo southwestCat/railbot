@@ -31,8 +31,13 @@ public:
 private:
     void update();
     BalanceActionSelection::BalanceAction handleState();
+    BalanceActionSelection::BalanceAction autoHandle();
+    BalanceActionSelection::BalanceAction mannualHandle();
+
+    bool comInInitialPosition();
 
 private:
     BalanceActionSelection::BalanceAction action = BalanceActionSelection::compliance;
+    BalanceActionSelection::BalanceAction lastAction;
     FuzzyPID fuzzyPID;
 };

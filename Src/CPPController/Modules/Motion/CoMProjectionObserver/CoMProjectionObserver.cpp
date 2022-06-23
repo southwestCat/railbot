@@ -6,6 +6,12 @@
 CoMProjectionObserver::CoMProjectionObserver() : copFilter(0.2)
 {
     baseBias = {0.f, 0.f};
+    f.open("ecop.txt");
+}
+
+CoMProjectionObserver::~CoMProjectionObserver()
+{
+    f.close();
 }
 
 void CoMProjectionObserver::update()
@@ -42,6 +48,7 @@ void CoMProjectionObserver::update(CoMProjectionEstimation &o)
 
     //! estimated com projection
     float ecopx = comEstimated.x() * 1000.f;
+    ecopx = ecopxCompensation(ecopx);
     float ecopy = comEstimated.y() * 1000.f;
     o.estimatedCoP = {ecopx, ecopy}; //< convert to mm
 
@@ -73,4 +80,22 @@ void CoMProjectionObserver::update(CoMProjectionEstimation &o)
     float mcopyN = mcopy / o.normalizedY;
     o.measuredCoPNormalized.x() = (abs(mcopxN) > 1.f) ? 1.f : mcopxN;
     o.measuredCoPNormalized.y() = (abs(mcopyN) > 1.f) ? 1.f : mcopyN;
+
+    // f << ecopx << " " << mcopx << std::endl;
+}
+
+float CoMProjectionObserver::ecopxCompensation(float x)
+{
+    const float x1 = 4.f;
+    const float x2 = 8.f;
+    const float a = 1 / 4;
+    const float b = x2;
+    if (x < -20.f)
+        x += x1;
+    else if (x < 0.f)
+        x += x2;
+    else
+        x = a * x + b;
+
+    return x;
 }
