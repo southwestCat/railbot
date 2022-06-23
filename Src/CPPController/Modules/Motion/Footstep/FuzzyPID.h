@@ -32,7 +32,7 @@ private:
     float ecMax = MaxNoSet;
 
     const float step = 13.f;
-    const float STEPS[13] = {-6.f * step, -5.f * step, -4.f * step, -3.f * step, -2.f * step, -1.f * step, 0.f, step * 1.f, step * 2.f, step * 3.f, step * 4.f, step * 5.f, step * 6.f};
+    const float STEPS[13] = {-90, -80, -70, -60, -50, -40, 0, 40, 50, 60, 70, 80, 90};
     const float E_Membership[7][13] =
         {1, 0.2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
          0, 0.2, 1, 0.2, 0, 0, 0, 0, 0, 0, 0, 0, 0,

@@ -25,7 +25,18 @@ float FuzzyPID::getU(float x, float xd)
     assert(ec <= 6);
     assert(ec >= -6);
 
-    return Fuzzy_Table[e + 6][ec + 6];
+    float r = Fuzzy_Table[e + 6][ec + 6];
+    if (r > 0)
+    {
+        if (r < 40)
+            r = 40;
+    }
+    else
+    {
+        if (r > -40)
+            r = -40;
+    }
+    return r;
 }
 
 void FuzzyPID::printFuzzyTable()

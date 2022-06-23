@@ -24,7 +24,6 @@ void BalanceActionSelector::update(BalanceActionSelection &o)
         o.targetAction = BalanceActionSelection::footstep;
         break;
     default:
-        o.targetAction = BalanceActionSelection::dcm;
         break;
     }
 }
@@ -35,7 +34,7 @@ BalanceActionSelection::BalanceAction BalanceActionSelector::handleState()
     static bool once = true;
     if (once)
     {
-        fuzzyPID.setERange(-80.f, 80.f);
+        fuzzyPID.setERange(-30.f, 30.f);
         fuzzyPID.setECRange(-10.f, 10.f);
         fuzzyPID.calculate();
         once = false;
@@ -62,12 +61,18 @@ BalanceActionSelection::BalanceAction BalanceActionSelector::handleState()
         //! Fuzzy PID
         float x = comPosition.x();
         float xd = comVelocity.x();
+        float yd = comVelocity.y();
         float stepLength = fuzzyPID.getU(x, xd);
+        
+        printf(">\n");
+        printf(" com: %3.3f %3.3f %3.3f\n", comPosition.x(), comPosition.y(), comPosition.z());
+        printf("comd: %3.3f %3.3f %3.3f\n", comVelocity.x(), comVelocity.y(), comVelocity.z());
+        printf("----\n\n");
 
         //! Set Footstep params
-        theFootstepControllerState->stepLength = 60.f;
+        theFootstepControllerState->stepLength = stepLength;
         theFootstepControllerState->nSteps = 1;
-        theFootstepControllerState->leftSwingFirst = true;
+        theFootstepControllerState->leftSwingFirst = (yd >= 0.f ? true : false);
 
         action = BalanceActionSelection::footstep;
     }

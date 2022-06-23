@@ -81,7 +81,7 @@ void FootstepsController::setInitialState()
     comHeight = comPosition.z();
 
     //! Set step height
-    STEPHEIGHT_ = 20.f;
+    STEPHEIGHT_ = 15.f;
 
     //! Calculate initial hip position
     float hipInitialX = theFootstepControllerState->hipPosition.x();
