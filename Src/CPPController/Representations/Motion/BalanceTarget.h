@@ -14,4 +14,9 @@ public:
 
     //! Update information of DCMController
     bool updatePendulum = false;
+
+    //! Controller done flag.
+    bool isComplianceControlDone = false;
+    bool isDCMControlDone = false;
+    bool isFootstepsControlDone = false;
 };

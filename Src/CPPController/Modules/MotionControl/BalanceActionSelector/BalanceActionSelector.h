@@ -7,6 +7,7 @@
 #include "Representations/Motion/FootstepControllerState.h"
 #include "Representations/Sensing/FloatingBaseEstimation.h"
 #include "Representations/Configuration/RobotDimensions.h"
+#include "Representations/Motion/BalanceTarget.h"
 #include "Modules/Motion/Footstep/FuzzyPID.h"
 #include "Tools/Module/Blackboard.h"
 
@@ -19,6 +20,7 @@ public:
     USES_REPRESENTATION(KeyStates);
     USES_REPRESENTATION(FloatingBaseEstimation);
     USES_REPRESENTATION(RobotDimensions);
+    USES_REPRESENTATION(BalanceTarget);
 
     MODIFIES_REPRESENTATION(FootstepControllerState);
 };
@@ -35,9 +37,13 @@ private:
     BalanceActionSelection::BalanceAction mannualHandle();
 
     bool comInInitialPosition();
+    bool footstepsAction();
 
 private:
     BalanceActionSelection::BalanceAction action = BalanceActionSelection::compliance;
     BalanceActionSelection::BalanceAction lastAction;
     FuzzyPID fuzzyPID;
+
+    unsigned stayInCoMInitialState = 0;
+    unsigned comVelocityMaxCounter = 0;
 };

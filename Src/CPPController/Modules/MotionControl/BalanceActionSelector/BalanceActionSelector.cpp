@@ -31,11 +31,60 @@ void BalanceActionSelector::update(BalanceActionSelection &o)
 BalanceActionSelection::BalanceAction BalanceActionSelector::handleState()
 {
     return mannualHandle();
+    // return autoHandle();
 }
 
 BalanceActionSelection::BalanceAction BalanceActionSelector::autoHandle()
 {
-    //! Default state: Compliance.
+    //<-- Hold on action.
+    if (action == BalanceActionSelection::BalanceAction::footstep)
+    {
+        if (!theBalanceTarget->isFootstepsControlDone)
+        {
+            action = BalanceActionSelection::BalanceAction::footstep;
+        }
+        else
+        {
+            action = BalanceActionSelection::BalanceAction::dcm;
+        }
+    }
+    else if (action == BalanceActionSelection::BalanceAction::dcm)
+    {
+        if (!theBalanceTarget->isDCMControlDone)
+        {
+            action = BalanceActionSelection::BalanceAction::dcm;
+        }
+        else
+        {
+            action = BalanceActionSelection::BalanceAction::compliance;
+        }
+    }
+    else if (action == BalanceActionSelection::BalanceAction::compliance)
+    {
+        if (!theBalanceTarget->isComplianceControlDone)
+        {
+            action = BalanceActionSelection::BalanceAction::compliance;
+        }
+        else
+        {
+            //<-- Change action.
+            if (footstepsAction()) //! goto Footsteps.
+            {
+                action = BalanceActionSelection::BalanceAction::footstep;
+            }
+            else if (!comInInitialPosition()) //! goto dcm or stay old state.
+                stayInCoMInitialState++;
+            else
+                stayInCoMInitialState = 0;
+
+            if (stayInCoMInitialState > 50)
+            {
+                action = BalanceActionSelection::BalanceAction::dcm;
+            }
+        }
+    }
+
+    return action;
 }
 
 BalanceActionSelection::BalanceAction BalanceActionSelector::mannualHandle()
@@ -79,6 +128,7 @@ BalanceActionSelection::BalanceAction BalanceActionSelector::mannualHandle()
             printf(">\n");
             printf(" com: %3.3f %3.3f %3.3f\n", comPosition.x(), comPosition.y(), comPosition.z());
             printf("comd: %3.3f %3.3f %3.3f\n", comVelocity.x(), comVelocity.y(), comVelocity.z());
+            printf("step: %3.3f\n", stepLength);
             printf("----\n\n");
         }
 
@@ -112,4 +162,25 @@ bool BalanceActionSelector::comInInitialPosition()
         return true;
     }
     return false;
+}
+
+bool BalanceActionSelector::footstepsAction()
+{
+    bool footsteps = false;
+
+    float x = theCoMProjectionEstimation->estimatedCoP.x();
+    if (abs(x) > 30.f)
+    {
+        footsteps = true;
+    }
+    float xd = theFloatingBaseEstimation->comVelocity.x();
+    if (abs(xd) > 10.f)
+        comVelocityMaxCounter++;
+    else
+        comVelocityMaxCounter = 0;
+
+    if (comVelocityMaxCounter > 10)
+        footsteps = true;
+
+    return footsteps;
 }

@@ -60,13 +60,6 @@ void ComplianceController::update(ComplianceJointRequest &o)
     //! stop action when large cov
     if ((covRateX > covRateThreshold))
     {
-        // if (!keepJoints)
-        // {
-        //     for (int i = Joints::firstLegJoint; i <= Joints::rAnkleRoll; i++)
-        //     {
-        //         o.angles[i] = theJointAngles->angles[i];
-        //     }
-        // }
         keepJoints = true;
         return;
     }
@@ -100,11 +93,13 @@ void ComplianceController::update(ComplianceJointRequest &o)
         {
             o.angles[i] = targetRequest.angles[i];
         }
-        // printf(">\n");
-        // printf("comdx: %3.3f\n", comd_x);
-        // printf("%3.3f %3.3f\n", targetSoleLeft.translation.x(), targetSoleRight.translation.x());
-        // printf("----\n\n");
     }
+
+    //! control done flag.
+    if (abs(comd_x) < 1.f)
+        theBalanceTarget->isComplianceControlDone = true;
+    else 
+        theBalanceTarget->isComplianceControlDone = false;
 }
 
 bool ComplianceController::inEstimatedEllipseArea(float estimated, float measured, float cov)

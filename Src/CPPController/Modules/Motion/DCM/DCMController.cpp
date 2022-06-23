@@ -226,35 +226,9 @@ void DCMController::applyCoMControl()
     theBalanceTarget->soleLeftRequest = targetSoleLeft;
     theBalanceTarget->soleRightRequest = targetSoleRight;
 
-
-    // const sva::PTransform &WTB = theFloatingBaseEstimation->WTB;
-    // const sva::PTransform &OTA = theFloatingBaseEstimation->OTA;
-
-    // const Vector3f &com = WTB.translation();
-    // Vector3f origin = OTA.inv().translation();
-    // float comx = com.x();
-
-    // float comK = 0.3f;
-    // float comx_desire = 0.f;
-    // float comx_err = comx_desire - comx;
-
-    // float comxd = comx_err * comK;
-    // origin.x() += comxd * dt_;
-    // // origin.x() = 10.f;
-    // origin.z() = MotionConfig::hipHeight;
-
-    // sva::PTransform modified_ATO = {Matrix3f::Identity(), origin};
-    // Vector3f p_soleLeft = modified_ATO.inv().translation() + Vector3f(0.f, 50.f, 0.f);
-    // Vector3f p_soleRight = modified_ATO.inv().translation() + Vector3f(0.f, -50.f, 0.f);
-
-    // Pose3f targetL(p_soleLeft);
-    // Pose3f targetR(p_soleRight);
-
-    // bool isPossible = InverseKinematic::calcLegJoints(targetL, targetR, Vector2f::Zero(), jointRequest_, *theRobotDimensions);
-    // updateJointRequest = isPossible;
-
-    // //! Update BalanceTarget
-    // theBalanceTarget->lastJointRequest = jointRequest_;
-    // theBalanceTarget->soleLeftRequest = targetL;
-    // theBalanceTarget->soleRightRequest = targetR;
+    //! control done flag.
+    if (abs(comxd) < 1.f)
+        theBalanceTarget->isDCMControlDone = true;
+    else 
+        theBalanceTarget->isDCMControlDone = false;
 }

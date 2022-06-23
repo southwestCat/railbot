@@ -105,6 +105,14 @@ void FootstepsController::setInitialState()
     bool left = theFootstepControllerState->leftSwingFirst;
     footsteps = generateFootsteps(stepLength, footSpread, nSteps, left);
 
+    //! Print information.
+    printf(">\n");
+    for (auto f:footsteps)
+    {
+        printf("%3.3f, %3.3f\n", f.x(), f.y());
+    }
+    printf("----\n\n");
+
     //! start walking.
     startWalking();
 
