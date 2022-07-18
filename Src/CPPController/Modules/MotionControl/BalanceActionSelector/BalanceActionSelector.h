@@ -11,6 +11,8 @@
 #include "Modules/Motion/Footstep/FuzzyPID.h"
 #include "Tools/Module/Blackboard.h"
 
+#include "CABSL/Cabsl.h"
+
 class BalanceActionSelectorBase
 {
 public:
@@ -25,9 +27,10 @@ public:
     MODIFIES_REPRESENTATION(FootstepControllerState);
 };
 
-class BalanceActionSelector : public BalanceActionSelectorBase
+class BalanceActionSelector : public BalanceActionSelectorBase, public Cabsl<BalanceActionSelector>
 {
 public:
+    BalanceActionSelector();
     void update(BalanceActionSelection &b);
 
 private:
@@ -44,6 +47,9 @@ private:
     BalanceActionSelection::BalanceAction lastAction;
     FuzzyPID fuzzyPID;
 
+    ActivationGraph activationGraph;
+
     unsigned stayInCoMInitialState = 0;
     unsigned comVelocityMaxCounter = 0;
+#include "ActionSelectorOptions.h"
 };

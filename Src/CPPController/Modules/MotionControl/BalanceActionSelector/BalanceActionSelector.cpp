@@ -2,6 +2,10 @@
 #include "Tools/Module/ModuleManager.h"
 #include <iostream>
 
+BalanceActionSelector::BalanceActionSelector() : Cabsl<BalanceActionSelector>(&activationGraph)
+{
+}
+
 void BalanceActionSelector::update()
 {
     UPDATE_REPRESENTATION(FrameInfo);
@@ -30,59 +34,15 @@ void BalanceActionSelector::update(BalanceActionSelection &o)
 
 BalanceActionSelection::BalanceAction BalanceActionSelector::handleState()
 {
-    return mannualHandle();
-    // return autoHandle();
+    // return mannualHandle();
+    return autoHandle();
 }
 
 BalanceActionSelection::BalanceAction BalanceActionSelector::autoHandle()
 {
-    //<-- Hold on action.
-    if (action == BalanceActionSelection::BalanceAction::footstep)
-    {
-        if (!theBalanceTarget->isFootstepsControlDone)
-        {
-            action = BalanceActionSelection::BalanceAction::footstep;
-        }
-        else
-        {
-            action = BalanceActionSelection::BalanceAction::dcm;
-        }
-    }
-    else if (action == BalanceActionSelection::BalanceAction::dcm)
-    {
-        if (!theBalanceTarget->isDCMControlDone)
-        {
-            action = BalanceActionSelection::BalanceAction::dcm;
-        }
-        else
-        {
-            action = BalanceActionSelection::BalanceAction::compliance;
-        }
-    }
-    else if (action == BalanceActionSelection::BalanceAction::compliance)
-    {
-        if (!theBalanceTarget->isComplianceControlDone)
-        {
-            action = BalanceActionSelection::BalanceAction::compliance;
-        }
-        else
-        {
-            //<-- Change action.
-            if (footstepsAction()) //! goto Footsteps.
-            {
-                action = BalanceActionSelection::BalanceAction::footstep;
-            }
-            else if (!comInInitialPosition()) //! goto dcm or stay old state.
-                stayInCoMInitialState++;
-            else
-                stayInCoMInitialState = 0;
-
-            if (stayInCoMInitialState > 50)
-            {
-                action = BalanceActionSelection::BalanceAction::dcm;
-            }
-        }
-    }
+    beginFrame(theFrameInfo->time);
+    Cabsl<BalanceActionSelector>::execute(OptionInfos::getOption("ActionRoot"));
+    endFrame();
 
     return action;
 }
