@@ -391,15 +391,14 @@ void FootstepsController::calcJointInDoubleSupport()
     //! Update BalanceTarget
     if (isPossible)
     {
-    theBalanceTarget->lastJointRequest = jointRequest_;
-    theBalanceTarget->soleLeftRequest = targetL;
-    theBalanceTarget->soleRightRequest = targetR;
+        theBalanceTarget->lastJointRequest = jointRequest_;
+        theBalanceTarget->soleLeftRequest = targetL;
+        theBalanceTarget->soleRightRequest = targetR;
     }
     else
     {
         printf("[WARNING]: In calcJointInDoubleSupport(), foot target cannot reach.\n");
     }
-
 }
 
 void FootstepsController::startSingleSupport()
