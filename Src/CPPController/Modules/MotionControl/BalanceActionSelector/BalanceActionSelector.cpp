@@ -34,8 +34,8 @@ void BalanceActionSelector::update(BalanceActionSelection &o)
 
 BalanceActionSelection::BalanceAction BalanceActionSelector::handleState()
 {
-    // return mannualHandle();
-    return autoHandle();
+    return mannualHandle();
+    // return autoHandle();
 }
 
 BalanceActionSelection::BalanceAction BalanceActionSelector::autoHandle()
@@ -53,7 +53,7 @@ BalanceActionSelection::BalanceAction BalanceActionSelector::mannualHandle()
     static bool once = true;
     if (once)
     {
-        fuzzyPID.setERange(-30.f, 30.f);
+        fuzzyPID.setERange(-20.f, 20.f);
         fuzzyPID.setECRange(-10.f, 10.f);
         fuzzyPID.calculate();
         once = false;

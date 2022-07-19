@@ -45,11 +45,6 @@ void BalanceEngine::update(BalanceEngineOutput &o)
     // //! Balance action selection;
     BalanceActionSelection::BalanceAction target = theBalanceActionSelection->targetAction;
 
-    if (target == BalanceActionSelection::footstep)
-    {
-        // theMPCControllerState->comPosition = theFloatingBaseEstimation.
-    }
-
     MotionUtilities::copy(*jointRequest[target], o, *theStiffnessSettings, Joints::firstLegJoint, Joints::rAnkleRoll);
 }
 
@@ -59,6 +54,7 @@ bool BalanceEngine::readyPosture(BalanceEngineOutput &o)
     if (nowTime > readyPostureTime + readyWaitTime)
     {
         theBalanceTarget->updatePendulum = false;
+        theBalanceTarget->balanceEngineReadyPosture = true;
         return true;
     }
     else if (nowTime > readyPostureTime)
@@ -66,6 +62,9 @@ bool BalanceEngine::readyPosture(BalanceEngineOutput &o)
         theBalanceTarget->updatePendulum = true;
         return false;
     }
+
+    //! BalanceEngine not in readyPosture
+    theBalanceTarget->balanceEngineReadyPosture = false;
 
     float t = (float)nowTime / 1000.f;
     const float duringT = (readyPostureTime) / 1000.f;

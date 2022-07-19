@@ -107,7 +107,7 @@ void FootstepsController::setInitialState()
 
     //! Print information.
     printf(">\n");
-    for (auto f:footsteps)
+    for (auto f : footsteps)
     {
         printf("%3.3f, %3.3f\n", f.x(), f.y());
     }
@@ -383,10 +383,23 @@ void FootstepsController::calcJointInDoubleSupport()
     bool isPossible = InverseKinematic::calcLegJoints(targetL, targetR, Vector2f::Zero(), jointRequest_, *theRobotDimensions);
     updatedJointRequest = isPossible;
 
+    // printf("DoubleSupport>\n");
+    // printf("targetL: %f %f %f\n", targetL.translation.x(), targetL.translation.y(), targetL.translation.z());
+    // printf("targetR: %f %f %f\n", targetR.translation.x(), targetR.translation.y(), targetR.translation.z());
+    // printf("----\n\n");
+
     //! Update BalanceTarget
+    if (isPossible)
+    {
     theBalanceTarget->lastJointRequest = jointRequest_;
     theBalanceTarget->soleLeftRequest = targetL;
     theBalanceTarget->soleRightRequest = targetR;
+    }
+    else
+    {
+        printf("[WARNING]: In calcJointInDoubleSupport(), foot target cannot reach.\n");
+    }
+
 }
 
 void FootstepsController::startSingleSupport()
@@ -581,10 +594,22 @@ void FootstepsController::calcJointInSingleSupport()
     bool isPossible = InverseKinematic::calcLegJoints(targetL, targetR, Vector2f::Zero(), jointRequest_, *theRobotDimensions);
     updatedJointRequest = isPossible;
 
+    // printf("SingleSupport>\n");
+    // printf("targetL: %f %f %f\n", targetL.translation.x(), targetL.translation.y(), targetL.translation.z());
+    // printf("targetR: %f %f %f\n", targetR.translation.x(), targetR.translation.y(), targetR.translation.z());
+    // printf("----\n\n");
+
     //! Update BalanceTarget
-    theBalanceTarget->lastJointRequest = jointRequest_;
-    theBalanceTarget->soleLeftRequest = targetL;
-    theBalanceTarget->soleRightRequest = targetR;
+    if (isPossible)
+    {
+        theBalanceTarget->lastJointRequest = jointRequest_;
+        theBalanceTarget->soleLeftRequest = targetL;
+        theBalanceTarget->soleRightRequest = targetR;
+    }
+    else
+    {
+        printf("[WARNING]: In calcJointInSingleSupport(), foot target cannot reach.\n");
+    }
 }
 
 void FootstepsController::runCOMMPC()

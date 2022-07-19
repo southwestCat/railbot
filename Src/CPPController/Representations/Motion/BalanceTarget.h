@@ -19,4 +19,5 @@ public:
     bool isComplianceControlDone = false;
     bool isDCMControlDone = false;
     bool isFootstepsControlDone = false;
+    bool balanceEngineReadyPosture = false;
 };
