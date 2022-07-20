@@ -30,6 +30,8 @@ define_option(ActionRoot)
         {
             if (abs(comX) > 20)
                 goto footstep;
+            if (theBalanceTarget->isComplianceControlDone)
+                goto dcm;
         }
         define_action
         {

@@ -12,12 +12,14 @@ FootstepsController::FootstepsController()
     fsm = WalkingFSM(ssp_duration, dsp_duration, dt);
     startStanding();
 
-    f.open("com.txt");
+    f.open("footTarget.txt");
+    fcom.open("com.txt");
 }
 
 FootstepsController::~FootstepsController()
 {
     f.close();
+    fcom.close();
 }
 
 void FootstepsController::update()
@@ -107,11 +109,33 @@ void FootstepsController::setInitialState()
 
     //! Print information.
     printf(">\n");
+    if (stepLength > 0)
+    {
+        printf("Forward.\n");
+        fcom << "Forward.\n";
+    }
+    else
+    {
+        printf("Backward.\n");
+        fcom << "Backward.\n";
+    }
+    if (left)
+    {
+        printf("left foot first.\n");
+        fcom << "left foot first.\n";
+    }
+    else
+    {
+        printf("right foot first.\n");
+        fcom << "right foot first.\n";
+    }
     for (auto f : footsteps)
     {
         printf("%3.3f, %3.3f\n", f.x(), f.y());
+        fcom << f.x() << " " << f.y() << std::endl;
     }
     printf("----\n\n");
+    fcom << "----\n\n";
 
     //! start walking.
     startWalking();
@@ -258,7 +282,7 @@ void FootstepsController::calcJointInDoubleSupport()
 
     //! Printf info
     // printf("%3.3f %3.3f %d\n", WPO.x(), WPO.y(), 0);
-    // f << com.x() << " " << com.y() << " " << 0 << std::endl;
+    fcom << "[" << theFrameInfo->time << "]" << " D: " << hip.x() << " " << hip.y() << " " << std::endl;
 
     if (left) //< Left swing first
     {
@@ -383,10 +407,14 @@ void FootstepsController::calcJointInDoubleSupport()
     bool isPossible = InverseKinematic::calcLegJoints(targetL, targetR, Vector2f::Zero(), jointRequest_, *theRobotDimensions);
     updatedJointRequest = isPossible;
 
+    //! Log
+    f << "[" << theFrameInfo->time << "]" << " DL: " << targetL.translation.x() << " " << targetL.translation.y() << " " << targetL.translation.z() << std::endl;
+    f << "[" << theFrameInfo->time << "]" << " DR: " << targetR.translation.x() << " " << targetR.translation.y() << " " << targetR.translation.z() << std::endl;
     // printf("DoubleSupport>\n");
     // printf("targetL: %f %f %f\n", targetL.translation.x(), targetL.translation.y(), targetL.translation.z());
     // printf("targetR: %f %f %f\n", targetR.translation.x(), targetR.translation.y(), targetR.translation.z());
     // printf("----\n\n");
+
 
     //! Update BalanceTarget
     if (isPossible)
@@ -442,6 +470,7 @@ void FootstepsController::calcJointInSingleSupport()
     //! Print info
     // printf("%3.3f %3.3f %d\n", WPO.x(), WPO.y(), 1);
     // f << com.x() << " " << com.y() << " " << 1 << std::endl;
+    fcom << "[" << theFrameInfo->time << "]" << " S: " << com.x() << " " << com.y() << " " << std::endl;
 
     const float KICKDOWN_TIME = 0.1f;
     const float KICKDOWN_DEPTH = 0.2f;
@@ -593,6 +622,9 @@ void FootstepsController::calcJointInSingleSupport()
     bool isPossible = InverseKinematic::calcLegJoints(targetL, targetR, Vector2f::Zero(), jointRequest_, *theRobotDimensions);
     updatedJointRequest = isPossible;
 
+    //! Log
+    f << "[" << theFrameInfo->time << "]" << " SL: " << targetL.translation.x() << " " << targetL.translation.y() << " " << targetL.translation.z() << std::endl;
+    f << "[" << theFrameInfo->time << "]" << " SR: " << targetR.translation.x() << " " << targetR.translation.y() << " " << targetR.translation.z() << std::endl;
     // printf("SingleSupport>\n");
     // printf("targetL: %f %f %f\n", targetL.translation.x(), targetL.translation.y(), targetL.translation.z());
     // printf("targetR: %f %f %f\n", targetR.translation.x(), targetR.translation.y(), targetR.translation.z());

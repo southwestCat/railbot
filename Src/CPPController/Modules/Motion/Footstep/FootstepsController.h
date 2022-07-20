@@ -114,6 +114,7 @@ private:
     float standRebalanceZ = 0.f;
 
     std::ofstream f;
+    std::ofstream fcom;
 
 private:
     std::vector<Eigen::Vector2f> generateFootsteps(float stepLength, float footSpread, unsigned nSteps, bool leftSwingFirst = true);

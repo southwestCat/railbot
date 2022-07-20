@@ -15,6 +15,16 @@
     systemctl --user disable bhuman.service
     ```
 
+    关机
+    ```bash
+    sudo systemctl poweroff
+    ```
+    
+    重启
+    ```bash
+    sudo systemctl reboot
+    ```
+
 4. 修改`/etc/netpln/default.yaml`，修改有线连接固定ip，添加wlan0为dhcp.
     ```bash
     nao@Default:~$ cat /etc/netplan/default.yaml
