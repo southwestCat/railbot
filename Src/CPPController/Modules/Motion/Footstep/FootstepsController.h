@@ -99,6 +99,7 @@ private:
     JointRequest jointRequest_;
     JointRequest recoveryStartJointRequest_;
     bool updatedJointRequest = false;
+    bool swingLeftFirst;
 
     Vector2f hip;            //< hip position in world frame.
     Vector2f hipInitialPos_; //< hip initial position in world frame.
@@ -113,7 +114,7 @@ private:
     unsigned standRebalanceCycle = STAND_REBALANCE_CYCLE;
     float standRebalanceZ = 0.f;
 
-    std::ofstream f;
+    std::ofstream flog;
     std::ofstream fcom;
 
 private:
