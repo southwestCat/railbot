@@ -3,7 +3,7 @@
 class FuzzyPID
 {
 public:
-    void setERange(float a, float b)
+void setERange(float a, float b)
     {
         eMin = a;
         eMax = b;
@@ -12,6 +12,23 @@ public:
     {
         ecMin = a;
         ecMax = b;
+    }
+    /*
+     * a < b < 0 < c < d;
+     */
+    void setERange(float a, float b, float c, float d)
+    {
+        e_a = a;
+        e_b = b;
+        e_c = c;
+        e_d = d;
+    }
+    void setECRange(float a, float b, float c, float d)
+    {
+        ec_a = a;
+        ec_b = b;
+        ec_c = c;
+        ec_d = d;
     }
     float getU(float x, float xd);
     void printFuzzyTable();
@@ -30,6 +47,15 @@ private:
     float eMax = MaxNoSet;
     float ecMin = MinNoSet;
     float ecMax = MaxNoSet;
+
+    float e_a = MinNoSet;
+    float e_b = MinNoSet;
+    float e_c = MaxNoSet;
+    float e_d = MaxNoSet;
+    float ec_a = MinNoSet;
+    float ec_b = MinNoSet;
+    float ec_c = MaxNoSet;
+    float ec_d = MaxNoSet;
 
     const float step = 13.f;
     const float STEPS[13] = {-70, -60, -55, -50, -45, -40, 0, 40, 45, 50, 55, 60, 70};

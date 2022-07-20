@@ -2,6 +2,14 @@ define_option(ActionRoot)
 {
     float comX;
     const float &xd = theFloatingBaseEstimation->comVelocity.x();
+    const float ea = Selector::Ea;
+    const float eb = Selector::Eb;
+    const float ec = Selector::Ec;
+    const float ed = Selector::Ed;
+    const float eca = Selector::ECa;
+    const float ecb = Selector::ECb;
+    const float ecc = Selector::ECc;
+    const float ecd = Selector::ECd;
 
     common_transition
     {
@@ -19,7 +27,7 @@ define_option(ActionRoot)
         }
         define_action
         {
-            printf("[INFO]: In wait.\n");
+            // printf("[INFO]: In wait.\n");
             action = BalanceActionSelection::compliance;
         }
     }
@@ -28,15 +36,24 @@ define_option(ActionRoot)
     {
         define_transition
         {
-            if (abs(comX) > 20)
+            if (comX > ec || comX < eb)
+            {
+                printf("[SELECTOR] comX: %f\n", comX);
                 goto footstep;
-            if (theBalanceTarget->isComplianceControlDone)
-                goto dcm;
+            }
+            if (xd < ecb || xd > ecc)
+            {
+                printf("[SELECTOR] xd: %f\n", xd);
+                goto footstep;
+            }
+                
+            // if (theBalanceTarget->isComplianceControlDone)
+            //     goto dcm;
         }
         define_action
         {
             // printf("[INFO]: In ActionRoot. \n");
-            printf("[INFO] comX: %f.\n", comX);
+            // printf("[INFO] comX: %f.\n", comX);
             action = BalanceActionSelection::compliance;
         }
     }
@@ -51,7 +68,7 @@ define_option(ActionRoot)
         define_action
         {
             // action = BalanceActionSelection::dcm;
-            printf("[INFO]: In DCM.\n");
+            // printf("[INFO]: In DCM.\n");
         }
     }
 
@@ -65,7 +82,7 @@ define_option(ActionRoot)
         define_action
         {
             action = BalanceActionSelection::footstep;
-            printf("[INFO]: In footstep.\n");
+            // printf("[INFO]: In footstep.\n");
         }
     }
 }

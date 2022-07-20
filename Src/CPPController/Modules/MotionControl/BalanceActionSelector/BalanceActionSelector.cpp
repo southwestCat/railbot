@@ -34,16 +34,65 @@ void BalanceActionSelector::update(BalanceActionSelection &o)
 
 BalanceActionSelection::BalanceAction BalanceActionSelector::handleState()
 {
-    return mannualHandle();
-    // return autoHandle();
+    // return mannualHandle();
+    return autoHandle();
 }
 
 BalanceActionSelection::BalanceAction BalanceActionSelector::autoHandle()
 {
+    //! Configure FuzzyPID
+    static bool once = true;
+    if (once)
+    {
+        const float ea = Selector::Ea;
+        const float eb = Selector::Eb;
+        const float ec = Selector::Ec;
+        const float ed = Selector::Ed;
+        const float eca = Selector::ECa;
+        const float ecb = Selector::ECb;
+        const float ecc = Selector::ECc;
+        const float ecd = Selector::ECd;
+
+        fuzzyPID.setERange(ea, eb, ec, ed);
+        fuzzyPID.setECRange(eca, ecb, ecc, ecd);
+        fuzzyPID.calculate();
+        once = false;
+    }
+
+    //! Run ActionSelector CABSL.
     beginFrame(theFrameInfo->time);
     Cabsl<BalanceActionSelector>::execute(OptionInfos::getOption("ActionRoot"));
     endFrame();
 
+    //! pre footstep action.
+    if (action == BalanceActionSelection::footstep)
+    {
+        //! update FootstepControllerState info
+        Vector3f comPosition = theFloatingBaseEstimation->WTB.translation();
+        comPosition.x() -= theRobotDimensions->leftAnkleToSoleCenter.x(); //< Convert coordinates to Contact surface frame.
+        theFootstepControllerState->comPosition = comPosition;
+        Vector3f hipPosition = theFloatingBaseEstimation->WTO.translation();
+        hipPosition.x() -= theRobotDimensions->leftAnkleToSoleCenter.x(); //< Convert coordinates to Contact surface frame.
+        theFootstepControllerState->hipPosition = hipPosition;
+        Vector3f comVelocity = theFloatingBaseEstimation->comVelocity;
+        theFootstepControllerState->comVelocity = comVelocity;
+        theFootstepControllerState->comAcceleration = {0.f, 0.f, 0.f};
+        theFootstepControllerState->footSpread = theRobotDimensions->yHipOffset;
+
+        //! Fuzzy PID
+        float x = comPosition.x();
+        float xd = comVelocity.x();
+        float yd = comVelocity.y();
+        float stepLength = fuzzyPID.getU(x, xd);
+
+        //! Set Footstep params
+        theFootstepControllerState->stepLength = stepLength;
+        theFootstepControllerState->nSteps = 1;
+        theFootstepControllerState->leftSwingFirst = (yd >= 0.f ? true : false);
+    }
+
+    //! Update last action.
+    lastAction = action;
     return action;
 }
 
@@ -53,8 +102,17 @@ BalanceActionSelection::BalanceAction BalanceActionSelector::mannualHandle()
     static bool once = true;
     if (once)
     {
-        fuzzyPID.setERange(-20.f, 20.f);
-        fuzzyPID.setECRange(-10.f, 10.f);
+        const float ea = Selector::Ea;
+        const float eb = Selector::Eb;
+        const float ec = Selector::Ec;
+        const float ed = Selector::Ed;
+        const float eca = Selector::ECa;
+        const float ecb = Selector::ECb;
+        const float ecc = Selector::ECc;
+        const float ecd = Selector::ECd;
+
+        fuzzyPID.setERange(ea, eb, ec, ed);
+        fuzzyPID.setECRange(eca, ecb, ecc, ecd);
         fuzzyPID.calculate();
         once = false;
     }
@@ -83,14 +141,14 @@ BalanceActionSelection::BalanceAction BalanceActionSelector::mannualHandle()
         float yd = comVelocity.y();
         float stepLength = fuzzyPID.getU(x, xd);
 
-        if (lastAction != BalanceActionSelection::footstep)
-        {
-            printf(">\n");
-            printf(" com: %3.3f %3.3f %3.3f\n", comPosition.x(), comPosition.y(), comPosition.z());
-            printf("comd: %3.3f %3.3f %3.3f\n", comVelocity.x(), comVelocity.y(), comVelocity.z());
-            printf("step: %3.3f\n", stepLength);
-            printf("----\n\n");
-        }
+        // if (lastAction != BalanceActionSelection::footstep)
+        // {
+        //     printf(">\n");
+        //     printf(" com: %3.3f %3.3f %3.3f\n", comPosition.x(), comPosition.y(), comPosition.z());
+        //     printf("comd: %3.3f %3.3f %3.3f\n", comVelocity.x(), comVelocity.y(), comVelocity.z());
+        //     printf("step: %3.3f\n", stepLength);
+        //     printf("----\n\n");
+        // }
 
         //! Set Footstep params
         theFootstepControllerState->stepLength = stepLength;

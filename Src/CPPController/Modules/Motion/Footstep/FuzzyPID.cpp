@@ -191,9 +191,35 @@ void FuzzyPID::recalculate()
 
 int FuzzyPID::fuzzificationE(float e)
 {
-    const float a = eMin;
-    const float b = eMax;
-    int f = round((e - (a + b) / 2.f) * 2.f * 6.f / (b - a));
+    // const float a = eMin;
+    // const float b = eMax;
+    // int f = round((e - (a + b) / 2.f) * 2.f * 6.f / (b - a));
+
+    // if (f > 6)
+    //     f = 6;
+    // if (f < -6)
+    //     f = -6;
+    // return f;
+
+    assert(e_a != MinNoSet);
+    assert(e_b != MinNoSet);
+    assert(e_c != MaxNoSet);
+    assert(e_d != MaxNoSet);
+
+    const float a = e_a;
+    const float b = e_b;
+    const float c = e_c;
+    const float d = e_d;
+
+    int f;
+    if (e > 0)
+    {
+        f = round((e - c) / (d - c) * 6.f);
+    }
+    else
+    {
+        f = round((b - e) / (a - b) * 6.f);
+    }
 
     if (f > 6)
         f = 6;
@@ -204,9 +230,35 @@ int FuzzyPID::fuzzificationE(float e)
 
 int FuzzyPID::fuzzificationEC(float ec)
 {
-    const float a = ecMin;
-    const float b = ecMax;
-    int f = round((ec - (a + b) / 2.f) * 2.f * 6.f / (b - a));
+    // const float a = ecMin;
+    // const float b = ecMax;
+    // int f = round((ec - (a + b) / 2.f) * 2.f * 6.f / (b - a));
+
+    // if (f > 6)
+    //     f = 6;
+    // if (f < -6)
+    //     f = -6;
+    // return f;
+
+    assert(ec_a != MinNoSet);
+    assert(ec_b != MinNoSet);
+    assert(ec_c != MaxNoSet);
+    assert(ec_d != MaxNoSet);
+
+    const float a = ec_a;
+    const float b = ec_b;
+    const float c = ec_c;
+    const float d = ec_d;
+
+    int f;
+    if (ec > 0)
+    {
+        f = round((ec - c) / (d - c) * 6.f);
+    }
+    else
+    {
+        f = round((b - ec) / (a - b) * 6.f);
+    }
 
     if (f > 6)
         f = 6;

@@ -69,8 +69,8 @@ bool BalanceEngine::readyPosture(BalanceEngineOutput &o)
     float t = (float)nowTime / 1000.f;
     const float duringT = (readyPostureTime) / 1000.f;
     float target = hipHeight;
-    Pose3f targetL = Pose3f(Vector3f(0.f, theRobotDimensions->yHipOffset, -target));
-    Pose3f targetR = Pose3f(Vector3f(0.f, -theRobotDimensions->yHipOffset, -target));
+    Pose3f targetL = Pose3f(Vector3f(-30.f, theRobotDimensions->yHipOffset, -target));
+    Pose3f targetR = Pose3f(Vector3f(-30.f, -theRobotDimensions->yHipOffset, -target));
     //! update request soleL and soleR to BalanceTarget.
     theBalanceTarget->soleLeftRequest = targetL;
     theBalanceTarget->soleRightRequest = targetR;

@@ -10,6 +10,7 @@
 #include "Representations/Motion/BalanceTarget.h"
 #include "Modules/Motion/Footstep/FuzzyPID.h"
 #include "Tools/Module/Blackboard.h"
+#include "SelectorConfig.h"
 
 #include "CABSL/Cabsl.h"
 
