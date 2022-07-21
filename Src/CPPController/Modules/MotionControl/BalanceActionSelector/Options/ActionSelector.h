@@ -36,24 +36,26 @@ define_option(ActionRoot)
     {
         define_transition
         {
-            if (comX > ec || comX < eb)
-            {
-                printf("[SELECTOR] comX: %f\n", comX);
-                goto footstep;
-            }
-            if (xd < ecb || xd > ecc)
-            {
-                printf("[SELECTOR] xd: %f\n", xd);
-                goto footstep;
-            }
+            // if (comX > ec || comX < eb)
+            // {
+            //     printf("[SELECTOR] comX: %f\n", comX);
+            //     goto footstep;
+            // }
+            // if (xd < ecb || xd > ecc)
+            // {
+            //     printf("[SELECTOR] xd: %f\n", xd);
+            //     goto footstep;
+            // }
                 
-            // if (theBalanceTarget->isComplianceControlDone)
-            //     goto dcm;
+            if (theBalanceTarget->isComplianceControlDone)
+                goto dcm;
         }
         define_action
         {
-            // printf("[INFO]: In ActionRoot. \n");
-            // printf("[INFO] comX: %f.\n", comX);
+            printf(">\n");
+            printf("[SELECTOR] In compliance.\n");
+            printf("[SELECTOR] comX: %3.3f %d\n", comX, theBalanceTarget->isComplianceControlDone);
+            printf("----\n\n");
             action = BalanceActionSelection::compliance;
         }
     }
@@ -68,7 +70,7 @@ define_option(ActionRoot)
         define_action
         {
             // action = BalanceActionSelection::dcm;
-            // printf("[INFO]: In DCM.\n");
+            printf("[SELECTOR] In DCM.\n");
         }
     }
 

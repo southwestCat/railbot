@@ -96,10 +96,14 @@ void ComplianceController::update(ComplianceJointRequest &o)
     }
 
     //! control done flag.
-    if (abs(comd_x) < 1.f)
+    const float eCoPX = theCoMProjectionEstimation->estimatedCoPNormalized.x();
+    if (abs(comd_x) < 1.f && abs(eCoPX) > 0.1)
         theBalanceTarget->isComplianceControlDone = true;
     else 
         theBalanceTarget->isComplianceControlDone = false;
+    // printf(">\n");
+    // printf("normalizedCoP: %f\n", theCoMProjectionEstimation->estimatedCoPNormalized.x());
+    // printf("----\n\n");
 }
 
 bool ComplianceController::inEstimatedEllipseArea(float estimated, float measured, float cov)

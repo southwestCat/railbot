@@ -232,3 +232,8 @@ void DCMController::applyCoMControl()
     else 
         theBalanceTarget->isDCMControlDone = false;
 }
+
+void DCMController::applyCoMControlWithoutDCMFeedback()
+{
+    
+}

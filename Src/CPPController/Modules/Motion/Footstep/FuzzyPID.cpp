@@ -74,6 +74,29 @@ int FuzzyPID::EC_MAX(int ec)
     return max;
 }
 
+void FuzzyPID::updateSTEPS(const float step)
+{
+    const float maxStep = step;
+    const float minStep = 40.f;
+
+    assert(maxStep < minStep);
+
+    float n = (maxStep - minStep) / 5.f;
+    DynamicSTEPS[0] = -maxStep;
+    DynamicSTEPS[1] = -maxStep + n;
+    DynamicSTEPS[2] = -maxStep + 2.f * n;
+    DynamicSTEPS[3] = -maxStep + 3.f * n;
+    DynamicSTEPS[4] = -maxStep + 4.f * n;
+    DynamicSTEPS[5] = -minStep;
+    DynamicSTEPS[6] = 0.f;
+    DynamicSTEPS[7] = minStep;
+    DynamicSTEPS[8] = maxStep - 4.f * n;
+    DynamicSTEPS[9] = maxStep - 3.f * n;
+    DynamicSTEPS[10] = maxStep - 2.f * n;
+    DynamicSTEPS[11] = maxStep - n;
+    DynamicSTEPS[12] = maxStep;
+}
+
 void FuzzyPID::calcFuzzyTable()
 {
     float R[169][13] = {0};

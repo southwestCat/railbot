@@ -30,6 +30,7 @@ void setERange(float a, float b)
         ec_c = c;
         ec_d = d;
     }
+    void updateSTEPS(const float step);
     float getU(float x, float xd);
     void printFuzzyTable();
     void calculate();
@@ -58,7 +59,8 @@ private:
     float ec_d = MaxNoSet;
 
     const float step = 13.f;
-    const float STEPS[13] = {-70, -60, -55, -50, -45, -40, 0, 40, 45, 50, 55, 60, 70};
+    const float STEPS[13] = {-90, -80, -70, -60, -50, -40, 0, 40, 50, 60, 70, 80, 90};
+    float DynamicSTEPS[13] = {0.f};
     const float E_Membership[7][13] =
         {1, 0.2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
          0, 0.2, 1, 0.2, 0, 0, 0, 0, 0, 0, 0, 0, 0,

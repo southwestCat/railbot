@@ -52,6 +52,7 @@ private:
     Contact supportContact();
     void applyAnkleControl();
     void applyCoMControl();
+    void applyCoMControlWithoutDCMFeedback();
 
 private:
     const float dt_ = Constants::motionCycleTime;
