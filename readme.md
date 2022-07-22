@@ -14,6 +14,7 @@
     systemctl --user stop bhuman.service
     systemctl --user disable bhuman.service
     ```
+    一些常用的`systemctl`指令，默认 sudo 密码为 nao
 
     关机
     ```bash
@@ -43,15 +44,15 @@
     nao@Default:~$ sudo netplan apply
     ```
 
-5. 使用wpa_passphrase 生成连接wifi的配置文件，`wpa_passphrase [ssid] [password] >> file.config` 如wifi的ssid为tjrg3009，密码是 tjrg3009，保存配置文件到`~/wpa_supplicant.conf`
+5. 使用wpa_passphrase 生成连接wifi的配置文件，`wpa_passphrase [ssid] [password] >> file.config` 如wifi的ssid为 wifi-test，密码是 12345678，保存配置文件到`~/wpa_supplicant.conf`
     ```bash
-    wpa_passphrase tjrg3009 tjrg3009 >> /home/nao/wps_supplicant.conf
+    wpa_passphrase wifi-test 12345678 >> /home/nao/wps_supplicant.conf
     ```
 6. 使用`wpa_supplicant`连接`wifi`
    ```bash
    sudo wpa_supplicant -B -Dnl80211 -iwlan0 -c/home/nao/wpa_supplicant.conf
    ```
-7. `ip addr` 查看无线网络是否连接成功，简单的测试一下网络连接
+7. 稍等一段时间后，使用`ip addr` 查看无线网络是否连接成功，简单的测试一下网络连接
     ```bash
     sudo apt update
     ```
@@ -64,3 +65,4 @@
     ```bash
     export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
     ```
+3. 在/home/nao目录，新建文件夹railbot，将Config文件夹，Bin/controller和Bin/lola_conn复制到/home/nao/railbot文件夹中，在终端中运行 lola_conn，新建终端运行 controller.
