@@ -4,12 +4,23 @@
 #include "Tools/Motion/InverseKinematic.h"
 #include "Tools/Motion/MotionUtilities.h"
 
+DCMController::DCMController()
+{
+    f_dcm_ecop.open("dcm_ecop.txt");
+}
+
+DCMController::~DCMController()
+{
+    f_dcm_ecop.close();
+}
+
 void DCMController::update()
 {
     UPDATE_REPRESENTATION(InertialData);
     UPDATE_REPRESENTATION(FrameInfo);
     UPDATE_REPRESENTATION(RobotModel);
     UPDATE_REPRESENTATION(JointAngles);
+    UPDATE_REPRESENTATION(CoMProjectionEstimation);
 
     // printf("%3.3f\n", (float)toDegrees(theJointAngles->angles[Joints::lHipPitch]));
 }
@@ -72,7 +83,8 @@ void DCMController::run(DCMJointRequest &s)
     }
 
     //! Apply control
-    applyCoMControl();
+    // applyCoMControl();
+    applyCoMControlWithoutDCMFeedback();
 
     //! Apply JointRequest
     if (updateJointRequest)
@@ -229,11 +241,53 @@ void DCMController::applyCoMControl()
     //! control done flag.
     if (abs(comxd) < 1.f)
         theBalanceTarget->isDCMControlDone = true;
-    else 
+    else
         theBalanceTarget->isDCMControlDone = false;
 }
 
 void DCMController::applyCoMControlWithoutDCMFeedback()
 {
-    
+    const float Kx = 5.f;
+
+    //! Calculate copX error.
+    // const float eCoPNX = theCoMProjectionEstimation->estimatedCoPNormalized.x();
+    const float eCoPX = theCoMProjectionEstimation->estimatedCoP.x();
+    float errX = 0.f - eCoPX;
+    float comxd = errX * Kx;
+    if (comxd > 15.f)
+        comxd = 15.f;
+    if (comxd < -15.f)
+        comxd = -15.f;
+
+    //! LOG f
+    const float ecopNX = theCoMProjectionEstimation->estimatedCoPNormalized.x();
+    const float mcopNX = theCoMProjectionEstimation->measuredCoPNormalized.x();
+    f_dcm_ecop << "[" << theFrameInfo->time << "]" << " ecopX: " << ecopNX << " mcopX: " << mcopNX << std::endl;
+
+    //! Get soleLeft target and soleRight target from BalanceTarget.
+    Pose3f targetSoleLeft = theBalanceTarget->soleLeftRequest;
+    Pose3f targetSoleRight = theBalanceTarget->soleRightRequest;
+
+    //! Calculate new sole left and right targets
+    targetSoleLeft.translation.x() -= comxd * dt_;
+    targetSoleRight.translation.x() -= comxd * dt_;
+
+    //! Update jointRequest_
+    bool isPossible = InverseKinematic::calcLegJoints(targetSoleLeft, targetSoleRight, Vector2f::Zero(), jointRequest_, *theRobotDimensions);
+
+    updateJointRequest = isPossible;
+
+    //! Update BalanceTarget
+    theBalanceTarget->lastJointRequest = jointRequest_;
+    theBalanceTarget->soleLeftRequest = targetSoleLeft;
+    theBalanceTarget->soleRightRequest = targetSoleRight;
+
+    if (abs(eCoPX) < 10.f)
+    {
+        theBalanceTarget->isDCMControlDone = true;
+    }
+    else
+    {
+        theBalanceTarget->isDCMControlDone = false;
+    }
 }

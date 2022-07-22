@@ -64,13 +64,15 @@ define_option(ActionRoot)
     {
         define_transition
         {
-            if (theBalanceTarget->isDCMControlDone)
-                goto compliance;
+            // if (theBalanceTarget->isDCMControlDone)
+            //     goto compliance;
         }
         define_action
         {
-            // action = BalanceActionSelection::dcm;
+            printf(">\n");
             printf("[SELECTOR] In DCM.\n");
+            printf("----\n\n");
+            action = BalanceActionSelection::dcm;
         }
     }
 

@@ -12,14 +12,14 @@ FootstepsController::FootstepsController()
     fsm = WalkingFSM(ssp_duration, dsp_duration, dt);
     startStanding();
 
-    flog.open("log.txt");
-    fcom.open("com.txt");
+    // flog.open("log.txt");
+    // fcom.open("com.txt");
 }
 
 FootstepsController::~FootstepsController()
 {
-    flog.close();
-    fcom.close();
+    // flog.close();
+    // fcom.close();
 }
 
 void FootstepsController::update()
@@ -113,30 +113,30 @@ void FootstepsController::setInitialState()
     if (stepLength > 0)
     {
         printf("Forward.\n");
-        fcom << "Forward.\n";
+        // fcom << "Forward.\n";
     }
     else
     {
         printf("Backward.\n");
-        fcom << "Backward.\n";
+        // fcom << "Backward.\n";
     }
     if (left)
     {
         printf("left foot first.\n");
-        fcom << "left foot first.\n";
+        // fcom << "left foot first.\n";
     }
     else
     {
         printf("right foot first.\n");
-        fcom << "right foot first.\n";
+        // fcom << "right foot first.\n";
     }
     for (auto f : footsteps)
     {
         printf("%3.3f, %3.3f\n", f.x(), f.y());
-        fcom << f.x() << " " << f.y() << std::endl;
+        // fcom << f.x() << " " << f.y() << std::endl;
     }
     printf("----\n\n");
-    fcom << "----\n\n";
+    // fcom << "----\n\n";
 
     //! start walking.
     startWalking();
@@ -283,7 +283,9 @@ void FootstepsController::calcJointInDoubleSupport()
 
     //! Printf info
     // printf("%3.3f %3.3f %d\n", WPO.x(), WPO.y(), 0);
-    fcom << "[" << theFrameInfo->time << "]" << " D: " << hip.x() << " " << hip.y() << " " << std::endl;
+
+    //! LOG fcom
+    // fcom << "[" << theFrameInfo->time << "]" << " D: " << hip.x() << " " << hip.y() << " " << std::endl;
 
     if (left) //< Left swing first
     {
@@ -316,15 +318,15 @@ void FootstepsController::calcJointInDoubleSupport()
             targetL = {OTL.rotation(), OTL.translation()};
 
             //! LOG
-            flog << "[" << theFrameInfo->time << "]" << "DS: Left swing first, right stance. \n";
-            flog << "[" << theFrameInfo->time << "]" << "Current footstep: " << fsm.cur_footstep << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "WPO: " << WPO.x() << " " << WPO.y() << " " << WPO.z() << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "WPR: " << WPR.x() << " " << WPR.y() << " " << WPR.z() << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "RPSR: " << RPSR.x() << " " << RPSR.y() << " " << RPSR.z() << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "targetR: " << targetR.translation.x() << " " << targetR.translation.y() << " " << targetR.translation.z() << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "WPL: " << WPL.x() << " " << WPL.y() << " " << WPL.z() << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "LPSL: " << LPSL.x() << " " << LPSL.y() << " " << LPSL.z() << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "targetL: " << targetL.translation.x() << " " << targetL.translation.y() << " " << targetL.translation.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "DS: Left swing first, right stance. \n";
+            // flog << "[" << theFrameInfo->time << "]" << "Current footstep: " << fsm.cur_footstep << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "WPO: " << WPO.x() << " " << WPO.y() << " " << WPO.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "WPR: " << WPR.x() << " " << WPR.y() << " " << WPR.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "RPSR: " << RPSR.x() << " " << RPSR.y() << " " << RPSR.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "targetR: " << targetR.translation.x() << " " << targetR.translation.y() << " " << targetR.translation.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "WPL: " << WPL.x() << " " << WPL.y() << " " << WPL.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "LPSL: " << LPSL.x() << " " << LPSL.y() << " " << LPSL.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "targetL: " << targetL.translation.x() << " " << targetL.translation.y() << " " << targetL.translation.z() << std::endl;
         }
         else //< left stance cur_footsteps
         {
@@ -355,15 +357,15 @@ void FootstepsController::calcJointInDoubleSupport()
             targetR = {OTR.rotation(), OTR.translation()};
 
             //! LOG
-            flog << "[" << theFrameInfo->time << "]" << "DS: Left swing first, left stance.\n";
-            flog << "[" << theFrameInfo->time << "]" << "Current footstep: " << fsm.cur_footstep << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "WPO: " << WPO.x() << " " << WPO.y() << " " << WPO.z() << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "WPL: " << WPL.x() << " " << WPL.y() << " " << WPL.z() << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "LPSL: " << LPSL.x() << " " << LPSL.y() << " " << LPSL.z() << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "targetL: " << targetL.translation.x() << " " << targetL.translation.y() << " " << targetL.translation.z() << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "WPR: " << WPR.x() << " " << WPR.y() << " " << WPR.z() << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "RPSR: " << RPSR.x() << " " << RPSR.y() << " " << RPSR.z() << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "targetR: " << targetR.translation.x() << " " << targetR.translation.y() << " " << targetR.translation.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "DS: Left swing first, left stance.\n";
+            // flog << "[" << theFrameInfo->time << "]" << "Current footstep: " << fsm.cur_footstep << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "WPO: " << WPO.x() << " " << WPO.y() << " " << WPO.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "WPL: " << WPL.x() << " " << WPL.y() << " " << WPL.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "LPSL: " << LPSL.x() << " " << LPSL.y() << " " << LPSL.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "targetL: " << targetL.translation.x() << " " << targetL.translation.y() << " " << targetL.translation.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "WPR: " << WPR.x() << " " << WPR.y() << " " << WPR.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "RPSR: " << RPSR.x() << " " << RPSR.y() << " " << RPSR.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "targetR: " << targetR.translation.x() << " " << targetR.translation.y() << " " << targetR.translation.z() << std::endl;
         }
     }
     else //< Right swing first
@@ -397,15 +399,15 @@ void FootstepsController::calcJointInDoubleSupport()
             targetR = {OTR.rotation(), OTR.translation()};
 
             //! LOG
-            flog << "[" << theFrameInfo->time << "]" << "DS: Right swing first, left stance.\n";
-            flog << "[" << theFrameInfo->time << "]" << "Current footstep: " << fsm.cur_footstep << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "WPO: " << WPO.x() << " " << WPO.y() << " " << WPO.z() << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "WPL: " << WPL.x() << " " << WPL.y() << " " << WPL.z() << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "LPSL: " << LPSL.x() << " " << LPSL.y() << " " << LPSL.z() << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "targetL: " << targetL.translation.x() << " " << targetL.translation.y() << " " << targetL.translation.z() << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "WPR: " << WPR.x() << " " << WPR.y() << " " <<WPR.z() << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "RPSR: " << RPSR.x() << " " << RPSR.y() << " " << RPSR.z() << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "targetR: " << targetR.translation.x() << " " << targetR.translation.y() << " " << targetR.translation.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "DS: Right swing first, left stance.\n";
+            // flog << "[" << theFrameInfo->time << "]" << "Current footstep: " << fsm.cur_footstep << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "WPO: " << WPO.x() << " " << WPO.y() << " " << WPO.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "WPL: " << WPL.x() << " " << WPL.y() << " " << WPL.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "LPSL: " << LPSL.x() << " " << LPSL.y() << " " << LPSL.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "targetL: " << targetL.translation.x() << " " << targetL.translation.y() << " " << targetL.translation.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "WPR: " << WPR.x() << " " << WPR.y() << " " <<WPR.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "RPSR: " << RPSR.x() << " " << RPSR.y() << " " << RPSR.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "targetR: " << targetR.translation.x() << " " << targetR.translation.y() << " " << targetR.translation.z() << std::endl;
         }
         else //< Right stance cur_footsteps
         {
@@ -436,15 +438,15 @@ void FootstepsController::calcJointInDoubleSupport()
             targetL = {OTL.rotation(), OTL.translation()};
 
             //! LOG
-            flog << "[" << theFrameInfo->time << "]" << "DS: Right swing first, right stance.\n";
-            flog << "[" << theFrameInfo->time << "]" << "Current footstep: " << fsm.cur_footstep << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "WPO: " << WPO.x() << " " << WPO.y() << " " << WPO.z() << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "WPR: " << WPR.x() << " " << WPR.y() << " " << WPR.z() << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "RPSR: " << RPSR.x() << " " << RPSR.y() << " " << RPSR.z() << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "targetR: " << targetR.translation.x() << " " << targetR.translation.y() << " " << targetR.translation.z() << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "WPL: " << WPL.x() << " " << WPL.y() << " " << WPL.z() << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "LPSL: " << LPSL.x() << " " << LPSL.y() << " " << LPSL.z() << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "targetL: " << targetL.translation.x() << " " << targetL.translation.y() << " " << targetL.translation.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "DS: Right swing first, right stance.\n";
+            // flog << "[" << theFrameInfo->time << "]" << "Current footstep: " << fsm.cur_footstep << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "WPO: " << WPO.x() << " " << WPO.y() << " " << WPO.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "WPR: " << WPR.x() << " " << WPR.y() << " " << WPR.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "RPSR: " << RPSR.x() << " " << RPSR.y() << " " << RPSR.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "targetR: " << targetR.translation.x() << " " << targetR.translation.y() << " " << targetR.translation.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "WPL: " << WPL.x() << " " << WPL.y() << " " << WPL.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "LPSL: " << LPSL.x() << " " << LPSL.y() << " " << LPSL.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "targetL: " << targetL.translation.x() << " " << targetL.translation.y() << " " << targetL.translation.z() << std::endl;
         }
     }
 
@@ -512,7 +514,9 @@ void FootstepsController::calcJointInSingleSupport()
     //! Print info
     // printf("%3.3f %3.3f %d\n", WPO.x(), WPO.y(), 1);
     // f << com.x() << " " << com.y() << " " << 1 << std::endl;
-    fcom << "[" << theFrameInfo->time << "]" << " S: " << com.x() << " " << com.y() << " " << std::endl;
+
+    //! LOG fcom
+    // fcom << "[" << theFrameInfo->time << "]" << " S: " << com.x() << " " << com.y() << " " << std::endl;
 
     const float KICKDOWN_TIME = 0.1f;
     const float KICKDOWN_DEPTH = 0.2f;
@@ -572,15 +576,15 @@ void FootstepsController::calcJointInSingleSupport()
             targetR = {OTR.rotation(), OTR.translation()};
 
             //! LOG
-            flog << "[" << theFrameInfo->time << "]" << "SS: Left swing first, left swing.\n";
-            flog << "[" << theFrameInfo->time << "]" << "Current footstep: " << fsm.cur_footstep << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "WPO: " << WPO.x() << " " << WPO.y() << " " << WPO.z() << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "WPL: " << WPL.x() << " " << WPL.y() << " " << WPL.z() << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "LPSL: " << LPSL.x() << " " << LPSL.y() << " " << LPSL.z() << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "targetL: " << targetL.translation.x() << " " << targetL.translation.y() << " " << targetL.translation.z() << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "WPR: " << WPR.x() << " " << WPR.y() << " " << WPR.z() << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "RPSR: " << RPSR.x() << " " << RPSR.y() << " " << RPSR.z() << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "targetR: " << targetR.translation.x() << " " << targetR.translation.y() << " " << targetR.translation.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "SS: Left swing first, left swing.\n";
+            // flog << "[" << theFrameInfo->time << "]" << "Current footstep: " << fsm.cur_footstep << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "WPO: " << WPO.x() << " " << WPO.y() << " " << WPO.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "WPL: " << WPL.x() << " " << WPL.y() << " " << WPL.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "LPSL: " << LPSL.x() << " " << LPSL.y() << " " << LPSL.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "targetL: " << targetL.translation.x() << " " << targetL.translation.y() << " " << targetL.translation.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "WPR: " << WPR.x() << " " << WPR.y() << " " << WPR.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "RPSR: " << RPSR.x() << " " << RPSR.y() << " " << RPSR.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "targetR: " << targetR.translation.x() << " " << targetR.translation.y() << " " << targetR.translation.z() << std::endl;
         }
         else //< right swing
         {
@@ -611,15 +615,15 @@ void FootstepsController::calcJointInSingleSupport()
             targetL = {OTL.rotation(), OTL.translation()};
 
             //! LOG
-            flog << "[" << theFrameInfo->time << "]" << "SS: Left swing first, right swing.\n";
-            flog << "[" << theFrameInfo->time << "]" << "Current footstep: " << fsm.cur_footstep << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "WPO: " << WPO.x() << " " << WPO.y() << " " << WPO.z() << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "WPR: " << WPR.x() << " " << WPR.y() << " " << WPR.z() << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "RPSR: " << RPSR.x() << " " << RPSR.y() << " " << RPSR.z() << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "targetR: " << targetR.translation.x() << " " << targetR.translation.y() << " " << targetR.translation.z() << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "WPL: " << WPL.x() << " " << WPL.y() << " " << WPL.z() << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "LPSL: " << LPSL.x() << " " << LPSL.y() << " " << LPSL.z() << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "targetL: " << targetL.translation.x() << " " << targetL.translation.y() << " " << targetL.translation.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "SS: Left swing first, right swing.\n";
+            // flog << "[" << theFrameInfo->time << "]" << "Current footstep: " << fsm.cur_footstep << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "WPO: " << WPO.x() << " " << WPO.y() << " " << WPO.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "WPR: " << WPR.x() << " " << WPR.y() << " " << WPR.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "RPSR: " << RPSR.x() << " " << RPSR.y() << " " << RPSR.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "targetR: " << targetR.translation.x() << " " << targetR.translation.y() << " " << targetR.translation.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "WPL: " << WPL.x() << " " << WPL.y() << " " << WPL.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "LPSL: " << LPSL.x() << " " << LPSL.y() << " " << LPSL.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "targetL: " << targetL.translation.x() << " " << targetL.translation.y() << " " << targetL.translation.z() << std::endl;
         }
     }
     else //< Right swing first
@@ -653,15 +657,15 @@ void FootstepsController::calcJointInSingleSupport()
             targetL = {OTL.rotation(), OTL.translation()};
 
             //! LOG
-            flog << "[" << theFrameInfo->time << "]" << "SS: Right swing first, right swing.\n";
-            flog << "[" << theFrameInfo->time << "]" << "Current footstep: " << fsm.cur_footstep << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "WPO: " << WPO.x() << " " << WPO.y() << " " << WPO.z() << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "WPR: " << WPR.x() << " " << WPR.y() << " " << WPR.z() << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "RPSR: " << RPSR.x() << " " << RPSR.y() << " " << RPSR.z() << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "targetR: " << targetR.translation.x() << " " << targetR.translation.y() << " " << targetR.translation.z() << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "WPL: " << WPL.x() << " " << WPL.y() << " " << WPL.z() << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "LPSL: " << LPSL.x() << " " << LPSL.y() << " " << LPSL.z() << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "targetL: " << targetL.translation.x() << " " << targetL.translation.y() << " " << targetL.translation.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "SS: Right swing first, right swing.\n";
+            // flog << "[" << theFrameInfo->time << "]" << "Current footstep: " << fsm.cur_footstep << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "WPO: " << WPO.x() << " " << WPO.y() << " " << WPO.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "WPR: " << WPR.x() << " " << WPR.y() << " " << WPR.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "RPSR: " << RPSR.x() << " " << RPSR.y() << " " << RPSR.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "targetR: " << targetR.translation.x() << " " << targetR.translation.y() << " " << targetR.translation.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "WPL: " << WPL.x() << " " << WPL.y() << " " << WPL.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "LPSL: " << LPSL.x() << " " << LPSL.y() << " " << LPSL.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "targetL: " << targetL.translation.x() << " " << targetL.translation.y() << " " << targetL.translation.z() << std::endl;
         }
         else //< left swing
         {
@@ -692,14 +696,14 @@ void FootstepsController::calcJointInSingleSupport()
             targetR = {OTR.rotation(), OTR.translation()};
 
             //! LOG
-            flog << "[" << theFrameInfo->time << "]" << "SS: Right swing first, left swing.\n";
-            flog << "[" << theFrameInfo->time << "]" << "Current footstep: " << fsm.cur_footstep << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "WPO: " << WPO.x() << " " << WPO.y() << " " << WPO.z() << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "LPSL: " << LPSL.x() << " " << LPSL.y() << " " << LPSL.z() << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "targetL: " << targetL.translation.x() << " " << targetL.translation.y() << " " << targetL.translation.z() << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "WPR: " << WPR.x() << " " << WPR.y() << " " << WPR.z() << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "RPSR: " << RPSR.x() << " " << RPSR.y() << " " << RPSR.z() << std::endl;
-            flog << "[" << theFrameInfo->time << "]" << "targetR: " << targetR.translation.x() << " " << targetR.translation.y() << " " << targetR.translation.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "SS: Right swing first, left swing.\n";
+            // flog << "[" << theFrameInfo->time << "]" << "Current footstep: " << fsm.cur_footstep << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "WPO: " << WPO.x() << " " << WPO.y() << " " << WPO.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "LPSL: " << LPSL.x() << " " << LPSL.y() << " " << LPSL.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "targetL: " << targetL.translation.x() << " " << targetL.translation.y() << " " << targetL.translation.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "WPR: " << WPR.x() << " " << WPR.y() << " " << WPR.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "RPSR: " << RPSR.x() << " " << RPSR.y() << " " << RPSR.z() << std::endl;
+            // flog << "[" << theFrameInfo->time << "]" << "targetR: " << targetR.translation.x() << " " << targetR.translation.y() << " " << targetR.translation.z() << std::endl;
         }
     }
 

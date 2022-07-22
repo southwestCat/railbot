@@ -10,6 +10,7 @@
 #include "Representations/Infrastructure/JointAngles.h"
 #include "Representations/MotionControl/BalanceActionSelection.h"
 #include "Representations/Motion/BalanceTarget.h"
+#include "Representations/Motion/CoMProjectionEstimation.h"
 
 #include "Modules/Motion/Utils/FloatingBaseObserver.h"
 #include "Modules/Motion/Utils/NetWrenchObserver.h"
@@ -19,6 +20,8 @@
 #include "Modules/Motion/MotionConfigure.h"
 #include "Tools/Module/Blackboard.h"
 
+#include <fstream>
+
 class DCMControllerBase
 {
 public:
@@ -26,6 +29,7 @@ public:
     REQUIRES_REPRESENTATION(FrameInfo);
     REQUIRES_REPRESENTATION(RobotModel);
     REQUIRES_REPRESENTATION(JointAngles);
+    REQUIRES_REPRESENTATION(CoMProjectionEstimation);
     
     USES_REPRESENTATION(RobotDimensions);
     USES_REPRESENTATION(LeftFootTask);
@@ -42,6 +46,9 @@ public:
 class DCMController : public DCMControllerBase
 {
 public:
+    DCMController();
+    ~DCMController();
+    
     void update(DCMJointRequest &s);
 
 private:
@@ -82,4 +89,6 @@ private:
 
     const int hipHeight = MotionConfig::hipHeight;
     JointRequest jointRequest_;
+
+    std::ofstream f_dcm_ecop;
 };

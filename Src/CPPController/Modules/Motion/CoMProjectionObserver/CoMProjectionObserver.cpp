@@ -6,12 +6,10 @@
 CoMProjectionObserver::CoMProjectionObserver() : copFilter(0.2)
 {
     baseBias = {0.f, 0.f};
-    f.open("ecop.txt");
 }
 
 CoMProjectionObserver::~CoMProjectionObserver()
 {
-    f.close();
 }
 
 void CoMProjectionObserver::update()

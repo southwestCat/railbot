@@ -7,8 +7,6 @@
 #include "Tools/Module/Blackboard.h"
 #include "Modules/Motion/Utils/ExponentialMovingAverage.h"
 
-#include <fstream>
-
 class CoMProjectionObserverBase
 {
 public:
@@ -32,6 +30,4 @@ private:
 private:
     ExponentialMovingAverage copFilter;
     Vector2f baseBias; //< normalized bias between estimated and measured.
-
-    std::ofstream f;
 };

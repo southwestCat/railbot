@@ -12,6 +12,13 @@ ComplianceController::ComplianceController()
 
     Acopx = 0.3f;
     Acopy = 0.3f;
+
+    f_compliance_ecop.open("compliance_ecop.txt", std::ios::out);
+}
+
+ComplianceController::~ComplianceController()
+{
+    f_compliance_ecop.close();
 }
 
 void ComplianceController::update()
@@ -21,6 +28,7 @@ void ComplianceController::update()
     UPDATE_REPRESENTATION(BalanceActionSelection);
     UPDATE_REPRESENTATION(JointAngles);
     UPDATE_REPRESENTATION(RobotModel);
+    UPDATE_REPRESENTATION(FrameInfo);
 }
 
 void ComplianceController::update(ComplianceJointRequest &o)
@@ -48,14 +56,28 @@ void ComplianceController::update(ComplianceJointRequest &o)
     float g = Constants::g_1000;
     float a_max = halfSoleX / r * g;
     float a = abs(gyroY) * r / 1000.f / T;
-    float covRate = a / a_max * 10.f;
-    float covRateX = (covRate > 10.f) ? 10.f : covRate;
+    // float covRate = a / a_max * 10.f;
+    // float covRateX = (covRate > 10.f) ? 10.f : covRate;
+    const float errCOV_inv = 2.f / errCOV;
+    float covRate = a / a_max * errCOV_inv;
+    if (covRate < 1.f)
+        covRate = 1.f;
+    float covRateX = (covRate > errCOV_inv) ? errCOV_inv : covRate;
     float errCOV_X = errCOV * covRateX;
 
     //! estimated cop x
     float estimatdCopX = theCoMProjectionEstimation->estimatedCoPNormalized.x();
     //! measured cop x
     float measuredCopX = theCoMProjectionEstimation->measuredCoPNormalized.x();
+
+    //! LOG
+    const float ecopNX = theCoMProjectionEstimation->estimatedCoPNormalized.x();
+    const float mcopNX = theCoMProjectionEstimation->measuredCoPNormalized.x();
+
+    if (theBalanceTarget->balanceEngineReadyPosture)
+    {
+        f_compliance_ecop << "[" << theFrameInfo->time << "]" << " ecopNX: " << ecopNX << " errCOV: " << errCOV_X << " mcopNX: " << mcopNX << std::endl;
+    }
 
     //! stop action when large cov
     if ((covRateX > covRateThreshold))
@@ -99,7 +121,7 @@ void ComplianceController::update(ComplianceJointRequest &o)
     const float eCoPX = theCoMProjectionEstimation->estimatedCoPNormalized.x();
     if (abs(comd_x) < 1.f && abs(eCoPX) > 0.1)
         theBalanceTarget->isComplianceControlDone = true;
-    else 
+    else
         theBalanceTarget->isComplianceControlDone = false;
     // printf(">\n");
     // printf("normalizedCoP: %f\n", theCoMProjectionEstimation->estimatedCoPNormalized.x());
