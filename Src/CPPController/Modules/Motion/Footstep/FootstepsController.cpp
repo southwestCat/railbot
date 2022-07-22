@@ -215,6 +215,9 @@ void FootstepsController::runStanding()
 {
     if (start_walking)
     {
+        //! Update isFootstepsControlDone
+        theBalanceTarget->isFootstepsControlDone = false;
+
         finished = false;
         start_walking = false;
         startDoubleSupport();
@@ -222,6 +225,7 @@ void FootstepsController::runStanding()
     else
     {
         finished = true;
+        theBalanceTarget->isFootstepsControlDone = true;
     }
 }
 
@@ -915,8 +919,8 @@ void FootstepsController::recoveryToStand()
 {
     const float T = 0.5f;
     float t = (float)(theFrameInfo->time - recoveryStartTime_) / 1000.f;
-    Pose3f targetL = Pose3f(Vector3f(0.f, theRobotDimensions->yHipOffset, -hipHeight_));
-    Pose3f targetR = Pose3f(Vector3f(0.f, -theRobotDimensions->yHipOffset, -hipHeight_));
+    Pose3f targetL = Pose3f(Vector3f(-30.f, theRobotDimensions->yHipOffset, -hipHeight_));
+    Pose3f targetR = Pose3f(Vector3f(-30.f, -theRobotDimensions->yHipOffset, -hipHeight_));
     JointRequest j;
     bool isPossible = InverseKinematic::calcLegJoints(targetL, targetR, Vector2f::Zero(), j, *theRobotDimensions);
     updatedJointRequest = isPossible;

@@ -10,10 +10,6 @@ float FuzzyPID::getU(float x, float xd)
 {
     //! assert not configuration
     assert(calculated);
-    assert(eMin != MinNoSet);
-    assert(eMax != MaxNoSet);
-    assert(ecMin != MinNoSet);
-    assert(ecMax != MaxNoSet);
 
     //! Get fuzzification inputs
     int e = fuzzificationE(x);
@@ -26,6 +22,41 @@ float FuzzyPID::getU(float x, float xd)
     assert(ec >= -6);
 
     float r = Fuzzy_Table[e + 6][ec + 6];
+    if (r > 0)
+    {
+        if (r < 40)
+            r = 40;
+        if (r > maxStep)
+            r = maxStep;
+    }
+    else
+    {
+        if (r > -40)
+            r = -40;
+        if (r < -maxStep)
+            r = -maxStep;
+    }
+    return r;
+}
+
+float FuzzyPID::getUDynamic(float x, float xd)
+{
+    //! assert not configuration
+    assert(calculated);
+
+    //! Get fuzzification inputs
+    int e = fuzzificationE(x);
+    int ec = fuzzificationEC(xd);
+
+    printf("[INFO] e: %d ec: %d\n", e, ec);
+
+    //! assert e and ec out of range.
+    assert(e <= 6);
+    assert(e >= -6);
+    assert(ec <= 6);
+    assert(ec >= -6);
+
+    float r = Fuzzy_Table_Dynamic[e + 6][ec + 6];
     if (r > 0)
     {
         if (r < 40)
@@ -50,6 +81,20 @@ void FuzzyPID::printFuzzyTable()
         }
         cout << endl;
     }
+}
+
+void FuzzyPID::printFuzzyTableDynamic()
+{
+    cout << "Fuzzy Table Dynamic: \n";
+    for (int i = 0; i < 13; i++)
+    {
+        for (int j = 0; j < 13; j++)
+        {
+            cout << Fuzzy_Table_Dynamic[i][j] << "\t";
+        }
+        cout << endl;
+    }
+    cout << endl;
 }
 
 int FuzzyPID::E_MAX(int e)
@@ -79,7 +124,7 @@ void FuzzyPID::updateSTEPS(const float step)
     const float maxStep = step;
     const float minStep = 40.f;
 
-    assert(maxStep < minStep);
+    assert(maxStep > minStep);
 
     float n = (maxStep - minStep) / 5.f;
     DynamicSTEPS[0] = -maxStep;
@@ -199,6 +244,109 @@ void FuzzyPID::calcFuzzyTable()
     calculated = true;
 }
 
+
+void FuzzyPID::calculateDynamic()
+{
+    float R[169][13] = {0};
+
+    float R1[13][13] = {0};
+    float R2[169] = {0};
+    float R3[169][13] = {0};
+
+    float R1d[13][13];
+    float R2d[169];
+
+    for (int E_Index = 0; E_Index < 7; E_Index++)
+    {
+        for (int EC_Index = 0; EC_Index < 7; EC_Index++)
+        {
+            int k = 0;
+            int Output_Index = Rules[E_Index][EC_Index] - 1;
+            for (int i = 0; i < 13; i++)
+            {
+                for (int j = 0; j < 13; j++)
+                {
+                    if (E_Membership[E_Index][i] < EC_Membership[EC_Index][j])
+                        R1[i][j] = E_Membership[E_Index][i];
+                    else
+                        R1[i][j] = EC_Membership[EC_Index][j];
+                    R2[k] = R1[i][j];
+                    k++;
+                }
+            }
+
+            for (int i = 0; i < 169; i++)
+            {
+                for (int j = 0; j < 13; j++)
+                {
+                    if (R2[i] < Output_Membership[Output_Index][j])
+                        R3[i][j] = R2[i];
+                    else
+                        R3[i][j] = Output_Membership[Output_Index][j];
+
+                    if (R3[i][j] > R[i][j])
+                        R[i][j] = R3[i][j];
+                }
+            }
+        }
+    }
+
+    for (int E_Index = 0; E_Index < 13; E_Index++)
+    {
+        for (int EC_Index = 0; EC_Index < 13; EC_Index++)
+        {
+            float Cd[13] = {0};
+            //! reset Cd[]
+            for (int i = 0; i < 13; i++)
+                Cd[i] = 0.f;
+            int kd = 0;
+            int Ed = E_MAX(E_Index);
+            int ECd = EC_MAX(EC_Index);
+            for (int i = 0; i < 13; i++)
+            {
+                for (int j = 0; j < 13; j++)
+                {
+                    if (E_Membership[Ed][i] < EC_Membership[ECd][j])
+                        R1d[i][j] = E_Membership[Ed][i];
+                    else
+                        R1d[i][j] = EC_Membership[ECd][j];
+
+                    R2d[kd] = R1d[i][j];
+                    kd++;
+                }
+            }
+
+            float tmp;
+            for (int i = 0; i < 169; i++)
+            {
+                for (int j = 0; j < 13; j++)
+                {
+                    if (R2d[i] < R[i][j])
+                        tmp = R2d[i];
+                    else
+                        tmp = R[i][j];
+
+                    if (tmp > Cd[j])
+                        Cd[j] = tmp;
+                }
+            }
+
+            float sum1 = 0.f;
+            float sum2 = 0.f;
+            float out;
+            for (int i = 0; i < 13; i++)
+            {
+                sum1 += Cd[i];
+                sum2 += Cd[i] * DynamicSTEPS[i];
+            }
+            out = (int)(sum2 / sum1 + 0.5f);
+            Fuzzy_Table_Dynamic[E_Index][EC_Index] = out;
+        }
+    }
+
+    calculated = true;
+}
+
 void FuzzyPID::calculate()
 {
     if (calculated)
@@ -237,11 +385,15 @@ int FuzzyPID::fuzzificationE(float e)
     int f;
     if (e > 0)
     {
-        f = round((e - c) / (d - c) * 6.f);
+        if (e < c)
+            e = c;
+        f = round((e - c) / (d - c) * 6.f) + 1;
     }
     else
     {
-        f = round((b - e) / (a - b) * 6.f);
+        if (e > b)
+            e = b;
+        f = round((b - e) / (a - b) * 6.f) - 1;
     }
 
     if (f > 6)
@@ -276,11 +428,15 @@ int FuzzyPID::fuzzificationEC(float ec)
     int f;
     if (ec > 0)
     {
-        f = round((ec - c) / (d - c) * 6.f);
+        if (ec < c)
+            ec = c;
+        f = round((ec - c) / (d - c) * 6.f) + 1;
     }
     else
     {
-        f = round((b - ec) / (a - b) * 6.f);
+        if (ec > b)
+            ec = b;
+        f = round((b - ec) / (a - b) * 6.f) - 1;
     }
 
     if (f > 6)

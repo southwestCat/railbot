@@ -55,6 +55,8 @@ BalanceActionSelection::BalanceAction BalanceActionSelector::autoHandle()
 
         fuzzyPID.setERange(ea, eb, ec, ed);
         fuzzyPID.setECRange(eca, ecb, ecc, ecd);
+        // fuzzyPID.updateSTEPS(90.f);
+        // fuzzyPID.calculateDynamic();
         fuzzyPID.calculate();
         once = false;
     }
@@ -65,7 +67,7 @@ BalanceActionSelection::BalanceAction BalanceActionSelector::autoHandle()
     endFrame();
 
     //! pre footstep action.
-    if (action == BalanceActionSelection::footstep)
+    if (action == BalanceActionSelection::footstep && lastAction != BalanceActionSelection::footstep)
     {
         //! update FootstepControllerState info
         Vector3f comPosition = theFloatingBaseEstimation->WTB.translation();
@@ -83,7 +85,15 @@ BalanceActionSelection::BalanceAction BalanceActionSelector::autoHandle()
         float x = comPosition.x();
         float xd = comVelocity.x();
         float yd = comVelocity.y();
+        const float maxL = 90.f - abs(x);
+        // fuzzyPID.updateSTEPS(maxL);
+        fuzzyPID.setMaxStep(maxL);
+        // fuzzyPID.calculateDynamic();
+        // fuzzyPID.printFuzzyTableDynamic();
+        printf("[INFO] x: %f xd: %f\n", x, xd);
+        // float stepLength = fuzzyPID.getUDynamic(x, xd);
         float stepLength = fuzzyPID.getU(x, xd);
+        fuzzyPID.printFuzzyTable();
 
         //! Set Footstep params
         theFootstepControllerState->stepLength = stepLength;
@@ -120,6 +130,13 @@ BalanceActionSelection::BalanceAction BalanceActionSelector::mannualHandle()
     if (theKeyStates->pressed[KeyStates::headFront])
     {
         action = BalanceActionSelection::compliance;
+
+        Vector3f comPosition = theFloatingBaseEstimation->WTB.translation();
+        comPosition.x() -= theRobotDimensions->leftAnkleToSoleCenter.x();
+        const float x = comPosition.x();
+        // printf(">\n");
+        // printf("[INFO] x: %3.3f\n", x); 
+        // printf("----\n\n");
     }
     if (theKeyStates->pressed[KeyStates::headMiddle])
     {

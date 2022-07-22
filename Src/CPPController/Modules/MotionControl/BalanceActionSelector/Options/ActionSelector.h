@@ -36,11 +36,10 @@ define_option(ActionRoot)
     {
         define_transition
         {
-            // if (comX > ec || comX < eb)
-            // {
-            //     printf("[SELECTOR] comX: %f\n", comX);
-            //     goto footstep;
-            // }
+            if (comX > ec || comX < eb)
+            {
+                goto footstep;
+            }
             // if (xd < ecb || xd > ecc)
             // {
             //     printf("[SELECTOR] xd: %f\n", xd);
@@ -52,10 +51,9 @@ define_option(ActionRoot)
         }
         define_action
         {
-            printf(">\n");
-            printf("[SELECTOR] In compliance.\n");
-            printf("[SELECTOR] comX: %3.3f %d\n", comX, theBalanceTarget->isComplianceControlDone);
-            printf("----\n\n");
+            // printf(">\n");
+            // printf("[SELECTOR] In compliance.\n");
+            // printf("----\n\n");
             action = BalanceActionSelection::compliance;
         }
     }
@@ -69,9 +67,9 @@ define_option(ActionRoot)
         }
         define_action
         {
-            printf(">\n");
-            printf("[SELECTOR] In DCM.\n");
-            printf("----\n\n");
+            // printf(">\n");
+            // printf("[SELECTOR] In DCM.\n");
+            // printf("----\n\n");
             action = BalanceActionSelection::dcm;
         }
     }
@@ -89,17 +87,32 @@ define_option(ActionRoot)
         }
     }
 
-    define_state(footstep)
+    define_state(footstepStay)
     {
         define_transition
         {
-            // if (state_time > 1000)
-            //     goto dcm;
+            if (state_time > 500)
+                goto dcm;
         }
         define_action
         {
             action = BalanceActionSelection::footstep;
+        }
+    }
+
+    define_state(footstep)
+    {
+        define_transition
+        {
+            if (theBalanceTarget->isFootstepsControlDone)
+                goto footstepStay;
+        }
+        define_action
+        {
+            // printf(">\n");
             // printf("[INFO]: In footstep.\n");
+            // printf("----\n\n");
+            action = BalanceActionSelection::footstep;
         }
     }
 }
