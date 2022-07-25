@@ -14,18 +14,25 @@ FootstepsController::FootstepsController()
 
     // flog.open("log.txt");
     // fcom.open("com.txt");
+
+    f_footstep_com.open("footstep_com.txt");
+    f_footstep_fsr.open("footstep_fsr.txt");
 }
 
 FootstepsController::~FootstepsController()
 {
     // flog.close();
     // fcom.close();
+
+    f_footstep_com.close();
+    f_footstep_fsr.close();
 }
 
 void FootstepsController::update()
 {
     UPDATE_REPRESENTATION(FrameInfo);
     UPDATE_REPRESENTATION(InertialData);
+    UPDATE_REPRESENTATION(FsrFilteredData);
 }
 
 void FootstepsController::update(FootstepJointRequest &j)
@@ -109,33 +116,38 @@ void FootstepsController::setInitialState()
     footsteps = generateFootsteps(stepLength, footSpread, nSteps, left);
 
     //! Print information.
-    printf(">\n");
+    // printf(">\n");
     if (stepLength > 0)
     {
-        printf("Forward.\n");
+        // printf("Forward.\n");
         // fcom << "Forward.\n";
+        f_footstep_com << "Forward.\n";
     }
     else
     {
-        printf("Backward.\n");
+        // printf("Backward.\n");
         // fcom << "Backward.\n";
+        f_footstep_com << "Backward.\n";
     }
     if (left)
     {
-        printf("left foot first.\n");
+        // printf("left foot first.\n");
         // fcom << "left foot first.\n";
+        f_footstep_com << "Left foot first.\n";
     }
     else
     {
-        printf("right foot first.\n");
+        // printf("right foot first.\n");
         // fcom << "right foot first.\n";
+        f_footstep_com << "Right foot first.\n";
     }
     for (auto f : footsteps)
     {
-        printf("%3.3f, %3.3f\n", f.x(), f.y());
+        // printf("%3.3f, %3.3f\n", f.x(), f.y());
         // fcom << f.x() << " " << f.y() << std::endl;
+        f_footstep_com << f.x() << " " << f.y() << std::endl;
     }
-    printf("----\n\n");
+    // printf("----\n\n");
     // fcom << "----\n\n";
 
     //! start walking.
@@ -290,6 +302,17 @@ void FootstepsController::calcJointInDoubleSupport()
 
     //! LOG fcom
     // fcom << "[" << theFrameInfo->time << "]" << " D: " << hip.x() << " " << hip.y() << " " << std::endl;
+    f_footstep_com << "[" << theFrameInfo->time << "]"
+                   << " D " << com.x() << " " << com.y() << " " << std::endl;
+    const float lfl = theFsrFilteredData->pressures[Legs::left][FsrSensors::fl];
+    const float lfr = theFsrFilteredData->pressures[Legs::left][FsrSensors::fr];
+    const float lbl = theFsrFilteredData->pressures[Legs::left][FsrSensors::bl];
+    const float lbr = theFsrFilteredData->pressures[Legs::left][FsrSensors::br];
+    const float rfl = theFsrFilteredData->pressures[Legs::right][FsrSensors::fl];
+    const float rfr = theFsrFilteredData->pressures[Legs::right][FsrSensors::fr];
+    const float rbl = theFsrFilteredData->pressures[Legs::right][FsrSensors::bl];
+    const float rbr = theFsrFilteredData->pressures[Legs::right][FsrSensors::br];
+    // f_footstep_fsr << "[" << theFrameInfo->time << "]" << " D " << fsm.cur_footstep << " " << lfl << " " << lfr << " " << lbl << " " << lbr << " " << rfl << " " << rfr << " " << rbl << " " << rbr << std::endl;
 
     if (left) //< Left swing first
     {
@@ -331,6 +354,9 @@ void FootstepsController::calcJointInDoubleSupport()
             // flog << "[" << theFrameInfo->time << "]" << "WPL: " << WPL.x() << " " << WPL.y() << " " << WPL.z() << std::endl;
             // flog << "[" << theFrameInfo->time << "]" << "LPSL: " << LPSL.x() << " " << LPSL.y() << " " << LPSL.z() << std::endl;
             // flog << "[" << theFrameInfo->time << "]" << "targetL: " << targetL.translation.x() << " " << targetL.translation.y() << " " << targetL.translation.z() << std::endl;
+            f_footstep_fsr << "[" << theFrameInfo->time << "]"
+                           << " D " << fsm.cur_footstep << " " << lfl << " " << lfr << " " << lbl << " " << lbr << " " << rfl << " " << rfr << " " << rbl << " " << rbr
+                           << " L: " << fsm.cur_footstep - 1 << " R: " << fsm.cur_footstep << std::endl;
         }
         else //< left stance cur_footsteps
         {
@@ -370,6 +396,9 @@ void FootstepsController::calcJointInDoubleSupport()
             // flog << "[" << theFrameInfo->time << "]" << "WPR: " << WPR.x() << " " << WPR.y() << " " << WPR.z() << std::endl;
             // flog << "[" << theFrameInfo->time << "]" << "RPSR: " << RPSR.x() << " " << RPSR.y() << " " << RPSR.z() << std::endl;
             // flog << "[" << theFrameInfo->time << "]" << "targetR: " << targetR.translation.x() << " " << targetR.translation.y() << " " << targetR.translation.z() << std::endl;
+            f_footstep_fsr << "[" << theFrameInfo->time << "]"
+                           << " D " << fsm.cur_footstep << " " << lfl << " " << lfr << " " << lbl << " " << lbr << " " << rfl << " " << rfr << " " << rbl << " " << rbr
+                           << " L: " << fsm.cur_footstep << " R: " << fsm.cur_footstep - 1 << std::endl;
         }
     }
     else //< Right swing first
@@ -412,6 +441,9 @@ void FootstepsController::calcJointInDoubleSupport()
             // flog << "[" << theFrameInfo->time << "]" << "WPR: " << WPR.x() << " " << WPR.y() << " " <<WPR.z() << std::endl;
             // flog << "[" << theFrameInfo->time << "]" << "RPSR: " << RPSR.x() << " " << RPSR.y() << " " << RPSR.z() << std::endl;
             // flog << "[" << theFrameInfo->time << "]" << "targetR: " << targetR.translation.x() << " " << targetR.translation.y() << " " << targetR.translation.z() << std::endl;
+            f_footstep_fsr << "[" << theFrameInfo->time << "]"
+                           << " D " << fsm.cur_footstep << " " << lfl << " " << lfr << " " << lbl << " " << lbr << " " << rfl << " " << rfr << " " << rbl << " " << rbr
+                           << " L: " << fsm.cur_footstep << " R: " << fsm.cur_footstep - 1 << std::endl;
         }
         else //< Right stance cur_footsteps
         {
@@ -451,6 +483,9 @@ void FootstepsController::calcJointInDoubleSupport()
             // flog << "[" << theFrameInfo->time << "]" << "WPL: " << WPL.x() << " " << WPL.y() << " " << WPL.z() << std::endl;
             // flog << "[" << theFrameInfo->time << "]" << "LPSL: " << LPSL.x() << " " << LPSL.y() << " " << LPSL.z() << std::endl;
             // flog << "[" << theFrameInfo->time << "]" << "targetL: " << targetL.translation.x() << " " << targetL.translation.y() << " " << targetL.translation.z() << std::endl;
+            f_footstep_fsr << "[" << theFrameInfo->time << "]"
+                           << " D " << fsm.cur_footstep << " " << lfl << " " << lfr << " " << lbl << " " << lbr << " " << rfl << " " << rfr << " " << rbl << " " << rbr
+                           << " L: " << fsm.cur_footstep - 1 << " R: " << fsm.cur_footstep << std::endl;
         }
     }
 
@@ -462,7 +497,6 @@ void FootstepsController::calcJointInDoubleSupport()
     // printf("targetL: %f %f %f\n", targetL.translation.x(), targetL.translation.y(), targetL.translation.z());
     // printf("targetR: %f %f %f\n", targetR.translation.x(), targetR.translation.y(), targetR.translation.z());
     // printf("----\n\n");
-
 
     //! Update BalanceTarget
     if (isPossible)
@@ -521,6 +555,18 @@ void FootstepsController::calcJointInSingleSupport()
 
     //! LOG fcom
     // fcom << "[" << theFrameInfo->time << "]" << " S: " << com.x() << " " << com.y() << " " << std::endl;
+    f_footstep_com << "[" << theFrameInfo->time << "]"
+                   << " S " << com.x() << " " << com.y() << std::endl;
+    const float lfl = theFsrFilteredData->pressures[Legs::left][FsrSensors::fl];
+    const float lfr = theFsrFilteredData->pressures[Legs::left][FsrSensors::fr];
+    const float lbl = theFsrFilteredData->pressures[Legs::left][FsrSensors::bl];
+    const float lbr = theFsrFilteredData->pressures[Legs::left][FsrSensors::br];
+    const float rfl = theFsrFilteredData->pressures[Legs::right][FsrSensors::fl];
+    const float rfr = theFsrFilteredData->pressures[Legs::right][FsrSensors::fr];
+    const float rbl = theFsrFilteredData->pressures[Legs::right][FsrSensors::bl];
+    const float rbr = theFsrFilteredData->pressures[Legs::right][FsrSensors::br];
+    f_footstep_fsr << "[" << theFrameInfo->time << "]"
+                   << " S " << fsm.cur_footstep << " " << lfl << " " << lfr << " " << lbl << " " << lbr << " " << rfl << " " << rfr << " " << rbl << " " << rbr << std::endl;
 
     const float KICKDOWN_TIME = 0.1f;
     const float KICKDOWN_DEPTH = 0.2f;
@@ -848,6 +894,18 @@ void FootstepsController::updateMPC(float dsp_duration, float ssp_duration)
 
 void FootstepsController::standRebalance()
 {
+    //! LOG
+    const float lfl = theFsrFilteredData->pressures[Legs::left][FsrSensors::fl];
+    const float lfr = theFsrFilteredData->pressures[Legs::left][FsrSensors::fr];
+    const float lbl = theFsrFilteredData->pressures[Legs::left][FsrSensors::bl];
+    const float lbr = theFsrFilteredData->pressures[Legs::left][FsrSensors::br];
+    const float rfl = theFsrFilteredData->pressures[Legs::right][FsrSensors::fl];
+    const float rfr = theFsrFilteredData->pressures[Legs::right][FsrSensors::fr];
+    const float rbl = theFsrFilteredData->pressures[Legs::right][FsrSensors::bl];
+    const float rbr = theFsrFilteredData->pressures[Legs::right][FsrSensors::br];
+    f_footstep_fsr << "[" << theFrameInfo->time << "]"
+                   << " R " << -1 << " " << lfl << " " << lfr << " " << lbl << " " << lbr << " " << rfl << " " << rfr << " " << rbl << " " << rbr << std::endl;
+
     //! Check balance state.
     const float gyroX = theInertialData->gyro.y();
     const float angleX = theInertialData->angle.x();
@@ -919,8 +977,8 @@ void FootstepsController::recoveryToStand()
 {
     const float T = 0.5f;
     float t = (float)(theFrameInfo->time - recoveryStartTime_) / 1000.f;
-    Pose3f targetL = Pose3f(Vector3f(-30.f, theRobotDimensions->yHipOffset, -hipHeight_));
-    Pose3f targetR = Pose3f(Vector3f(-30.f, -theRobotDimensions->yHipOffset, -hipHeight_));
+    Pose3f targetL = Pose3f(Vector3f(-20.f, theRobotDimensions->yHipOffset, -hipHeight_));
+    Pose3f targetR = Pose3f(Vector3f(-20.f, -theRobotDimensions->yHipOffset, -hipHeight_));
     JointRequest j;
     bool isPossible = InverseKinematic::calcLegJoints(targetL, targetR, Vector2f::Zero(), j, *theRobotDimensions);
     updatedJointRequest = isPossible;

@@ -48,6 +48,8 @@ private:
     BalanceActionSelection::BalanceAction lastAction;
     FuzzyPID fuzzyPID;
 
+    float footstepInitialXd;
+
     ActivationGraph activationGraph;
 
     unsigned stayInCoMInitialState = 0;

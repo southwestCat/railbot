@@ -262,7 +262,7 @@ void DCMController::applyCoMControlWithoutDCMFeedback()
     //! LOG f
     const float ecopNX = theCoMProjectionEstimation->estimatedCoPNormalized.x();
     const float mcopNX = theCoMProjectionEstimation->measuredCoPNormalized.x();
-    f_dcm_ecop << "[" << theFrameInfo->time << "]" << " ecopX: " << ecopNX << " mcopX: " << mcopNX << std::endl;
+    f_dcm_ecop << "[" << theFrameInfo->time << "]" << " ecopX: " << ecopNX << " mcopX: " << mcopNX << " comdX: " << comxd << std::endl;
 
     //! Get soleLeft target and soleRight target from BalanceTarget.
     Pose3f targetSoleLeft = theBalanceTarget->soleLeftRequest;

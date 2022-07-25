@@ -83,17 +83,18 @@ BalanceActionSelection::BalanceAction BalanceActionSelector::autoHandle()
 
         //! Fuzzy PID
         float x = comPosition.x();
-        float xd = comVelocity.x();
+        // float xd = comVelocity.x();
+        float xd = footstepInitialXd;
         float yd = comVelocity.y();
         const float maxL = 90.f - abs(x);
         // fuzzyPID.updateSTEPS(maxL);
         fuzzyPID.setMaxStep(maxL);
         // fuzzyPID.calculateDynamic();
         // fuzzyPID.printFuzzyTableDynamic();
-        printf("[INFO] x: %f xd: %f\n", x, xd);
         // float stepLength = fuzzyPID.getUDynamic(x, xd);
         float stepLength = fuzzyPID.getU(x, xd);
-        fuzzyPID.printFuzzyTable();
+        // fuzzyPID.printFuzzyTable();
+        // printf("[INFO] x: %f xd: %f\n", x, xd);
 
         //! Set Footstep params
         theFootstepControllerState->stepLength = stepLength;

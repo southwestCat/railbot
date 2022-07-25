@@ -8,6 +8,7 @@
 #include "Representations/MotionControl/BalanceActionSelection.h"
 #include "Representations/Configuration/RobotDimensions.h"
 #include "Representations/Sensing/InertialData.h"
+#include "Representations/Infrastructure/SensorData/FsrSensorData.h"
 #include "Modules/Motion/MotionConfigure.h"
 #include "Tools/Module/Blackboard.h"
 #include "Tools/Math/Constants.h"
@@ -20,6 +21,7 @@ class FootstepsControllerBase
 public:
     REQUIRES_REPRESENTATION(FrameInfo);
     REQUIRES_REPRESENTATION(InertialData);
+    REQUIRES_REPRESENTATION(FsrFilteredData);
 
     USES_REPRESENTATION(FootstepControllerState);
     USES_REPRESENTATION(BalanceActionSelection);
@@ -116,6 +118,8 @@ private:
 
     std::ofstream flog;
     std::ofstream fcom;
+    std::ofstream f_footstep_com;
+    std::ofstream f_footstep_fsr;
 
 private:
     std::vector<Eigen::Vector2f> generateFootsteps(float stepLength, float footSpread, unsigned nSteps, bool leftSwingFirst = true);

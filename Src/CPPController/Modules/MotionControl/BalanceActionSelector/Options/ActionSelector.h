@@ -40,11 +40,12 @@ define_option(ActionRoot)
             {
                 goto footstep;
             }
-            // if (xd < ecb || xd > ecc)
-            // {
-            //     printf("[SELECTOR] xd: %f\n", xd);
-            //     goto footstep;
-            // }
+            if (xd < ecb || xd > ecc)
+            {
+                // printf("[SELECTOR] xd: %f\n", xd);
+                footstepInitialXd = xd;
+                goto preFootstep;
+            }
                 
             if (theBalanceTarget->isComplianceControlDone)
                 goto dcm;
@@ -97,6 +98,21 @@ define_option(ActionRoot)
         define_action
         {
             action = BalanceActionSelection::footstep;
+        }
+    }
+
+    define_state(preFootstep)
+    {
+        define_transition
+        {
+            if (state_time > 100)
+                goto footstep;
+        }
+        define_action
+        {
+            if (footstepInitialXd < xd)
+                footstepInitialXd = xd;
+            action = BalanceActionSelection::compliance;
         }
     }
 

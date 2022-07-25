@@ -39,6 +39,10 @@ void ComplianceController::update(ComplianceJointRequest &o)
     {
         return;
     }
+    if (!theBalanceTarget->balanceEngineReadyPosture)
+    {
+        return;
+    }
 
     for (int i = 0; i <= Joints::rAnkleRoll; i++)
     {
@@ -70,13 +74,20 @@ void ComplianceController::update(ComplianceJointRequest &o)
     //! measured cop x
     float measuredCopX = theCoMProjectionEstimation->measuredCoPNormalized.x();
 
+    //! error x and comd
+    float errX = theCoMProjectionEstimation->measuredCoPNormalized.x() - theCoMProjectionEstimation->estimatedCoPNormalized.x();
+    float comd_x = Acopx * (errX * theCoMProjectionEstimation->normalizedX);
+
     //! LOG
     const float ecopNX = theCoMProjectionEstimation->estimatedCoPNormalized.x();
     const float mcopNX = theCoMProjectionEstimation->measuredCoPNormalized.x();
 
     if (theBalanceTarget->balanceEngineReadyPosture)
     {
-        f_compliance_ecop << "[" << theFrameInfo->time << "]" << " ecopNX: " << ecopNX << " errCOV: " << errCOV_X << " mcopNX: " << mcopNX << std::endl;
+        if ((covRateX > covRateThreshold))
+            comd_x = 0.f;
+        f_compliance_ecop << "[" << theFrameInfo->time << "]"
+                          << " ecopNX: " << ecopNX << " errCOV: " << errCOV_X << " mcopNX: " << mcopNX << " comdX: " << comd_x << std::endl;
     }
 
     //! stop action when large cov
@@ -93,9 +104,6 @@ void ComplianceController::update(ComplianceJointRequest &o)
     //! Get soleLeft target and soleRight target from BalanceTarget.
     Pose3f targetSoleLeft = theBalanceTarget->soleLeftRequest;
     Pose3f targetSoleRight = theBalanceTarget->soleRightRequest;
-
-    float errX = theCoMProjectionEstimation->measuredCoPNormalized.x() - theCoMProjectionEstimation->estimatedCoPNormalized.x();
-    float comd_x = Acopx * (errX * theCoMProjectionEstimation->normalizedX);
 
     targetSoleLeft.translation.x() -= comd_x * dt;
     targetSoleRight.translation.x() -= comd_x * dt;
