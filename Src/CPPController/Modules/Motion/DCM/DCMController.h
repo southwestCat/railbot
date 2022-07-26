@@ -87,6 +87,8 @@ private:
     static constexpr float FOOT_DAMPING_ADMITTANCE_K_TauX = 0.1f;
     static constexpr float FOOT_DAMPING_ADMITTANCE_K_TauY = 0.1f;
 
+    unsigned int dcmFinishedCounter = 0;
+
     const int hipHeight = MotionConfig::hipHeight;
     JointRequest jointRequest_;
 

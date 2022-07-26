@@ -53,5 +53,7 @@ private:
 
     const float dt = Constants::motionCycleTime;
 
+    unsigned int complianceFinishedCounter = 0;
+
     std::ofstream f_compliance_ecop;
 };

@@ -5,8 +5,8 @@
 
 ComplianceController::ComplianceController()
 {
-    covRateThreshold = 10.f * 0.8f;
-    errCOV = 0.2f;
+    // covRateThreshold = 10.f * 0.8f;
+    errCOV = 0.1f;
     keepJoints = false;
     T = Constants::motionCycleTime;
 
@@ -62,7 +62,7 @@ void ComplianceController::update(ComplianceJointRequest &o)
     float a = abs(gyroY) * r / 1000.f / T;
     // float covRate = a / a_max * 10.f;
     // float covRateX = (covRate > 10.f) ? 10.f : covRate;
-    const float errCOV_inv = 2.f / errCOV;
+    const float errCOV_inv = 1.f / errCOV;
     float covRate = a / a_max * errCOV_inv;
     if (covRate < 1.f)
         covRate = 1.f;
@@ -82,24 +82,26 @@ void ComplianceController::update(ComplianceJointRequest &o)
     const float ecopNX = theCoMProjectionEstimation->estimatedCoPNormalized.x();
     const float mcopNX = theCoMProjectionEstimation->measuredCoPNormalized.x();
 
-    if (theBalanceTarget->balanceEngineReadyPosture)
-    {
-        if ((covRateX > covRateThreshold))
-            comd_x = 0.f;
-        f_compliance_ecop << "[" << theFrameInfo->time << "]"
-                          << " ecopNX: " << ecopNX << " errCOV: " << errCOV_X << " mcopNX: " << mcopNX << " comdX: " << comd_x << std::endl;
-    }
+    // printf("errCOV_X: %f errX: %f\n", errCOV_X, errX);
+
+    // if (theBalanceTarget->balanceEngineReadyPosture)
+    // {
+    if ((errCOV_X > abs(errX)))
+        comd_x = 0.f;
+    f_compliance_ecop << "[" << theFrameInfo->time << "]"
+                      << " ecopNX: " << ecopNX << " errCOV: " << errCOV_X << " mcopNX: " << mcopNX << " comdX: " << comd_x << std::endl;
+    // }
 
     //! stop action when large cov
-    if ((covRateX > covRateThreshold))
-    {
-        keepJoints = true;
-        return;
-    }
-    else
-    {
-        keepJoints = false;
-    }
+    // if ((errCOV_X > abs(errX)))
+    // {
+    //     keepJoints = true;
+    //     return;
+    // }
+    // else
+    // {
+    //     keepJoints = false;
+    // }
 
     //! Get soleLeft target and soleRight target from BalanceTarget.
     Pose3f targetSoleLeft = theBalanceTarget->soleLeftRequest;
@@ -127,7 +129,14 @@ void ComplianceController::update(ComplianceJointRequest &o)
 
     //! control done flag.
     const float eCoPX = theCoMProjectionEstimation->estimatedCoPNormalized.x();
-    if (abs(comd_x) < 1.f && abs(eCoPX) > 0.1)
+    if (abs(comd_x) < 1.f && abs(eCoPX) > 0.12)
+        // theBalanceTarget->isComplianceControlDone = true;
+        complianceFinishedCounter++;
+    else
+        // theBalanceTarget->isComplianceControlDone = false;
+        complianceFinishedCounter = 0;
+
+    if (complianceFinishedCounter > 50)
         theBalanceTarget->isComplianceControlDone = true;
     else
         theBalanceTarget->isComplianceControlDone = false;

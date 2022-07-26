@@ -282,12 +282,20 @@ void DCMController::applyCoMControlWithoutDCMFeedback()
     theBalanceTarget->soleLeftRequest = targetSoleLeft;
     theBalanceTarget->soleRightRequest = targetSoleRight;
 
-    if (abs(eCoPX) < 10.f)
+    const float errNX = abs(ecopNX - mcopNX);
+
+    if (errNX < 0.08f)
     {
-        theBalanceTarget->isDCMControlDone = true;
+        // theBalanceTarget->isDCMControlDone = true;
+        dcmFinishedCounter++;
     }
     else
     {
-        theBalanceTarget->isDCMControlDone = false;
+        // theBalanceTarget->isDCMControlDone = false;
+        dcmFinishedCounter = 0;
     }
+    if (dcmFinishedCounter > 50)
+        theBalanceTarget->isDCMControlDone = true;
+    else
+        theBalanceTarget->isDCMControlDone = false;
 }
