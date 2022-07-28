@@ -110,7 +110,7 @@ void DCMController::updateRealFromKinematics()
     //! LOG
     if (theBalanceTarget->balanceEngineReadyPosture)
     {
-        f_comd << "[" << theFrameInfo->time << "]" << " xd: " << realCom_.x() << " yd: " << realCom_.y() << " zd: " << realCom_.z() << std::endl;
+        f_comd << "[" << theFrameInfo->time << "]" << " xd: " << realComd_.x() << " yd: " << realComd_.y() << " zd: " << realComd_.z() << std::endl;
     }
 
     // std::cout << realCom_.transpose() << std::endl;
