@@ -7,11 +7,13 @@
 DCMController::DCMController()
 {
     f_dcm_ecop.open("dcm_ecop.txt");
+    f_comd.open("comd.txt");
 }
 
 DCMController::~DCMController()
 {
     f_dcm_ecop.close();
+    f_comd.close();
 }
 
 void DCMController::update()
@@ -104,6 +106,12 @@ void DCMController::updateRealFromKinematics()
     comVelFilter_.update(realCom_);
     realComd_ = comVelFilter_.vel();
     theFloatingBaseEstimation->comVelocity = realComd_;
+
+    //! LOG
+    if (theBalanceTarget->balanceEngineReadyPosture)
+    {
+        f_comd << "[" << theFrameInfo->time << "]" << " xd: " << realCom_.x() << " yd: " << realCom_.y() << " zd: " << realCom_.z() << std::endl;
+    }
 
     // std::cout << realCom_.transpose() << std::endl;
     // printf("vel: %3.3f, %3.3f\n", realCom_.x(), realCom_.y());

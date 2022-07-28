@@ -93,4 +93,5 @@ private:
     JointRequest jointRequest_;
 
     std::ofstream f_dcm_ecop;
+    std::ofstream f_comd;
 };
