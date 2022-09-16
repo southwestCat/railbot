@@ -60,7 +60,7 @@
 
 ## 运行程序
 
-1. eigen-quadprog 复制到机器人 /usr/local/lib/ 目录下。该库文件可以先在PC上编译好， 在机器上运行可执行文件提醒缺少库文件，ldd 查看链接库，再查看机器人缺少哪些库文件，然后复制到对应路径。Ubuntu20.04编译程序可以在nao-bhkernel上运行，其他版本的操作系统没有测试。
+1. [eigen-quadprog](https://github.com/jrl-umi3218/eigen-quadprog) 复制到机器人 /usr/local/lib/ 目录下。该库文件可以先在PC上编译好， 在机器上运行可执行文件提醒缺少库文件，ldd 查看链接库，再查看机器人缺少哪些库文件，然后复制到对应路径。Ubuntu20.04编译程序可以在nao-bhkernel上运行，其他版本的操作系统没有测试。
 2. 在 `/home/nao/.bashrc` 末尾添加 
     ```bash
     export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
