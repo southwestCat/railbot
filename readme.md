@@ -1,68 +1,51 @@
 # Railbot
+> Railbot is a open-source software for biped robot control, especially, for NAO robot. If you are interested in robot motion control, use this code as you wish. Any problem, please contact with us. email: ziihan_xu@163.com
 
-## 准备工作
-1. 编译[BHumanCodeRelease2021](https://github.com/bhuman/BHumanCodeRelease)代码，下载的时候需要使用`--recursive`，编译方法见[public wiki](https://wiki.b-human.de/coderelease2021/)
-    ```bash
-    git clone --recursive https://github.com/bhuman/BHumanCodeRelease.git
-    ```
+## Flash
+You must flash the NAO robot to the robocup version first and unlock the root permission. More details see [bhuman wiki](https://wiki.b-human.de/coderelease2022/getting-started/).
 
+## Requirments
++ CMake >=  3.6
++ libeigen3-dev
++ libboost1.71-dev
++ libboost-system1.71-dev
++ [eigen-quadprog](https://github.com/jrl-umi3218/eigen-quadprog)
 
-2. 使用flasher将bhuman.opn刷机到Nao机器人上，默认的IP是`10.1.89.40`
+## Linked Libraries
+Copy the library files form your pc to the same path on NAO robot. You can use `ldd` command to check the detailed path information of the excutable files.
+we need:
++ -leigen-quadprog
++ -lboost_system
 
-3. 刷机后，需要手动开机，电脑设置静态IP为`10.1.100.10`后两位可以随便设置，ssh连接机器人，停用bhuman程序，禁止开机自启动
-    ```bash
-    systemctl --user stop bhuman.service
-    systemctl --user disable bhuman.service
-    ```
-    一些常用的`systemctl`指令，默认 sudo 密码为 nao
+## Build
+Build this program on your PC and no need to complie on the robot. We build our code on Ubuntu20.04, PC. Use the `Make.sh` script to build the project. This scrip will automaticly make directories `Build` and `Bin`. After the build process, you can find the excutable files, `lola_conn` and `controller`, in `Bin`. 
 
-    关机
-    ```bash
-    sudo systemctl poweroff
-    ```
-    
-    重启
-    ```bash
-    sudo systemctl reboot
-    ```
+## Run
+Copy the `lola_conn` and `controller` to NAO home path, usually `/home/nao`, `lola_conn` and `controller` need to be run simultaneously. We recommend that run `lola_conn` first and then run `controller`.  
 
-4. 修改`/etc/netpln/default.yaml`，修改有线连接固定ip，添加wlan0为dhcp.
-    ```bash
-    nao@Default:~$ cat /etc/netplan/default.yaml
-    network:
-    version: 2
-    renderer: networkd
-    ethernets:
-        eth0:
-        addresses: [192.168.20.44/16]
+If the program does not work property, use `ldd` to check the linked libraries, you will see the following, the outputs maybe different depend on your setup. Find the missing library files and copy them from your PC. That's why we use Ubuntu20.04 to build our program. If you use other version of Linux system, the library files maybe different and may not work as well.
+```bash
+ldd controller 
+	linux-vdso.so.1 (0x00007ffc5f781000)
+	libeigen-quadprog.so.1 => /usr/local/lib/libeigen-quadprog.so.1 (0x00007fc03b5fc000)
+	librt.so.1 => /lib/x86_64-linux-gnu/librt.so.1 (0x00007fc03b5ae000)
+	libstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007fc03b3cc000)
+	libm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007fc03b27d000)
+	libgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007fc03b262000)
+	libpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007fc03b23f000)
+	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fc03b04b000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007fc03b639000)
+```
 
-        wlan0:
-        addresses: []
-        dhcp4: true
-        optional: true
-    nao@Default:~$ sudo netplan try
-    nao@Default:~$ sudo netplan apply
-    ```
+```bash
+ldd lola_conn 
+	linux-vdso.so.1 (0x00007ffe82fc0000)
+	libpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007fab7a095000)
+	librt.so.1 => /lib/x86_64-linux-gnu/librt.so.1 (0x00007fab7a08b000)
+	libstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007fab79ea9000)
+	libgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007fab79e8e000)
+	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fab79c9c000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007fab7a0fe000)
+	libm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007fab79b4d000)
 
-5. 使用wpa_passphrase 生成连接wifi的配置文件，`wpa_passphrase [ssid] [password] >> file.config` 如wifi的ssid为 wifi-test，密码是 12345678，保存配置文件到`~/wpa_supplicant.conf`
-    ```bash
-    wpa_passphrase wifi-test 12345678 >> /home/nao/wps_supplicant.conf
-    ```
-6. 使用`wpa_supplicant`连接`wifi`
-   ```bash
-   sudo wpa_supplicant -B -Dnl80211 -iwlan0 -c/home/nao/wpa_supplicant.conf
-   ```
-7. 稍等一段时间后，使用`ip addr` 查看无线网络是否连接成功，简单的测试一下网络连接
-    ```bash
-    sudo apt update
-    ```
-8. 这样nao机器人就有了和一般ubuntu系统几乎相同的体验，安装build-essential等都可以用apt安装。
-
-## 运行程序
-
-1. [eigen-quadprog](https://github.com/jrl-umi3218/eigen-quadprog) 复制到机器人 /usr/local/lib/ 目录下。该库文件可以先在PC上编译好， 在机器上运行可执行文件提醒缺少库文件，ldd 查看链接库，再查看机器人缺少哪些库文件，然后复制到对应路径。Ubuntu20.04编译程序可以在nao-bhkernel上运行，其他版本的操作系统没有测试。
-2. 在 `/home/nao/.bashrc` 末尾添加 
-    ```bash
-    export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
-    ```
-3. 在/home/nao目录，新建文件夹railbot，将Config文件夹，Bin/controller和Bin/lola_conn复制到/home/nao/railbot文件夹中，在终端中运行 lola_conn，新建终端运行 controller.
+```

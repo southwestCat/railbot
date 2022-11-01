@@ -10,6 +10,7 @@ set(CMAKE_EXE_LINKER_FLAGS " -no-pie")
 include_directories(
     Src/
     Src/CPPController
+    Src/LolaConnector/msgpack/include
 )
 
 add_executable(lola_conn 
